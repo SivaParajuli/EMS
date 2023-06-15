@@ -1,10 +1,7 @@
 package com.aakivaa.emss.services;
 
-
-import com.aakivaa.emss.dto.EventDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.EventsCostRate;
 
 import java.util.List;
 
@@ -27,7 +24,6 @@ public interface VenueService {
 
     List<?> getAllBookedDate(String email);
 
-    EventsCostRate uploadEventDetails(EventDto eventDto, String email);
 
     Integer getNumberOfNewRegistration();
 

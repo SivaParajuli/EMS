@@ -1,9 +1,9 @@
 package com.aakivaa.emss.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -33,6 +33,6 @@ public class EventsCostRate implements Serializable {
 
     @JsonIgnoreProperties({"password","description","bookingList","functionList","applicationUserRole"})
     @ManyToOne(targetEntity = Venue.class,fetch =FetchType.LAZY)
-    @JoinColumn(name="v_id",foreignKey = @ForeignKey(name ="Fk_FR_venueId"))
+    @JoinColumn(name="v_id")
     private Venue venue1;
 }

@@ -2,7 +2,7 @@ package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -58,6 +58,7 @@ public class Venue implements Serializable {
     @Column (columnDefinition = "Text")
     private String description;
 
+
     @Lob @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
@@ -67,5 +68,9 @@ public class Venue implements Serializable {
 
     @OneToMany(targetEntity = EventsCostRate.class,mappedBy = "venue1",cascade = CascadeType.ALL)
     private List<EventsCostRate> functionList;
+
+
+
+    private Long totalRatings;
 
 }

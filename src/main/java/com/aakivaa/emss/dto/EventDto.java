@@ -6,10 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class EventDto {
-    private String marriage;
-    private String conclave;
-    private String collegeEvent;
-    private String annualMeet;
-    private String familyParty;
+    private String personalProgram;
+    private String professionalEvent;
+    private String FamilyFunction;
     private String rate;
 }

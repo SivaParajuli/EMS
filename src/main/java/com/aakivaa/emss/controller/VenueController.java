@@ -1,11 +1,9 @@
 package com.aakivaa.emss.controller;
 
-import com.aakivaa.emss.dto.EventDto;
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.StatusChangeReq;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.EventsCostRate;
 import com.aakivaa.emss.services.BookingServices;
 import com.aakivaa.emss.services.VenueService;
 import org.springframework.http.HttpStatus;
@@ -98,18 +96,6 @@ public class VenueController extends BaseController {
             }
         }
 
-        @PostMapping(path="updateEventDetails/{email}")
-        public ResponseEntity<ResponseDto> createClient(@RequestBody EventDto eventDto , @PathVariable("email") String email) {
-            EventsCostRate eventsCostAndRate =venueService.uploadEventDetails(eventDto,email);
-            if(eventDto !=null){
-                return new ResponseEntity<>
-                        (successResponse("Event Updated on "+email, eventsCostAndRate), HttpStatus.CREATED);
-            }
-            else{
-                return new ResponseEntity<>
-                        (errorResponse("Event Updation Failed",null),HttpStatus.BAD_REQUEST);
-            }
-        }
 
         @GetMapping("bookingRequest/{email}")
         public ResponseEntity<ResponseDto> getNumberOfBooking(@PathVariable("email")  String email){

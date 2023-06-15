@@ -3,9 +3,9 @@ package com.aakivaa.emss.models;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.EventType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -40,13 +40,13 @@ public class Booking implements Serializable {
     private Double calculatedPayment;
 
     @JsonIgnoreProperties({"password","bookingList","id","applicationUserRole"})
-    @ManyToOne(targetEntity = UserC.class,fetch =FetchType.EAGER)
-    @JoinColumn(name="client_id",foreignKey = @ForeignKey(name ="Fk_BR_clientId"))
+    @ManyToOne(targetEntity = UserC.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id")
     private UserC userC;
 
     @JsonIgnoreProperties({"password","description","bookingList","applicationUserRole"})
     @ManyToOne(targetEntity = Venue.class,fetch =FetchType.EAGER)
-    @JoinColumn(name="venue_id",foreignKey = @ForeignKey(name ="Fk_BR_venueId"))
+    @JoinColumn(name="venue_id")
     private Venue venue;
 
 }

@@ -4,6 +4,7 @@ import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.registrationDto.UserDto;
 import com.aakivaa.emss.dto.registrationDto.VenueRegistration;
+import com.aakivaa.emss.models.Admin;
 import com.aakivaa.emss.services.RegistrationServices;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,6 +51,20 @@ public class RegistrationController extends BaseController{
         else{
             return new ResponseEntity<>
                     (errorResponse("Venue Creation Failed",null),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @PostMapping(path="admin")
+    public ResponseEntity<ResponseDto> registerAdmin(@RequestBody Admin admin) {
+        admin =registrationServices.registerAdmin(admin);
+        if(admin !=null){
+            return new ResponseEntity<>
+                    (successResponse("Client Created.", admin), HttpStatus.CREATED);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Client Creation Failed",null),HttpStatus.BAD_REQUEST);
         }
     }
 

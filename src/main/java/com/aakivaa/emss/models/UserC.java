@@ -1,9 +1,9 @@
 package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.enums.ApplicationUserRole;
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class UserC implements Serializable {
     @Id
     @SequenceGenerator(name="client_id_sequence",sequenceName="client_id_sequence")
-    @GeneratedValue(generator="client_id_sequence",strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(generator="client_id_sequence",strategy= GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(name="name",length=200)

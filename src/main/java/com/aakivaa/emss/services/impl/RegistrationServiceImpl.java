@@ -4,13 +4,18 @@ import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.registrationDto.UserDto;
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.models.Admin;
 import com.aakivaa.emss.models.UserC;
 import com.aakivaa.emss.models.Venue;
+import com.aakivaa.emss.repo.AdminRepo;
 import com.aakivaa.emss.repo.UserCRepo;
 import com.aakivaa.emss.repo.VenueRepo;
+import com.aakivaa.emss.security.user.User;
+import com.aakivaa.emss.security.user.UserRepo;
 import com.aakivaa.emss.services.RegistrationServices;
 import com.aakivaa.emss.utils.EmailSenderService;
 import com.aakivaa.emss.utils.FileStorageUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,12 +29,18 @@ public class RegistrationServiceImpl implements RegistrationServices {
     private final UserCRepo userCRepo;
     private  final FileStorageUtils fileStorageUtils;
     private final EmailSenderService emailSenderService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepo userRepo;
+    private final AdminRepo adminRepo;
 
-    public RegistrationServiceImpl( VenueRepo venueRepo, UserCRepo userCRepo, FileStorageUtils fileStorageUtils, EmailSenderService emailSenderService) {
+    public RegistrationServiceImpl(VenueRepo venueRepo, UserCRepo userCRepo, FileStorageUtils fileStorageUtils, EmailSenderService emailSenderService, PasswordEncoder passwordEncoder, UserRepo userRepo, AdminRepo adminRepo) {
         this.venueRepo = venueRepo;
         this.userCRepo = userCRepo;
         this.fileStorageUtils = fileStorageUtils;
         this.emailSenderService = emailSenderService;
+        this.passwordEncoder = passwordEncoder;
+        this.userRepo = userRepo;
+        this.adminRepo = adminRepo;
     }
 
     @Override
@@ -40,8 +51,14 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .email(userDto.getEmail())
                 .city_name(userDto.getCity_name())
                 .street_name(userDto.getStreet_name())
-                .password(userDto.getPassword())
+                .password(passwordEncoder.encode(userDto.getPassword()))
                 .build();
+        User entity1= User.builder()
+                .email(userDto.getEmail())
+                .uname(userDto.getUsername())
+                .password(passwordEncoder.encode(userDto.getPassword()))
+                .applicationUserRole(ApplicationUserRole.CLIENT).build();
+        userRepo.save(entity1);
         entity= userCRepo.save(entity);
         return UserDto.builder()
                 .id(entity.getId())
@@ -59,7 +76,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
         Venue entity = Venue.builder()
                 .id(venueDto.getId())
                 .venueName(venueDto.getVenueName())
-                .password((venueDto.getPassword()))
+                .password(passwordEncoder.encode(venueDto.getPassword()))
                 .contactNumber(venueDto.getContactNumber())
                 .email(venueDto.getEmail())
                 .address(venueDto.getAddress())
@@ -103,12 +120,12 @@ public class RegistrationServiceImpl implements RegistrationServices {
         if (status == 0) {
             if (venue.isPresent()) {
                 Venue venue1 = venue.get();
-                UserC user = new UserC();
+                User user = new User();
                 user.setEmail(venue1.getEmail());
-                user.setUName(venue1.getUserName());
+                user.setUname(venue1.getUserName());
                 user.setPassword(venue1.getPassword());
                 user.setApplicationUserRole(venue1.getApplicationUserRole());
-                userCRepo.save(user);
+                userRepo.save(user);
                 emailSenderService.sendEmail(venue1.getEmail(),
                         "Registration Response",
                         "Your Registration is Successful login with your credentials.");
@@ -125,6 +142,28 @@ public class RegistrationServiceImpl implements RegistrationServices {
             }
         }
         return null;
+    }
+
+
+
+    @Override
+    public Admin registerAdmin(Admin admin) {
+        Admin entity= Admin.builder()
+                .name(admin.getName())
+                .email(admin.getEmail())
+                .password(passwordEncoder.encode(admin.getPassword()))
+                .applicationUserRole(ApplicationUserRole.ADMIN)
+                .build();
+        User entity1= User.builder()
+                .email(admin.getEmail())
+                .uname(admin.getName())
+                .password(passwordEncoder.encode(admin.getPassword()))
+                .applicationUserRole(ApplicationUserRole.ADMIN).build();
+        userRepo.save(entity1);
+        adminRepo.save(entity);
+        return Admin.builder()
+                .email(entity.getEmail())
+                .build();
     }
 
 }

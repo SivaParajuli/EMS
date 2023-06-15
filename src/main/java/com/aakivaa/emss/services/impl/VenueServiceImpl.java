@@ -144,27 +144,6 @@ public class VenueServiceImpl implements VenueService {
         return new ArrayList<>(dateList);
     }
 
-    @Override
-    public EventsCostRate uploadEventDetails(EventDto eventDto, String email) {
-        Venue venue = venueRepo.findVenueByEmail(email).orElseThrow(() -> new RuntimeException("venueNotFound"));
-        EventsCostRate entity = EventsCostRate.builder()
-                .marriageCost(Double.parseDouble(eventDto.getMarriage()))
-                .annualMeetCost(Double.parseDouble(eventDto.getAnnualMeet()))
-                .collegeEventCost(Double.parseDouble(eventDto.getCollegeEvent()))
-                .conclaveCost(Double.parseDouble(eventDto.getConclave()))
-                .familyFunctionCost(Double.parseDouble(eventDto.getFamilyParty()))
-                .rate(Double.parseDouble(eventDto.getRate()))
-                .venue1(venue)
-                .build();
-        entity = functionRepo.save(entity);
-        return EventsCostRate.builder()
-                .familyFunctionCost(entity.getFamilyFunctionCost())
-                .id(entity.getId())
-                .collegeEventCost(entity.getCollegeEventCost())
-                .marriageCost(entity.getMarriageCost())
-                .annualMeetCost(entity.getAnnualMeetCost())
-                .build();
-    }
 
     @Override
     public Integer getNumberOfNewRegistration() {
