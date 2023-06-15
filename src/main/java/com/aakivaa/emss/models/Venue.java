@@ -58,7 +58,6 @@ public class Venue implements Serializable {
     @Column (columnDefinition = "Text")
     private String description;
 
-
     @Lob @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
