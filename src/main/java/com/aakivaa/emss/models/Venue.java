@@ -44,10 +44,10 @@ public class Venue implements Serializable {
     private ApplicationUserRole applicationUserRole;
 
     @Column(name = "contactNumber", length = 10)
-    private String contactNumber;
+    private String mobile_no;
 
     @Column(name = "address", length = 45)
-    private String address;
+    private String city_name;
 
     @Column(name = "venueStatus")
     private VenueStatus venueStatus;
@@ -58,10 +58,16 @@ public class Venue implements Serializable {
     @Column (columnDefinition = "Text")
     private String description;
 
+    private String citizenshipNo;
 
     @Lob @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "MEDIUMBLOB")
-    private String image;
+    private String file;
+
+
+    @Lob @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "MEDIUMBLOB")
+    private List<String> images;
 
     @OneToMany(targetEntity = Booking.class,mappedBy = "venue",cascade = CascadeType.ALL)
     private List<Booking> bookingList;

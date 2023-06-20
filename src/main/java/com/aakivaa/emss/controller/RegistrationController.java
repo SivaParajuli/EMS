@@ -2,10 +2,10 @@ package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.dto.registrationDto.UserDto;
-import com.aakivaa.emss.dto.registrationDto.VenueRegistration;
+import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Admin;
 import com.aakivaa.emss.services.RegistrationServices;
+import com.aakivaa.emss.utils.EmailSenderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,11 @@ import java.io.IOException;
 public class RegistrationController extends BaseController{
 
     private final RegistrationServices registrationServices;
+    private final EmailSenderService emailSenderService;
 
-    public RegistrationController(RegistrationServices registrationServices) {
+    public RegistrationController(RegistrationServices registrationServices, EmailSenderService emailSenderService) {
         this.registrationServices = registrationServices;
+        this.emailSenderService = emailSenderService;
     }
 
 
@@ -41,9 +43,9 @@ public class RegistrationController extends BaseController{
     public ResponseEntity<ResponseDto> createVenue(@ModelAttribute VenueDto venueDto) throws IOException {
        venueDto = registrationServices.venueRegistration(venueDto);
         if(venueDto !=null){
-//            emailSenderService.sendEmail("svenuebooking.spad01@gmail.com",
-//                    "Registration Request",
-//                    venueDto.getVenueName() +" wants to be registered with requirements in vbs.");
+            emailSenderService.sendEmail("svenuebooking.spad01@gmail.com",
+                    "Registration Request",
+                    venueDto.getVenueName() +" wants to be registered with requirements in vbs.");
 
             return new ResponseEntity<>
                     (successResponse("Registration Request Sent Successfully.",venueDto), HttpStatus.CREATED);

@@ -1,6 +1,6 @@
 package com.aakivaa.emss.services;
 
-import com.aakivaa.emss.dto.registrationDto.UserDto;
+import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.UserC;
 

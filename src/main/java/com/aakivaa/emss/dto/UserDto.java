@@ -1,4 +1,4 @@
-package com.aakivaa.emss.dto.registrationDto;
+package com.aakivaa.emss.dto;
 
 import lombok.*;
 

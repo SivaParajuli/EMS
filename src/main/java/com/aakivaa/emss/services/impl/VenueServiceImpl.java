@@ -1,11 +1,9 @@
 package com.aakivaa.emss.services.impl;
 
-import com.aakivaa.emss.dto.EventDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.EventsCostRate;
 import com.aakivaa.emss.models.Venue;
 import com.aakivaa.emss.repo.FunctionRepo;
 import com.aakivaa.emss.repo.VenueRepo;
@@ -39,9 +37,9 @@ public class VenueServiceImpl implements VenueService {
                 .venueName(entity.getVenueName())
                 .userName(entity.getUserName())
                 .capacity(entity.getCapacity())
-                .contactNumber(entity.getContactNumber())
+                .mobile_no(entity.getMobile_no())
                 .email(entity.getEmail())
-                .address(entity.getAddress())
+                .city_name(entity.getCity_name())
                 .build()).collect(Collectors.toList());
     }
 
@@ -57,9 +55,8 @@ public class VenueServiceImpl implements VenueService {
                     .venueName(venue1.getVenueName())
                     .capacity(venue1.getCapacity())
                     .email(venue1.getEmail())
-                    .contactNumber(venue1.getContactNumber())
-                    .address(venue1.getAddress())
-                    .filePath(venue1.getImage())
+                    .mobile_no(venue1.getMobile_no())
+                    .city_name(venue1.getCity_name())
                     .build();
         }
         return null;
@@ -72,9 +69,9 @@ public class VenueServiceImpl implements VenueService {
             Venue venue1 = venue.get();
             return VenueDto.builder()
                     .venueName(venue1.getVenueName())
-                    .address(venue1.getAddress())
+                    .city_name(venue1.getCity_name())
                     .capacity(venue1.getCapacity())
-                    .contactNumber(venue1.getContactNumber())
+                    .mobile_no(venue1.getMobile_no())
                     .email(venue1.getEmail())
                     .userName(venue1.getUserName())
                     .build();
@@ -113,13 +110,12 @@ public class VenueServiceImpl implements VenueService {
         return venueList.stream().map(entity -> VenueDto.builder()
                 .id(entity.getId())
                 .venueName(entity.getVenueName())
-                .contactNumber(entity.getContactNumber())
+                .mobile_no(entity.getMobile_no())
                 .email(entity.getEmail())
-                .address(entity.getAddress())
+                .city_name(entity.getCity_name())
                 .capacity(entity.getCapacity())
                 .userName(entity.getUserName())
                 .description(entity.getDescription())
-                .filePath(entity.getImage())
                 .build()).collect(Collectors.toList());
     }
 

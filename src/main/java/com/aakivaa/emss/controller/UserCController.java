@@ -2,7 +2,7 @@ package com.aakivaa.emss.controller;
 import com.aakivaa.emss.dto.BookingDto;
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.dto.registrationDto.UserDto;
+import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.UserC;
 import com.aakivaa.emss.services.BookingServices;

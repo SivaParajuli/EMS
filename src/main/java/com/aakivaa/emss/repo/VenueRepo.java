@@ -41,7 +41,7 @@ public interface VenueRepo extends JpaRepository<Venue, Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE Venue v SET v.venueName= :n,v.userName= :u,v.address= :a,v.contactNumber= :c,v.password = :p,v.description= :d where v.email = :e")
+    @Query(value = "UPDATE Venue v SET v.venueName= :n,v.userName= :u,v.city_name= :a,v.mobile_no= :c,v.password = :p,v.description= :d where v.email = :e")
     Integer update(@Param("n") String venueName,
                    @Param("u") String userName,
                    @Param("a") String address,

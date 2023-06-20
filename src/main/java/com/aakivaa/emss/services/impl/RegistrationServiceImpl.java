@@ -1,7 +1,7 @@
 package com.aakivaa.emss.services.impl;
 
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.dto.registrationDto.UserDto;
+import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Admin;
@@ -51,6 +51,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .email(userDto.getEmail())
                 .city_name(userDto.getCity_name())
                 .street_name(userDto.getStreet_name())
+                .applicationUserRole(ApplicationUserRole.CLIENT)
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .build();
         User entity1= User.builder()
@@ -77,24 +78,18 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .id(venueDto.getId())
                 .venueName(venueDto.getVenueName())
                 .password(passwordEncoder.encode(venueDto.getPassword()))
-                .contactNumber(venueDto.getContactNumber())
+                .mobile_no(venueDto.getMobile_no())
                 .email(venueDto.getEmail())
-                .address(venueDto.getAddress())
-                .description(venueDto.getDescription())
+                .city_name(venueDto.getCity_name())
                 .userName(venueDto.getUserName())
-                .capacity(venueDto.getCapacity())
                 .applicationUserRole(ApplicationUserRole.VENUE)
                 .venueStatus(VenueStatus.UNVERIFIED)
-                .image(file)
+                .file(file)
                 .build();
         entity = venueRepo.save(entity);
         return VenueDto.builder()
                 .id(entity.getId())
                 .venueName(entity.getVenueName())
-                .email(entity.getEmail())
-                .userName(entity.getUserName())
-                .filePath(entity.getImage())
-                .capacity(entity.getCapacity())
                 .build();
     }
 
@@ -104,13 +99,11 @@ public class RegistrationServiceImpl implements RegistrationServices {
         return venueList.stream().map(entity -> VenueDto.builder()
                 .id(entity.getId())
                 .venueName(entity.getVenueName())
-                .contactNumber(entity.getContactNumber())
+                .mobile_no(entity.getMobile_no())
                 .email(entity.getEmail())
-                .address(entity.getAddress())
+                .city_name(entity.getCity_name())
                 .userName(entity.getUserName())
-                .capacity(entity.getCapacity())
-                .filePath(entity.getImage())
-                .description(entity.getDescription())
+                .filePath(entity.getFile())
                 .build()).collect(Collectors.toList());
     }
 

@@ -2,7 +2,7 @@ package com.aakivaa.emss.services;
 
 
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.dto.registrationDto.UserDto;
+import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Admin;
 
 import java.io.IOException;
