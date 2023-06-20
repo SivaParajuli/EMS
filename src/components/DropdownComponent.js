@@ -19,7 +19,7 @@ export function DropdownComponentNames({role,setRole,handleRoleChange,eventDetai
     console.log(eventNames);
     
     return(
-          <Grid xs={2}>
+          <Grid xs={6} lg={2}>
               <RoleDropdown
               select
               label="EventType"
@@ -58,7 +58,7 @@ export function DropdownComponentValues({role,pricing,eventValues,setPricing,han
     
     console.log(eventValues);
     return (
-    <Grid xs={2}>
+    <Grid xs={6} lg={2}>
               <RoleDropdown
               select
               disabled={role == "" ? true : false}

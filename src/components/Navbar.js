@@ -1,32 +1,44 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import * as React from 'react';
+import {useState, useReducer} from 'react';
 import { styled } from '@mui/system';
 import {
-  AppBar,
-  Toolbar,
-  Button,
-  Typography,
-  Box,
   Paper,
   MenuList,
   MenuItem,
+  createTheme,
+  ThemeProvider,
 } from '@mui/material';
 import { Event } from '@mui/icons-material';
 import { NavLink as RouterNavLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
 
-const NavbarStyle = styled(AppBar)`
-  background-color: #364652;
-`;
+const drawerWidth = '80%';
 
-const NavbarContainer = styled(Toolbar)`
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap; /* Added flex-wrap property */
-
-  @media (max-width: 600px) {
-  flex-direction: column;
-  align-items: flex-start;
-}
-`;
+const theme = createTheme({
+  components:{
+    MuiBackdrop:{
+      styleOverrides:{
+        root:{
+          background:'none'
+        }
+      }
+    },MuiModal:{
+      styleOverrides:{
+        backdrop:{
+          visibility:'none'
+        }
+      }
+    }
+  }
+})
 
 const Logo = styled(Event)`
   font-weight: bold;
@@ -34,9 +46,34 @@ const Logo = styled(Event)`
   margin-right: 10px;
   color: #ffffff;
 `;
+const LogoRes = styled(Event)`
+  font-weight: bold;
+  font-size: 30px;
+  margin-right: 10px;
+  color: #000;
+`;
 
 const NavLink = styled(Button)(({ theme }) => ({
   color: '#ffffff',
+  fontFamily:
+    'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+  fontWeight: 'bold',
+  textTransform: 'none',
+  height: '64px',
+  borderRadius: '0px',
+  '&:hover': {
+    color: '#E9C46A',
+  },
+  
+  [theme.breakpoints.down('sm')]: {
+    height: 'auto',
+    padding: '8px 16px',
+  }
+}));
+
+const NavLinkRes = styled(Button)(({ theme }) => ({
+  color: '#000',
+  width:'400px',
   fontFamily:
     'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
   fontWeight: 'bold',
@@ -70,6 +107,11 @@ const DropdownMenu = styled(Paper)`
   top: 100%;
   left: 0;
 `;
+const DropdownMenuRes = styled(Paper)`
+  position: absolute;
+  left: 60%;
+  top:0;
+`;
 
 const DropdownItem = styled(MenuItem)`
   font-size: 15px;
@@ -80,6 +122,14 @@ const DropdownItem = styled(MenuItem)`
 `;
 
 const StyledNavLink = styled(RouterNavLink)`
+  font-size: 15px;
+  color: inherit;
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
+`;
+const StyledNavLinkRes = styled(RouterNavLink)`
   font-size: 15px;
   color: inherit;
   text-decoration: none;
@@ -109,14 +159,17 @@ const reducer = (state, action) => {
   }
 };
 
-const Navbar = () => {
+
+function Navbar(props) {
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isActive, dispatch] = useReducer(reducer, initialState);
 
   const handleSetActive = (item) => {
     dispatch({ type: 'SET_ACTIVE', item });
   };
-
+  
   const handleDropdownOpen = () => {
     setIsDropdownOpen(true);
   };
@@ -125,23 +178,114 @@ const Navbar = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleDrawerToggle = () => {
+    setMobileOpen((prevState) => !prevState);
+  };
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ 
+      display:'flex',flexDirection:'column',gap:'10px',
+      alignItems:'center',padding:'20px',backgroundColor:'#f9f9f9',height:'100vh',
+      
+      }}>
+      <LogoRes variant="h4" />
+      <Divider />
+      <StyledNavLinkRes to="/" activeClassName="active">
+           <NavLinkRes
+              onClick={() => handleSetActive('forHome')}
+            >
+              Home
+            </NavLinkRes>
+          </StyledNavLinkRes>
+          <StyledNavLinkRes to="/explorepage" activeClassName="active">
+            <NavLinkRes
+              color="inherit"
+              onClick={() => handleSetActive('forExplore')}
+            >
+              Explore
+            </NavLinkRes>
+          </StyledNavLinkRes>
+          <StyledNavLinkRes to="/loginpage" activeClassName="active">
+            <NavLinkRes
+              color="inherit"
+              onClick={() => handleSetActive('forLogin')}
+              
+            >
+              Login
+            </NavLinkRes>
+          </StyledNavLinkRes>
+          <DropdownContainer onMouseLeave={handleDropdownClose}>
+            <NavLinkRes
+              color="inherit"
+              onMouseEnter={handleDropdownOpen}
+              onClick={() => handleSetActive('forRegister')}
+              
+            >
+              Register
+            </NavLinkRes>
+            <DropdownMenuRes
+              elevation={3}
+              sx={{ display: isDropdownOpen ? 'block' : 'none',
+              '&::-webkit-scrollbar': {
+                width: '0px'
+              }}}
+              onMouseLeave={handleDropdownClose}
+            >
+              <MenuList>
+                <DropdownItem onClick={handleDropdownClose}>
+                  <StyledNavLinkRes
+                    to="/registrationpageUO"
+                    onClick={() => handleSetActive('forRegister')}
+                    activeClassName="active"
+                  >
+                    User
+                  </StyledNavLinkRes>
+                </DropdownItem>
+                <DropdownItem onClick={handleDropdownClose}>
+                  <StyledNavLinkRes
+                    to="/registrationpageD"
+                    onClick={() => handleSetActive('forRegister')}
+                    activeClassName="active"
+                  >
+                    Dealer
+                  </StyledNavLinkRes>
+                </DropdownItem>
+              </MenuList>
+            </DropdownMenuRes>
+          </DropdownContainer>
+          
+    </Box>
+  );
+
+  const container = window !== undefined ? () => window().document.body : undefined;
+
   return (
-    <NavbarStyle position="fixed">
-      <NavbarContainer>
-        <Logo variant="h4" />
-        <Box
+    <ThemeProvider theme={theme}>
+    <Box sx={{ display: 'flex'}}>
+      <AppBar component="nav">
+        <Toolbar  sx={{ display: 'flex',flexDirection:'row',
+        backgroundColor: '#364652',justifyContent:'space-between' }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Logo variant="h4" />
+          <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
+            display:{xs:'none',sm:'block',lg:'flex',xl:'flex'},
+            alignItems: 'center'
           }}
         >
           <StyledNavLink to="/" activeClassName="active">
-            <NavLink
+           <NavLink
               color="inherit"
               onClick={() => handleSetActive('forHome')}
-              sx={{
-                borderBottom: isActive.forHome ? '2px solid #2A9D8F' : '0px',
-              }}
+              
             >
               Home
             </NavLink>
@@ -150,9 +294,7 @@ const Navbar = () => {
             <NavLink
               color="inherit"
               onClick={() => handleSetActive('forExplore')}
-              sx={{
-                borderBottom: isActive.forExplore ? '2px solid #2A9D8F' : '0px',
-              }}
+              
             >
               Explore
             </NavLink>
@@ -161,9 +303,7 @@ const Navbar = () => {
             <NavLink
               color="inherit"
               onClick={() => handleSetActive('forLogin')}
-              sx={{
-                borderBottom: isActive.forLogin ? '2px solid #2A9D8F' : '0px',
-              }}
+              
             >
               Login
             </NavLink>
@@ -173,9 +313,7 @@ const Navbar = () => {
               color="inherit"
               onMouseEnter={handleDropdownOpen}
               onClick={() => handleSetActive('forRegister')}
-              sx={{
-                borderBottom: isActive.forRegister ? '2px solid #2A9D8F' : '0px',
-              }}
+              
             >
               Register
             </NavLink>
@@ -206,10 +344,34 @@ const Navbar = () => {
               </MenuList>
             </DropdownMenu>
           </DropdownContainer>
-        </Box>
-      </NavbarContainer>
-    </NavbarStyle>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Box component="nav">
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+    </Box>
+    </ThemeProvider>
   );
+}
+
+Navbar.propTypes = {
+ 
+  window: PropTypes.func,
 };
 
 export default Navbar;

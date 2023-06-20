@@ -30,8 +30,8 @@ const ContainerWrapper = styled(Container)(({siderbarT})=>({
     width:siderbarT ? `calc(100vw - 240px)`: `calc(100vw - 64px)`,
     marginLeft: siderbarT ? '240px' : '64px',
     padding:'5px 30px 5px 20px',
-  }));
- 
+}));
+
 const theme = createTheme({
     components:{
     MuiTypography:{
@@ -55,20 +55,25 @@ const theme = createTheme({
 const DashboardPreview = () => {
     const[state,setState] = useContext(AuthContext);
     const siderbarT = state.siderbarToggle;
-    
+    const authrole = JSON.parse(sessionStorage.getItem("isoftype"))
+
     
     const handleScroll = ()=>{
         if(window.scrollY >= 64 ){
-            setState({...state,pageScroll:true})
+            setState((prevState)=>{return {...prevState,pageScroll:true}})
         }else{
-            setState({...state,pageScroll:false})
+          setState((prevState)=>{return {...prevState,pageScroll:false}})
         }
     }
 
     useEffect(()=>{
+      let value = true
+        if(value){
         window.addEventListener("scroll",handleScroll)
+        }
         return ()=> {
         window.removeEventListener("scroll",handleScroll)
+        value = false
         }
     },[])
 
@@ -77,18 +82,7 @@ const DashboardPreview = () => {
         <ContainerWrapper siderbarT={siderbarT} 
         disableGutters maxWidth={'xl'} sx={{marginTop:'30px'}}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="user" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="order" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="earning" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="balance" />
-        </Grid>
+          <DashboardWidget type={authrole}/>
       </Grid>
       <Grid container spacing={2} marginTop={4}>
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>

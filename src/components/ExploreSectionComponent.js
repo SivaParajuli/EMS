@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useMemo, useState} from 'react';
 import { lazy } from 'react';
 import dayjs from 'dayjs';
 import { Button, Skeleton, TextField} from '@mui/material'
@@ -15,9 +15,11 @@ import Stack from '@mui/material/Stack';
 const DropdownComponentNames = lazy(()=> import("./DropdownComponent").then(module=>{
   return { default: module.DropdownComponentNames}
 }));
+
 const DropdownComponentValues = lazy(()=>import("./DropdownComponent").then(module=>{
   return { default: module.DropdownComponentValues}
 }));
+
 const GridItemsExplorePage = lazy(()=> import('./GridItemsExplorePage'));
 
 
@@ -31,11 +33,7 @@ const CustomTextField = styled(TextField )({
   
 });
 
-const RoleDropdown = styled(TextField)`
-  && {
-    width: 100%;
-  }
-`;
+
 const SubmitButton = styled(Button)`
   background-color: #384E77; /* Update the button background color */
   color: #E6F9AF; /* Set the text color to white */
@@ -43,7 +41,12 @@ const SubmitButton = styled(Button)`
     background-color: #384E77; /* Update the button background color on hover */
     color:#E6F9AF;
   }
+  width:7%;
+  @media screen and (max-width:767px){
+    width:50%;
+  }
 `;
+
 const center = {
   lat: 27.734649721065097, 
   lng: 85.35900791127253, 
@@ -115,10 +118,7 @@ const ExploreSectionComponent = React.memo(()=> {
   const [pricing,setPricing] = useState("");
 
 	
-	const handleSearchTerm = event =>{
-    setSearchTerm(event.target.value);
-	};
-  
+
   const filterEventValue = ()=>{
     for(let item in EventDetails){
         if(item == role){
@@ -163,15 +163,15 @@ const ExploreSectionComponent = React.memo(()=> {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
-        <Grid container spacing={1} sx={{
+        <Grid container spacing={2} sx={{
           display:'flex',
           flexDirection:'row',
           justifyContent:'center',
           gap:'5px',
           marginTop:'100px',
-          marginBottom:'40px',
-          position:'relative'}}>
-          <Grid xs={2} >
+          marginBottom:'40px'
+          }}>
+          <Grid xs={6} lg={2}>
           <DateTimePicker
           label="StartingDate"
             defaultValue={tomorrow}
@@ -179,7 +179,7 @@ const ExploreSectionComponent = React.memo(()=> {
             views={['year', 'month', 'day', 'hours', 'minutes']}
           />
         </Grid>
-        <Grid xs={2}>
+        <Grid xs={6} lg={2}>
           <DateTimePicker
           label="EndingDate"
           disablePast
@@ -187,7 +187,7 @@ const ExploreSectionComponent = React.memo(()=> {
             views={['year', 'month', 'day', 'hours', 'minutes']}
           />
           </Grid>
-          <Grid  xs={2}>
+          <Grid xs={6} lg={2}>
             <Autocomplete
             onLoad={(autocomplete) => {
             autocomplete.addListener('place_changed', () => {
@@ -212,7 +212,7 @@ const ExploreSectionComponent = React.memo(()=> {
               },
               }}
               value={searchTerm}
-              onChange={handleSearchTerm}
+              onChange={()=>setSearchTerm((prevTerm)=> prevTerm = searchTerm)}
               name="location"
               margin="normal"
             />
@@ -233,7 +233,6 @@ const ExploreSectionComponent = React.memo(()=> {
           fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
           fontSize: '14px',
           fontWeight: 'bold',
-          width:'7%'
           }} color="primary">
           Search
         </SubmitButton>

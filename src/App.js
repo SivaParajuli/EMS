@@ -1,7 +1,8 @@
-import React,{Suspense, lazy, useContext} from 'react';
+import React,{Suspense, lazy, useContext, useEffect} from 'react';
 import { Outlet, Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Skeleton, Stack } from '@mui/material';
 import { AuthProvider ,AuthContext} from './context/AuthContext';
+import ExploreVenue from './components/ExploreVenue';
 
 const LoginPage = lazy(()=>import('./components/LoginPage'));
 const RegistrationPageForUser = lazy(()=> import('./components/RegistrationPageForUser'));
@@ -52,14 +53,16 @@ const App = () => {
     </Stack>
     )
   }
-  const ProtectedRoute = ({children}) => {
-    const [state] = useContext(AuthContext);
 
-    if(!state.loggedIn){
-      return <Navigate to="/loginpage"/>
+  
+    const ProtectedRoute = ({children}) => {
+      const [state] = useContext(AuthContext);
+
+      if(state.logstate == null){
+        return <Navigate to="/loginpage"/>
+      }
+      return children
     }
-    return children
-  }
 
   const router = createBrowserRouter([
     {
@@ -88,16 +91,20 @@ const App = () => {
     ]
     },{
       path:"/dashboard",
-      element:(<ProtectedRoute><LayoutDashboard/></ProtectedRoute>),
+      element:<ProtectedRoute><LayoutDashboard/></ProtectedRoute>,
       children:[{
         path:"/dashboard/addvenuedetails",
         element:(<AddVenueDetailStepper/>),
-      },{path:"/dashboard/preview",
-        element:<DashboardPreview/>}
+      },{
+        path:"/dashboard/preview",
+        element:<DashboardPreview/>},
+        {
+          path:"/dashboard/list",
+        element:<ExploreVenue/>}
     ]
     }
   ])
-
+  
   return (
     <div className='App'>
     <Suspense fallback={<Loader/>}>

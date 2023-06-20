@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { ThemeProvider } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
 const dashboardnavtheme = createTheme({
   components:{
@@ -61,15 +62,24 @@ const NavButton = styled(Button)({
 const DashboardNavbar = () => {
     const[state,setState] = useContext(AuthContext);
     const siderbarT = state.siderbarToggle;
-
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-      const handleClick = (event) => {
+    const navigate = useNavigate();
+
+    const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     };
-      const handleClose = () => {
+    
+    const handleClose = () => {
     setAnchorEl(null);
     };
+
+    const handleLogout =() => {
+      sessionStorage.removeItem("isoftype")
+      sessionStorage.removeItem("token")
+      setState((prevState)=>{return {...prevState,logstate:""}})
+      navigate("/loginpage")
+    }
 
     const toggleSidebar = () => {
       setState({...state,siderbarToggle:!state.siderbarToggle});
@@ -160,7 +170,7 @@ const DashboardNavbar = () => {
         <MenuItem sx={{ fontSize:'14px',
               fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
 
-            fontWeight:'500'}} onClick={handleClose}>
+            fontWeight:'500'}} onClick={handleLogout}>
           <ListItemIcon sx={{marginRight:'-5px'}}>
             <Logout sx={{
                 fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',

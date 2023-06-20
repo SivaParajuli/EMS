@@ -16,6 +16,7 @@ import { ThemeProvider } from '@emotion/react';
 import { Link } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import UpdateIcon from '@mui/icons-material/Update';
+import { Explore } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -99,9 +100,10 @@ export default function DashboardSidebar() {
   let data;
   const [open, setOpen] = React.useState(false);
   const [state,setState] = React.useContext(AuthContext);
-  console.log(state.isofType);
+  const authrole = JSON.parse(sessionStorage.getItem("isoftype"))
 
-  switch(state.isofType){
+
+  switch(authrole){
     case "ADMIN":
     data = [
         {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
@@ -110,8 +112,9 @@ export default function DashboardSidebar() {
       break;
       case "CLIENT":
       data = [
-        {text:"ABC",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"DEF",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Preview",route:"/dashboard/preview",icon:<DashboardIcon/>},
+        {text:"Update",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>},
+        {text:"Explore",route:"/dashboard/list",icon:<Explore/>}
       ]
       break;
       case "DEALER":
