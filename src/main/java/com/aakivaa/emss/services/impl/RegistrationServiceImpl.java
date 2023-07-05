@@ -17,6 +17,7 @@ import com.aakivaa.emss.utils.EmailSenderService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -73,7 +74,8 @@ public class RegistrationServiceImpl implements RegistrationServices {
 
     @Override
     public VenueDto venueRegistration(VenueDto venueDto) throws IOException {
-        String file = fileStorageUtils.storeFile(venueDto.getVenueFile());
+        MultipartFile multipartFile = venueDto.getVenueFile();
+        String file = fileStorageUtils.storeFile(multipartFile);
         Venue entity = Venue.builder()
                 .id(venueDto.getId())
                 .venueName(venueDto.getVenueName())
@@ -103,7 +105,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .email(entity.getEmail())
                 .city_name(entity.getCity_name())
                 .userName(entity.getUserName())
-                .filePath(entity.getFile())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
                 .build()).collect(Collectors.toList());
     }
 

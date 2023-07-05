@@ -45,7 +45,7 @@ public class RegistrationController extends BaseController{
         if(venueDto !=null){
             emailSenderService.sendEmail("svenuebooking.spad01@gmail.com",
                     "Registration Request",
-                    venueDto.getVenueName() +" wants to be registered with requirements in vbs.");
+                    venueDto.getVenueName() +" wants to be registered with requirements in EMS.");
 
             return new ResponseEntity<>
                     (successResponse("Registration Request Sent Successfully.",venueDto), HttpStatus.CREATED);

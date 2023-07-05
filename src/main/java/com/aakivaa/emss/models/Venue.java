@@ -61,7 +61,7 @@ public class Venue implements Serializable {
     private String citizenshipNo;
 
     @Lob @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "MEDIUMBLOB")
+    @Column(name = "filePath")
     private String file;
 
 

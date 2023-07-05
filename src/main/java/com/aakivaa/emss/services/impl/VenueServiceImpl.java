@@ -40,6 +40,7 @@ public class VenueServiceImpl implements VenueService {
                 .mobile_no(entity.getMobile_no())
                 .email(entity.getEmail())
                 .city_name(entity.getCity_name())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
                 .build()).collect(Collectors.toList());
     }
 
@@ -116,6 +117,7 @@ public class VenueServiceImpl implements VenueService {
                 .capacity(entity.getCapacity())
                 .userName(entity.getUserName())
                 .description(entity.getDescription())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
                 .build()).collect(Collectors.toList());
     }
 
