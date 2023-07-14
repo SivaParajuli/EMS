@@ -37,7 +37,7 @@ public class AdminController extends BaseController {
         List<VenueDto> venueList =registerService.getAllPendingRegister();
         if(venueList !=null) {
             return new ResponseEntity<>
-                    (successResponse("Requested Booking List  Fetched.",venueList), HttpStatus.OK);
+                    (successResponse("Requested Registration list  Fetched.",venueList), HttpStatus.OK);
         }
         else{
             return new ResponseEntity<>
@@ -63,7 +63,7 @@ public class AdminController extends BaseController {
         Integer venue = registerService.updateVenueStatus(statusChangeReq.getStatus(), id);
         if (venue != null) {
             return new ResponseEntity<>
-                    (successResponse("Updating Successful.", venue), HttpStatus.OK);
+                    (successResponse("verification updated successfully..", venue), HttpStatus.OK);
         } else {
             return new ResponseEntity<>
                     (errorResponse("Updating venue verification status failed.", null), HttpStatus.BAD_REQUEST);

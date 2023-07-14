@@ -85,7 +85,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .city_name(venueDto.getCity_name())
                 .userName(venueDto.getUserName())
                 .applicationUserRole(ApplicationUserRole.VENUE)
-                .venueStatus(VenueStatus.UNVERIFIED)
+                .venueStatus(VenueStatus.PENDING)
                 .file(file)
                 .build();
         entity = venueRepo.save(entity);
@@ -97,15 +97,19 @@ public class RegistrationServiceImpl implements RegistrationServices {
 
 
     public List<VenueDto> getAllPendingRegister() {
-        List<Venue> venueList= venueRepo.findPendingRegister(VenueStatus.UNVERIFIED);
+        List<Venue> venueList= venueRepo.findPendingRegister(VenueStatus.PENDING);
         return venueList.stream().map(entity -> VenueDto.builder()
                 .id(entity.getId())
                 .venueName(entity.getVenueName())
-                .mobile_no(entity.getMobile_no())
                 .email(entity.getEmail())
                 .city_name(entity.getCity_name())
+                .mobile_no(entity.getMobile_no())
+                .applicationUserRole(entity.getApplicationUserRole())
+                .venueStatus(entity.getVenueStatus())
                 .userName(entity.getUserName())
-                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
+                .capacity(entity.getCapacity())
+                .filePath(entity.getFile())
+                .description(entity.getDescription())
                 .build()).collect(Collectors.toList());
     }
 
@@ -133,7 +137,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 emailSenderService.sendEmail(venue1.getEmail(),
                         "Registration Response",
                         "Your Registration is UnSuccessful Register again with valid information");
-                return venueRepo.updateVenueStatus(VenueStatus.UNVERIFIED, id);
+                return venueRepo.updateVenueStatus(VenueStatus.DELETED, id);
             }
         }
         return null;

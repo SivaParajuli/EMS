@@ -145,7 +145,7 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
     public Integer getNumberOfNewRegistration() {
-        Integer newRegistration = venueRepo.newRegistration(VenueStatus.UNVERIFIED);
+        Integer newRegistration = venueRepo.newRegistration(VenueStatus.PENDING);
         return newRegistration;
     }
 

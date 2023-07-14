@@ -1,5 +1,6 @@
 package com.aakivaa.emss.dto;
 
+import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.EventsCostRate;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class VenueDto {
     private String userName;
     private String mobile_no;
     private String city_name;
+    private ApplicationUserRole applicationUserRole;
     private String email;
     private String password;
     private String citizenShipNo;
