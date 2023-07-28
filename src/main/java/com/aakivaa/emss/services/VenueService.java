@@ -26,6 +26,8 @@ public interface VenueService {
 
     List<Booking> getBookingList(String email);
 
+    VenueDto getDetailsOfVenue(Long id);
+
     List<?> getAllBookedDate(String email);
 
     Integer getNumberOfNewRegistration();

@@ -4,10 +4,8 @@ import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
 import javax.persistence.*;
 
-import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.EventsCostRate;
-import com.aakivaa.emss.models.Images;
-import com.aakivaa.emss.models.VenueRatingsAndReviews;
+import com.aakivaa.emss.models.*;
+import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
 import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
 import lombok.*;
@@ -77,7 +75,7 @@ public class Venue implements Serializable {
 
     @Column(columnDefinition = "MEDIUMBLOB")
     @OneToMany
-    private List<Images> images;
+    private List<Images> listOfImages;
 
 
     @OneToMany(targetEntity = Booking.class,mappedBy = "venue",cascade = CascadeType.ALL)
@@ -99,6 +97,12 @@ public class Venue implements Serializable {
 
     @OneToMany
     private List<FunctionTypes> functionTypesList;
+
+    @OneToMany
+    private List<PricingForBooking> pricing;
+
+    @OneToMany
+    private List<AvailableServices> availableServicesList;
 
 
 

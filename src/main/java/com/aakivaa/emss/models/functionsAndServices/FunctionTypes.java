@@ -24,8 +24,6 @@ public class FunctionTypes implements Serializable {
 
     private Long price;
 
-    private String preference;
-
 
     @OneToMany
     private List<AvailableServices> availableServices;

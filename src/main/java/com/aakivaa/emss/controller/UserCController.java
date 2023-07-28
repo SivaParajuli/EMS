@@ -165,4 +165,17 @@ public class UserCController extends BaseController{
         }
     }
 
+    @GetMapping(path="venueDetails/{id}")
+    public ResponseEntity<ResponseDto>getDetailsOfVenue(@PathVariable Long id){
+        VenueDto venue =venueService.getDetailsOfVenue(id);
+        if(venue != null ){
+            return new ResponseEntity<>
+                    (successResponse("Details fetched.", venue), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

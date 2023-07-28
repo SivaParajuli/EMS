@@ -26,7 +26,8 @@ public class RatingAndReviewServiceImpl implements RatingAndReviewService {
     @Override
     public VenueRatingsAndReviews rateVenue(int rating, Long vid, Long id)  {
         venueRepo.updateTotalRatings(rating + venueRepo.getTotalRatings(vid),vid);
-        venueRepo.updateNumberOfRatedClients(1+venueRepo.getNumberOfRatedClients(vid),vid);
+        int num = venueRepo.getNumberOfRatedClients(vid);
+        venueRepo.updateNumberOfRatedClients(1+num,vid);
 
         UserC userC = userCRepo.getById(id);
         Venue venue = venueRepo.getById(vid);

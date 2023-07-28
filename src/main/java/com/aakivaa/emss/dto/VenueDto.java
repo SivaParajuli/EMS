@@ -41,7 +41,7 @@ public class VenueDto {
     private String filePath;
 
     //used while saving list of images
-    private MultipartFile[] multipartFiles;
+    private List<MultipartFile> multipartFileList;
 
     private List<String> listOfFilePaths;
 
@@ -49,15 +49,23 @@ public class VenueDto {
 
     private List<VenueRatingsAndReviews> venueRatingsAndReviewsList;
 
-    private RecipeMenu[] recipeMenuList;
+    private List<RecipeMenu> recipeMenuList;
 
-    private FunctionTypes[] functionTypesList;
+    private List<FunctionTypes> functionTypesList;
 
-    private AvailableServices[] availableServices;
+    private List<AvailableServices> availableServices;
+
+    private List<AvailableServices> availableServicesList;
+
+    private List<RecipeMenu> recipeMenuLists;
 
     private RecipeMenu recipeMenu;
 
     private FunctionTypes functionTypes;
+
+    private Long ratings;
+
+    private List<VenueRatingsAndReviews> ratingsAndReviewsList;
 
 
 }

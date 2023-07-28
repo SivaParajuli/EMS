@@ -4,6 +4,10 @@ import com.aakivaa.emss.dto.EventsCostCalculation;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Booking;
+import com.aakivaa.emss.models.Images;
+import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
+import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
+import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.users.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -87,6 +91,18 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     @Modifying
     @Query(value="UPDATE Venue  v SET v.numberOfRatedClients=:tr where v.id=:i")
     Integer updateNumberOfRatedClients(@Param("tr") Integer integer,@Param("i") Long id);
+
+    @Query(value = "SELECT f from Venue v join v.functionList f where v.id= :i")
+    List<FunctionTypes> getFunctionList(@Param("i") Long id);
+
+    @Query(value = "SELECT r from Venue v join v.recipeMenuList r where v.id= :i")
+    List<RecipeMenu> getRecipeList(@Param("i") Long id);
+
+    @Query(value = "SELECT a from Venue v join v.availableServicesList a where v.id= :i")
+    List<AvailableServices> getAvailableServiceList(@Param("i") Long id);
+
+    @Query(value = "SELECT im from Venue v join v.listOfImages im where v.id= :i")
+    List<Images> getImagesList(@Param("i") Long id);
 
 
 }

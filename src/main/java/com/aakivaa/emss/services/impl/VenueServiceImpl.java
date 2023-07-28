@@ -7,19 +7,16 @@ import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.Images;
 import com.aakivaa.emss.models.PricingForBooking;
 import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
+import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
 import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.*;
 import com.aakivaa.emss.services.VenueService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import com.aakivaa.emss.utils.RecommenderUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +26,6 @@ public class VenueServiceImpl implements VenueService {
 
 
     private final VenueRepo venueRepo;
-    private final FunctionRepo functionRepo;
     private final FileStorageUtils fileStorageUtils;
     private final RecommenderUtils recommenderUtils;
     private final ImagesRepo imagesRepo;
@@ -40,9 +36,8 @@ public class VenueServiceImpl implements VenueService {
 
 
 
-    public VenueServiceImpl(VenueRepo venueRepo, FunctionRepo functionRepo, FileStorageUtils fileStorageUtils, RecommenderUtils recommenderUtils, ImagesRepo imagesRepo, FunctionsTypesRepo functionsTypesRepo, AvailableServicesRepo availableServicesRepo, RecipeMenuRepo recipeMenuRepo, PricingForBookingRepo pricingForBookingRepo) {
+    public VenueServiceImpl(VenueRepo venueRepo, FileStorageUtils fileStorageUtils, RecommenderUtils recommenderUtils, ImagesRepo imagesRepo, FunctionsTypesRepo functionsTypesRepo, AvailableServicesRepo availableServicesRepo, RecipeMenuRepo recipeMenuRepo, PricingForBookingRepo pricingForBookingRepo) {
         this.venueRepo = venueRepo;
-        this.functionRepo = functionRepo;
         this.fileStorageUtils = fileStorageUtils;
         this.recommenderUtils = recommenderUtils;
         this.imagesRepo = imagesRepo;
@@ -51,7 +46,6 @@ public class VenueServiceImpl implements VenueService {
         this.recipeMenuRepo = recipeMenuRepo;
         this.pricingForBookingRepo = pricingForBookingRepo;
     }
-    Logger logger = LoggerFactory.getLogger(VenueServiceImpl.class);
 
     @Override
     public List<VenueDto> findAll() {
@@ -161,6 +155,37 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
+    public VenueDto getDetailsOfVenue(Long id) {
+        List<String> files = new ArrayList<>();
+        Venue venue = venueRepo.getById(id);
+        List<Images> imagesList = venue.getListOfImages();
+        imagesList.forEach(images -> {
+             String filePath = fileStorageUtils.getBase64FileFromFilePath(images.getFilePath());
+             files.add(filePath);
+        });
+//        List<Images> imagesList = venueRepo.getImagesList(id);
+//        List<FunctionTypes> functionTypesList = venueRepo.getFunctionList(id);
+//        List<AvailableServices> availableServicesList = venueRepo.getAvailableServiceList(id);
+//        List<RecipeMenu> recipeMenuList = venueRepo.getRecipeList(id);
+        return VenueDto.builder()
+                .venueName(venue.getVenueName())
+                .availableRooms(venue.getAvailableRooms())
+                .mobile_no(venue.getMobile_no())
+                .city_name(venue.getCity_name())
+                .listOfFilePaths(files)
+                .availableServicesList(venue.getAvailableServicesList())
+                .recipeMenuLists(venue.getRecipeMenuList())
+                .capacity(venue.getCapacity())
+                .email(venue.getEmail())
+                .userName(venue.getUserName())
+                .description(venue.getDescription())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(venue.getFile()))
+                .ratings(venue.getTotalRatings()/venue.getNumberOfRatedClients())
+                .ratingsAndReviewsList(venue.getVenueRatingsAndReviewsList())
+                .build();
+    }
+
+    @Override
     public List<?> getAllBookedDate(String email) {
         List<?> dateList = venueRepo.getBookedVenueDateById(email, BookingStatus.CANCELED);
         return new ArrayList<>(dateList);
@@ -169,14 +194,12 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
     public Integer getNumberOfNewRegistration() {
-        Integer newRegistration = venueRepo.newRegistration(VenueStatus.PENDING);
-        return newRegistration;
+        return venueRepo.newRegistration(VenueStatus.PENDING);
     }
 
     @Override
     public Integer getNumberOfBooking(String email) {
-        Integer numberOfBooking = venueRepo.getNumberOfBooking(email , BookingStatus.PENDING);
-        return numberOfBooking;
+        return venueRepo.getNumberOfBooking(email , BookingStatus.PENDING);
     }
 
     public List<Venue> getRecommendation(String email) {
@@ -192,7 +215,7 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public Integer updateDetails(VenueDto venueDto, Long id) {
         Venue venue = venueRepo.getById(id);
-         Arrays.stream(venueDto.getMultipartFiles()).forEach(file->{
+        venueDto.getMultipartFileList().forEach(file ->{
              try {
                  String path = fileStorageUtils.storeFile(file);
                  Images image=Images.builder()
@@ -204,15 +227,23 @@ public class VenueServiceImpl implements VenueService {
                  e.printStackTrace();
              }
          });
+        venueDto.getFunctionTypesList().forEach(functionTypes -> {
+            FunctionTypes functionTypes1 = FunctionTypes.builder()
+                    .functionName(functionTypes.getFunctionName())
+                    .venue(venue)
+                    .price(functionTypes.getPrice())
+                    .build();
+            functionsTypesRepo.save(functionTypes1);
+        });
 
-        Arrays.stream(venueDto.getAvailableServices()).forEach(availableServices -> {
+        venueDto.getAvailableServicesList().forEach(availableServices -> {
             AvailableServices availableServices1 = AvailableServices.builder()
                     .name(availableServices.getName())
                     .venue(venue)
                     .build();
             availableServicesRepo.save(availableServices1);
         });
-        Arrays.stream(venueDto.getRecipeMenuList()).forEach(recipeMenu -> {
+        venueDto.getRecipeMenuList().forEach(recipeMenu -> {
             RecipeMenu recipeMenu1 = RecipeMenu.builder()
                     .items(recipeMenu.getItems())
                     .price(recipeMenu.getPrice())
