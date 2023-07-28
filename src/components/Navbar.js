@@ -179,13 +179,13 @@ function Navbar(props) {
   };
 
   const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
+    setMobileOpen((prevState) => prevState = !prevState);
   };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ 
       display:'flex',flexDirection:'column',gap:'10px',
-      alignItems:'center',padding:'20px',backgroundColor:'#f9f9f9',height:'100vh',
+      alignItems:'center',padding:'20px',backgroundColor:'#f9f9f9',height:'100vh'
       
       }}>
       <LogoRes variant="h4" />
@@ -252,8 +252,7 @@ function Navbar(props) {
                 </DropdownItem>
               </MenuList>
             </DropdownMenuRes>
-          </DropdownContainer>
-          
+          </DropdownContainer>       
     </Box>
   );
 
@@ -261,8 +260,7 @@ function Navbar(props) {
 
   return (
     <ThemeProvider theme={theme}>
-    <Box sx={{ display: 'flex'}}>
-      <AppBar component="nav">
+      <AppBar component="nav" sx={{position:'sticky'}}>
         <Toolbar  sx={{ display: 'flex',flexDirection:'row',
         backgroundColor: '#364652',justifyContent:'space-between' }}>
           <IconButton
@@ -364,7 +362,7 @@ function Navbar(props) {
           {drawer}
         </Drawer>
       </Box>
-    </Box>
+    
     </ThemeProvider>
   );
 }

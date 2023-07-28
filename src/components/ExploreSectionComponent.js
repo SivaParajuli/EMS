@@ -1,7 +1,7 @@
-import React,{useMemo, useState} from 'react';
+import React,{useContext, useMemo, useState} from 'react';
 import { lazy } from 'react';
 import dayjs from 'dayjs';
-import { Button, Skeleton, TextField} from '@mui/material'
+import { Button, Container, Skeleton, TextField, Typography} from '@mui/material'
 import  styled  from '@emotion/styled';
 import { Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -10,6 +10,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useJsApiLoader,Autocomplete } from '@react-google-maps/api';
 import Stack from '@mui/material/Stack';
+import { AuthContext } from '../context/AuthContext';
 
 
 const DropdownComponentNames = lazy(()=> import("./DropdownComponent").then(module=>{
@@ -41,7 +42,7 @@ const SubmitButton = styled(Button)`
     background-color: #384E77; /* Update the button background color on hover */
     color:#E6F9AF;
   }
-  width:7%;
+  width:8%;
   @media screen and (max-width:767px){
     width:50%;
   }
@@ -60,6 +61,15 @@ const EventDetails = {
 
 const theme = createTheme({
   components:{
+    MuiTypography:{
+      styleOverrides:{
+        root:{
+          fontSize:'18px',
+          fontFamily: 'Lato, sans-serif',
+          fontFamily: 'Montserrat, sans-serif'
+        }
+      }
+    },
       MuiInputLabel:{
       styleOverrides: {
         root: {
@@ -72,6 +82,7 @@ const theme = createTheme({
     MuiInputBase:{
       styleOverrides: {
         root: {
+          height:'45px',
           fontSize:'14px',
           fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
         },
@@ -102,21 +113,49 @@ const theme = createTheme({
         '& .MuiFormControl-root':{
           margin:'0px',
           fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-
         }
       }
     }
-  } 
+  },MuiButtonBase:{
+    styleOverrides:{
+      root:{
+
+        fontFamily:"Montserrat, sans-serif",
+        padding:"7px 10px",
+        "&:hover":{
+          backgroundColor:"#f0f0f0",
+          color:"#2F3E46"
+        }
+      }
+    }
+  }
   },
 });
 
 
-const ExploreSectionComponent = React.memo(()=> {
+
+const ExploreSectionComponent = ()=> {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [role, setRole] = useState("");
   const [pricing,setPricing] = useState("");
-
+  const [state] = useContext(AuthContext);
+  let extrabutton;
+  
+  switch(state.logstate){
+    case "CLIENT":
+      extrabutton={
+        buttonav:<Typography sx={{fontSize:"10px",fontWeight:"bold"}}>Available</Typography>
+      }
+      break;
+      case null:
+        extrabutton={
+         
+        }
+        break;
+      default:
+      break;
+  }
 	
 
   const filterEventValue = ()=>{
@@ -136,8 +175,6 @@ const ExploreSectionComponent = React.memo(()=> {
     setPricing(event.target.value);
   }
 
-  console.log(role);
-  
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries:['places']
@@ -163,12 +200,12 @@ const ExploreSectionComponent = React.memo(()=> {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
+        <Container sx={{position:"relative"}}>
         <Grid container spacing={2} sx={{
           display:'flex',
           flexDirection:'row',
           justifyContent:'center',
-          gap:'5px',
-          marginTop:'100px',
+          gap:'5px',marginTop:'40px',
           marginBottom:'40px'
           }}>
           <Grid xs={6} lg={2}>
@@ -212,7 +249,7 @@ const ExploreSectionComponent = React.memo(()=> {
               },
               }}
               value={searchTerm}
-              onChange={()=>setSearchTerm((prevTerm)=> prevTerm = searchTerm)}
+              onChange={(e)=>setSearchTerm((prevTerm)=> prevTerm = e.target.value)}
               name="location"
               margin="normal"
             />
@@ -228,7 +265,7 @@ const ExploreSectionComponent = React.memo(()=> {
           
           <DropdownComponentValues role={role} pricing={pricing} eventValues={filterEventValue()}
           setPricing={setPricing} handlePricing={handlePricing}/>
-        
+          
           <SubmitButton type="submit" fullWidth variant="contained" sx={{
           fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
           fontSize: '14px',
@@ -237,10 +274,11 @@ const ExploreSectionComponent = React.memo(()=> {
           Search
         </SubmitButton>
         </Grid>
-        <GridItemsExplorePage/>
+        <GridItemsExplorePage extraprops={extrabutton}/>
+        </Container>
         </ThemeProvider>
     </LocalizationProvider>
   );
-});
+};
 
 export default ExploreSectionComponent

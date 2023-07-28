@@ -87,13 +87,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       '& .MuiDrawer-paper': closedMixin(theme),
     }),
   }),
-);
-
-const sidebarItemDetail = [
-  {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-  {text:"Update Details",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
-  ]
-   
+);   
 
 export default function DashboardSidebar() {
   
@@ -112,15 +106,16 @@ export default function DashboardSidebar() {
       break;
       case "CLIENT":
       data = [
-        {text:"Preview",route:"/dashboard/preview",icon:<DashboardIcon/>},
+        {text:"Main",route:"/dashboard/preview",icon:<DashboardIcon/>},
         {text:"Update",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>},
         {text:"Explore",route:"/dashboard/list",icon:<Explore/>}
       ]
       break;
-      case "DEALER":
+      case "VENUE":
       data = [
         {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"Something",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Requests",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>},
+        {text:"History",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
       ]
       break;
       default:
@@ -178,53 +173,12 @@ export default function DashboardSidebar() {
           ))}
         </List>
         <Divider/>
-        <List>
-        {data.map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
-              <Link to={`${item.route}`} style={{textDecoration:'none',color:'GrayText'}}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: state.siderbarToggle ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    
-                    minWidth: 0,
-                    mr: state.siderbarToggle ? 2.5 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                
-                <ListItemText 
-                disableTypography
-                primary={<Typography variant='body2' style={{fontSize:'14px',
-                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-                fontWeight:'500',
-                color:'#264653'
-                ,opacity: state.siderbarToggle ? 1 : 0}}>{item.text}</Typography>}/>
-              </ListItemButton>
-              </Link>
-            </ListItem>
-          ))}
-        </List>
       </Drawer>
     </Box>
     </ThemeProvider>
   );
 }
-
-
-
-
-
-
-
-
+  
 
 
 

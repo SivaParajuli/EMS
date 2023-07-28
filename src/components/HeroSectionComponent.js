@@ -73,7 +73,7 @@ const HeroSectionComponent = () => {
   ];
 
   return (
-    <HeroSection sx={{marginTop:'64px'}}>
+    <HeroSection>
       <Carousel animation="slide">
         {carouselItems.map((item, index) => (
           <CarouselItem key={index} item={item} />

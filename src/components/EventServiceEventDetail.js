@@ -6,20 +6,18 @@ import { Form } from 'react-router-dom';
 
 const arrayofeventdetail = {
 
-  "PersonalProgram":
+  "Program":
   ["Event Hall with Dining",
   "Multiple Rooms with Spa Pool(B:L:D)",
   "Bbq and Dance Live Event",
   "Parking Space and Security",
   "Green Environment",
-  "Sport Hall and Games"],
-  "FamilyFunction":[
+  "Sport Hall and Games",
   "Event Hall and Mandap",
   "Launch Snacks Beverages",
   "Dancing Space and Sound System",
   "Green Environment",
-  "Parking Space and Security"
-  ],"ProfessionalEvent":[
+  "Parking Space and Security",
   "Necessary Digital Systems",
   "Launch Snacks Beverages",
   "Parking Space and Security",
@@ -93,10 +91,11 @@ function EventServiceEventDetail() {
         
       };
 
+      console.log(dropdownValues)
       
   return (
     <UpperSectionWrapper>
-      <Form onSubmit={()=>console.log("hello")}>
+      <Form onSubmit={console.log("Hello World")}>
       <Typography variant='body2' sx={{  fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
       fontWeight:'600'}}>
       <li sx={{padding:'0px'}}>Add Event Detail</li></Typography>
@@ -135,12 +134,12 @@ function EventServiceEventDetail() {
 
         paddingTop:'3px'}}>Event Types</InputLabel>
       <Select
-        labelId="dropdown1-label"
+        labelId="dropdown0-label"
         id="dropdown0"
-        name="0"
+        name="dropdown0"
         multiple
         required
-        value={dropdownValues[0] || []}
+        value={dropdownValues.dropdown0 || []}
         onChange={handleDropdownChange}
         renderValue={(selected) => selected.join(', ')}
       >
@@ -161,47 +160,31 @@ function EventServiceEventDetail() {
     </ThemeProvider>
     </Grid>
     <ThemeProvider theme={theme}>
-  {dropdownValues[0]?.map((item,index)=>
-  ( 
     <Grid item xs={2}>
     <FormControl fullWidth margin="normal">
-      <InputLabel id={`dropdown${index+1}-label`}
+      <InputLabel id={`dropdown1-label`}
       sx={{fontSize:'13px',backgroundColor:'#fff',width:'140px',paddingLeft:'4px',
       fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
 
-        paddingTop:'3px'}}>For {item}</InputLabel>
+        paddingTop:'3px'}}>For Programs</InputLabel>
         <Select
-        id={`dropdown${index+1}`}
-        name={`${index+1}`}
+        id={`dropdown1`}
+        name={`dropdown1`}
         multiple
         required
-        value={dropdownValues[index+1] || []}
+        value={dropdownValues.dropdown1 || []}
         onChange={handleDropdownChange}
-        renderValue={(selected) => selected.join(', ')}
+        renderValue={(selected) => selected.join(',')}
         >
-        {item == "PersonalProgram" ? ( 
-          arrayofeventdetail.PersonalProgram.map((item)=>( 
+        {arrayofeventdetail.Program.map((item)=>( 
         <MenuItem value={`${item}`}>
-          <Checkbox checked={dropdownValues[index+1]?.includes(`${item}`)} />
-          <ListItemText primary={`${item}`} />
-        </MenuItem> )))
-         : item == "FamilyFunction" ? (
-          arrayofeventdetail.FamilyFunction.map((item)=>( 
-            <MenuItem value={`${item}`}>
-          <Checkbox checked={dropdownValues[index+2]?.includes(`${item}`)} />
-          <ListItemText primary={`${item}`} />
-        </MenuItem> ))): 
-        item == "ProfessionalEvent" && (
-          arrayofeventdetail.ProfessionalEvent.map((item)=>( 
-            <MenuItem value={`${item}`}>
-          <Checkbox checked={dropdownValues[index+3]?.includes(`${item}`)} />
+          <Checkbox checked={dropdownValues[1]?.includes(`${item}`)} />
           <ListItemText primary={`${item}`} />
         </MenuItem> ))
-        )
          }
       </Select>
     </FormControl>
-    </Grid>))}
+    </Grid>
     </ThemeProvider>
     <Button type="submit"
                   sx={{":hover":{backgroundColor: 'rgba(0, 0, 0, 0.05)',color:'#001'},

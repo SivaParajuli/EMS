@@ -47,6 +47,16 @@ const DashboardWidget = ({ type }) => {
         ...dataforclient
       ];
       break;
+      case "ADMIN":
+      data = [
+        ...dataforclient
+      ];
+      break;
+      case "VENUE":
+      data = [
+        ...dataforclient
+      ];
+      break;
       default:
       break;
   }

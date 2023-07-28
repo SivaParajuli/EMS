@@ -136,12 +136,12 @@ const FileInputLabel = styled.label({
     }
 });
 
-const initialState = {username:"",password:"",email:"",city_name:"",mobile_no:""};
+const initialState = {userName:"",password:"",email:"",city_name:"",mobile_no:"",venueName:""};
 
 const reducer = (dealerdetail , action)=> {
     switch(action.type){
-      case "username":{
-        return {...dealerdetail, username: action.payload}
+      case "userName":{
+        return {...dealerdetail, userName: action.payload}
       }
       break;
       case "password":{
@@ -160,6 +160,9 @@ const reducer = (dealerdetail , action)=> {
         return {...dealerdetail, mobile_no: action.payload}
       }
       break;
+      case "venueName":
+        return {...dealerdetail,venueName:action.payload}
+        break;
       default:
       return dealerdetail
     }
@@ -168,38 +171,43 @@ const reducer = (dealerdetail , action)=> {
 
 
 const RegistrationPageForDealer = () => {
-    const [selectedFile, setSelectedFile] = useState([]);
-    const formData = new FormData();
+    const [venueFile, setVenueFile] = useState([]);
     const [dealerdetail,dispatch] = useReducer(reducer,initialState);
     
 
     const handleFileChange = (event) => {
-      const files = event.target.files;
-      const selectedfilelist = Array.from(files);
-      setSelectedFile((prevState) => {return prevState = selectedfilelist})
-      
-      for (let i = 0; i <= selectedfilelist.length; i++) {
-        formData.append(`image${i}`, selectedfilelist[i]);
-      }
-      
-    };
+      setVenueFile((prevFile)=> prevFile = event.target.files[0])
+      // setSelectedFile((prevState) => {
+      // prevState = files
+      // return prevState})
 
+    }
+    
+    console.log(venueFile)
     
     const handleSubmit = async(event) => {
     event.preventDefault();
-    formData.append("data",dealerdetail)
+    const formData = new FormData();
+
+    formData.append("userName",dealerdetail.userName)
+    formData.append("password",dealerdetail.password)
+    formData.append("email",dealerdetail.email)
+    formData.append("city_name",dealerdetail.city_name)
+    formData.append("mobile_no",dealerdetail.mobile_no)
+    formData.append("venueName",dealerdetail.venueName)
+    
+    // for (let i = 0; i < selectedFile.length; i++) {
+    //   formData.append(`image${i}`, selectedFile[i]);
+    // }
+    formData.append("venueFile",venueFile)
+
+    console.log(formData.get("venueFile"))
+    console.log(formData.get("userName"))
+    
     try{
       const url = "http://localhost:8888/register/venue";
       const request = await fetch(url,{
         method: "POST", 
-        mode: "cors", 
-        cache: "no-cache", 
-        credentials: "same-origin",
-        headers: {
-          'Content-Type': "multipart/form-data"
-        },
-        redirect: "follow", 
-        referrerPolicy: "no-referrer",
         body: formData
       });
       const response = await request.json();
@@ -233,8 +241,8 @@ const RegistrationPageForDealer = () => {
               name="username"
               autoComplete="given-name"
               margin="normal"
-              onChange={(event)=>dispatch({type:"username",payload:event.target.value})}
-              value={dealerdetail.username}
+              onChange={(event)=>dispatch({type:"userName",payload:event.target.value})}
+              value={dealerdetail.userName}
             />
           </Grid>
           <Grid item xs={12} lg={6}>
@@ -280,6 +288,21 @@ const RegistrationPageForDealer = () => {
               margin="normal"
               onChange={(event)=>dispatch({type:"address",payload:event.target.value})}
               value={dealerdetail.city_name}
+            />
+          </Grid>
+          <Grid item xs={12} lg={6}>
+            <TextField
+              variant="outlined"
+              required
+              fullWidth
+              id="venueName"
+              type="text"
+              label="VenueName"
+              name="venueName"
+              autoComplete="venueName"
+              margin="normal"
+              onChange={(event)=>dispatch({type:"venueName",payload:event.target.value})}
+              value={dealerdetail.venueName}
             />
           </Grid>
           <Grid item xs={12} lg={6}>

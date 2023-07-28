@@ -2,8 +2,12 @@ import React,{Suspense, lazy, useContext, useEffect} from 'react';
 import { Outlet, Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Skeleton, Stack } from '@mui/material';
 import { AuthProvider ,AuthContext} from './context/AuthContext';
-import ExploreVenue from './components/ExploreVenue';
-
+const ExploreVenue = lazy(()=> import('./components/ExploreVenue.js').then(module=>{
+  return { default: module.ExploreVenue}
+}));
+const ExploreVenueTabPanel = lazy(()=> import("./components/ExploreVenueTabPanel.js").then(module=>{
+  return { default: module.ExploreVenueTabPanel}
+}));
 const LoginPage = lazy(()=>import('./components/LoginPage'));
 const RegistrationPageForUser = lazy(()=> import('./components/RegistrationPageForUser'));
 const RegistrationPageForDealer= lazy(()=> import('./components/RegistrationPageForDealer'));
@@ -17,6 +21,9 @@ const Navbar = lazy(()=> import('./components/Navbar'));
 
 
 const App = () => {
+
+  const [state] = useContext(AuthContext);
+ 
 
   const LayoutLanding =()=>{
     return(
@@ -74,8 +81,11 @@ const App = () => {
         path:"/",
         element:<LandingPage/>
       },{
-        path:"/explorepage",
+        path: "/explorepage",
         element:<ExploreSectionComponent/>
+      },{
+        path: state.logstate == null ? "/explorepage/list/:id" : "/dashboard/list/detail/:id",
+        element: <ExploreVenueTabPanel/>
       },
       {
         path:"/loginpage",
@@ -100,7 +110,11 @@ const App = () => {
         element:<DashboardPreview/>},
         {
           path:"/dashboard/list",
-        element:<ExploreVenue/>}
+        element:<ExploreVenue/>,
+      },{
+        path: state.logstate == null ? "/dashboard/list/detail/:id" : "/explorepage/list/:id",
+        element:<ExploreVenueTabPanel/>
+      }
     ]
     }
   ])

@@ -13,6 +13,7 @@ const AuthProvider = ({children})=> {
     //         setState((prevState)=>{return {...prevState,logstate:true}})
     //     }
     // },[state.logstate])
+        console.log(state.logstate)
 
     return(
         <AuthContext.Provider value={[state,setState]}>

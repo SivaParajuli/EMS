@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import  styled from '@emotion/styled';
-import { Container, Typography, TextField, Button, Paper, createTheme, ThemeProvider } from '@mui/material';
+import { Container, Typography, TextField, Button, Paper, createTheme, ThemeProvider, Snackbar } from '@mui/material';
 import loginimage from '../images/forlogin.jpg'
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { RequestParam } from './RequestParam';
+
 
 const theme = createTheme({
     components:{
@@ -55,10 +55,10 @@ const ContainerWrapper = styled('div')`
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 100vh;
   border-radius: 15px;
   background-color:#fCfCfC;
-  z-index:999;
+  position:relative;
+  height:550px;
   @media screen and (max-width:767px){
     display:flex;
     flex-direction:column;
@@ -69,7 +69,6 @@ const ContainerWrapper = styled('div')`
 const LeftWrapper = styled('div')({
   display:'flex',
   flex:0.55,
-  height:'100vh',
   '@media screen and (max-width:767px)':{display: 'none'}
 })
 
@@ -119,31 +118,36 @@ const SubmitButton = styled(Button)`
   }
 `;
 
+
 const LoginPage = () => {
 
   const navigate = useNavigate();
   const[logindetail,setLoginDetail] = useState({username:"",password:""})
   const [state,setState] = useContext(AuthContext)
   
-  const handleSubmit = async(event) => {
-    event.preventDefault();
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
     
     try{
       const url = "http://localhost:8888/login";
       const request = await fetch(url,{
-        ...RequestParam,
         method:"POST",
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify(logindetail)
       });
       const response = await request.json();
-      sessionStorage.setItem("token",JSON.stringify(response.data.token))
-      sessionStorage.setItem("isoftype",JSON.stringify(response.data.applicationUserRole))
-      setState((prevState)=>{
-      return {...prevState,logstate:JSON.parse(sessionStorage.getItem("isoftype"))}})
-      navigate("/dashboard/preview")
-      console.log(response)
-    }catch(error){  
-      console.log(error)
+      if(response.status == true){
+        sessionStorage.setItem("token",JSON.stringify(response.data.token))
+        sessionStorage.setItem("isoftype",JSON.stringify(response.data.applicationUserRole))
+        setState((prevState)=>{
+        return {...prevState,logstate:JSON.parse(sessionStorage.getItem("isoftype"))}})
+        setTimeout(()=>{navigate("/dashboard/preview")},4000) 
+      }else{
+        alert("Invalid Login!")
+      }
+      }catch(error){  
+        alert("Invalid Login!")
     }
   };
 

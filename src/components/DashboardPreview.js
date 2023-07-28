@@ -7,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Container, createTheme } from '@mui/material';
 import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
+import { AdminData } from './TableData';
 const DashboardChart = lazy(()=> import('./DashboardChart'));
 const DashboardFeatured = lazy(()=> import('./DashboardFeatured'));
 const DashboardWidget = lazy(()=> import('./DashboardWidget'));
@@ -76,7 +77,7 @@ const DashboardPreview = () => {
         value = false
         }
     },[])
-
+    
     return (
         <ThemeProvider theme={theme}>    
         <ContainerWrapper siderbarT={siderbarT} 
@@ -96,10 +97,7 @@ const DashboardPreview = () => {
             boxShadow: '2px 4px 10px 1px rgba(201, 201, 201, 0.47)',
             padding:'10px 10px',
             borderRadius: '10px'}}>
-        <Typography variant="h6" fontSize="large" gutterBottom>
-          Latest Transactions
-        </Typography>
-        <DashboardTable />
+        <DashboardTable type={authrole}/>
       </Box>
       </ContainerWrapper>
       </ThemeProvider>

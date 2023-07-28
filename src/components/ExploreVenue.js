@@ -44,11 +44,11 @@ const ContainerWrapper = styled(Container)(({siderbarT})=>({
       marginLeft: siderbarT ? '240px' : '64px'
 }));
 
-function ExploreVenue() {
+export function ExploreVenue() {
 
     const[state,setState] = useContext(AuthContext);
     const siderbarT = state.siderbarToggle;
-
+    
     return (
     <ThemeProvider theme={theme}>
     <ContainerWrapper siderbarT={siderbarT}>
@@ -57,5 +57,3 @@ function ExploreVenue() {
     </ThemeProvider>
   )
 }
-
-export default ExploreVenue

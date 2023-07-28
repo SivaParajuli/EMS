@@ -48,6 +48,9 @@ const theme = createTheme({
   }
 });
 
+
+const EventService = ["Starter","Launch","Dinner","Dessert"]
+
 function EventPriceDetail() {
     const [role, setRole] = useState("");
     const [priceValue,setPriceValue] = useState("");
@@ -97,7 +100,7 @@ function EventPriceDetail() {
 
     return (
       <ThemeProvider theme={theme}>
-        <Form onSubmit={()=>console.log("hello")}>
+        <Form onSubmit={handleEventPriceSubmit}>
         <Grid container spacing={1} sx={{display:'flex',flexDirection:'row',alignItems:'center',gap:'10px',marginLeft:'1px',marginBottom:'15px'}}>
         <Grid xs={2}>
               <RoleDropdown
@@ -189,7 +192,7 @@ function EventPriceDetail() {
                 onChange={handleDropdownChange}
                 renderValue={(selected) => selected.join(',')}
               >
-              { pref !=""  && eventValuesNext().map((value)=>(
+              { pref !=""  && EventService.map((value)=>(
              <MenuItem value={`${value}`}>
              <Checkbox checked={dropdownValues[0]?.includes(`${value}`)} />
              <ListItemText primary={`${value}`} />
