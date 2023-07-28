@@ -44,19 +44,19 @@ public class FileStorageUtils {
 //        String image = Base64.getEncoder().encodeToString(multipartFile.getBytes());
         return fileStorageLocation;
     }
-
-    public List<String> storeMultipleImages(List<MultipartFile> multipartFileList) throws IOException{
-        List<String> imagePathList = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFileList) {
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-            if (fileName.contains("..")) {
-                throw new IOException("not valid file");
-            }
-            String image = Base64.getEncoder().encodeToString(multipartFile.getBytes());
-            imagePathList.add(image);
-        }
-        return imagePathList;
-    }
+                    //check
+//    public List<String> storeMultipleImages(List<MultipartFile> multipartFileList) throws IOException{
+//        List<String> imagePathList = new ArrayList<>();
+//        for (MultipartFile multipartFile : multipartFileList) {
+//            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+//            if (fileName.contains("..")) {
+//                throw new IOException("not valid file");
+//            }
+//            String image = Base64.getEncoder().encodeToString(multipartFile.getBytes());
+//            imagePathList.add(image);
+//        }
+//        return imagePathList;
+//    }
 
     public String getBase64FileFromFilePath(String filePath) {
         File readingFile = new File(filePath);

@@ -1,6 +1,6 @@
 package com.aakivaa.emss.services;
 
-import com.aakivaa.emss.models.Admin;
+import com.aakivaa.emss.models.users.Admin;
 
 public interface AdminService {
 

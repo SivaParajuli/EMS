@@ -2,7 +2,7 @@ package com.aakivaa.emss.services.impl;
 
 import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.UserC;
+import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.repo.UserCRepo;
 import com.aakivaa.emss.services.UserCService;
 import org.springframework.stereotype.Service;

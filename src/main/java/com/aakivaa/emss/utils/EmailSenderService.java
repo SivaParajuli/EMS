@@ -4,21 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 
-@Service
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+
+@Service
 public class EmailSenderService {
+    @Autowired
+    private JavaMailSender mailSender;
 
-   private JavaMailSender mailSender;
-
-    public void sendEmail(String toEmail, String subject, String body){
+    public String sendEmail(String toEmail,String subject,String body){
         Date date = new Date();
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom("svenuebooking.spad@gmail.com");
@@ -27,5 +29,6 @@ public class EmailSenderService {
         mailMessage.setText(body);
         mailMessage.setSentDate(date);
         mailSender.send(mailMessage);
+        return "Mail Sent Successfully.....!!!";
     }
 }

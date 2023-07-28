@@ -1,7 +1,7 @@
 package com.aakivaa.emss.repo;
 
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.UserC;
+import com.aakivaa.emss.models.users.UserC;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserCRepo extends JpaRepository<UserC,Integer> {
+public interface UserCRepo extends JpaRepository<UserC,Long> {
     @Query(value = "SELECT c from UserC c where c.email = :e")
     Optional<UserC> findClientByEmail(@Param("e") String email);
 

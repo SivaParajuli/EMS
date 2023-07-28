@@ -2,6 +2,8 @@ package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.EventType;
+import com.aakivaa.emss.models.users.UserC;
+import com.aakivaa.emss.models.users.Venue;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -21,7 +23,7 @@ public class Booking implements Serializable {
     @Id
     @SequenceGenerator(name="BookingRequest_SEG_GEN",sequenceName = "BookingRequest_SEG_GEN")
     @GeneratedValue(generator = "BookingRequest_SEG_GEN",strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
 
     @Temporal(TemporalType.DATE)
     private Date bookingDate;

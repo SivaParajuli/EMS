@@ -3,7 +3,7 @@ package com.aakivaa.emss.controller;
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.UserDto;
-import com.aakivaa.emss.models.Admin;
+import com.aakivaa.emss.models.users.Admin;
 import com.aakivaa.emss.services.RegistrationServices;
 import com.aakivaa.emss.utils.EmailSenderService;
 import org.springframework.http.HttpStatus;
@@ -43,9 +43,9 @@ public class RegistrationController extends BaseController{
     public ResponseEntity<ResponseDto> createVenue(@ModelAttribute VenueDto venueDto) throws IOException {
        venueDto = registrationServices.venueRegistration(venueDto);
         if(venueDto !=null){
-            emailSenderService.sendEmail("svenuebooking.spad01@gmail.com",
-                    "Registration Request",
-                    venueDto.getVenueName() +" wants to be registered with requirements in EMS.");
+//            emailSenderService.sendEmail("svenuebooking.spad@gmail.com",
+//                    "Registration Request",
+//                    venueDto.getVenueName() +" wants to be registered with requirements in EMS.");
 
             return new ResponseEntity<>
                     (successResponse("Registration Request Sent Successfully.",venueDto), HttpStatus.CREATED);

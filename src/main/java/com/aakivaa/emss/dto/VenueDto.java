@@ -3,11 +3,16 @@ package com.aakivaa.emss.dto;
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.EventsCostRate;
+import com.aakivaa.emss.models.VenueRatingsAndReviews;
+import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
+import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
+import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.OneToMany;
 import java.util.List;
 @AllArgsConstructor
 @Getter
@@ -15,13 +20,14 @@ import java.util.List;
 
 public class VenueDto {
 
-    private Integer id;
+    private Long id;
     private String venueName;
     private String userName;
     private String mobile_no;
     private String city_name;
     private ApplicationUserRole applicationUserRole;
     private String email;
+    private String availableRooms;
     private String password;
     private String citizenShipNo;
     //used while saving
@@ -35,11 +41,23 @@ public class VenueDto {
     private String filePath;
 
     //used while saving list of images
-    private List<MultipartFile> listOfImages;
+    private MultipartFile[] multipartFiles;
 
     private List<String> listOfFilePaths;
 
     private List<EventsCostRate> functionList;
+
+    private List<VenueRatingsAndReviews> venueRatingsAndReviewsList;
+
+    private RecipeMenu[] recipeMenuList;
+
+    private FunctionTypes[] functionTypesList;
+
+    private AvailableServices[] availableServices;
+
+    private RecipeMenu recipeMenu;
+
+    private FunctionTypes functionTypes;
 
 
 }

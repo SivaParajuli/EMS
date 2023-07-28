@@ -12,7 +12,7 @@ public interface BookingServices {
 
     Booking VenueBookingRequest(BookingDto bookingDto, String vEmail, String email) throws IOException;
 
-    Integer VenueBookingResponse(Integer bookingStatus, Integer id);
+    Integer VenueBookingResponse(Integer bookingStatus, Long id);
 
-    Booking findById(Integer id);
+    Booking findById(Long id);
 }

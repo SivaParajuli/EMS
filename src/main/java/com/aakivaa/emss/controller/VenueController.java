@@ -4,12 +4,15 @@ import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.StatusChangeReq;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.Booking;
+import com.aakivaa.emss.models.PricingForBooking;
 import com.aakivaa.emss.services.BookingServices;
 import com.aakivaa.emss.services.VenueService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 @RequestMapping("venue-")
 @RestController
@@ -70,7 +73,7 @@ public class VenueController extends BaseController {
         @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
         @PutMapping("response/{id}")
         public ResponseEntity<ResponseDto> BookingResponse(@RequestBody StatusChangeReq statusChangeReq,
-                                                           @PathVariable("id")Integer id){
+                                                           @PathVariable("id")Long id){
             Integer bookingResponse = bookingServices.VenueBookingResponse(statusChangeReq.getStatus(),id);
             if(bookingResponse != null){
                 return new ResponseEntity<>
@@ -103,5 +106,34 @@ public class VenueController extends BaseController {
             return new ResponseEntity<>
                     (successResponse("Number of Booking Request", bookingRequest),HttpStatus.OK);
         }
+
+
+    @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
+    @PutMapping(path="update/{vid}")
+    public ResponseEntity<ResponseDto> updateVenueDetails(@RequestBody VenueDto venueDto,@PathVariable("vid") Long id){
+        Integer venue =venueService.updateDetails(venueDto,id);
+        if(venue!=null){
+            return new ResponseEntity<>
+                    (successResponse("Venue Details  Updated.", venue), HttpStatus.CREATED);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Update failed.",null),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(path="updatePricing/{id}")
+    public ResponseEntity<ResponseDto> createVenue(@ModelAttribute PricingForBooking pricing,@PathVariable("id") Long id) {
+       Integer integer = venueService.updatePricing(pricing,id);
+        if(pricing !=null){
+            return new ResponseEntity<>
+                    (successResponse("PricingDetails updated",pricing), HttpStatus.CREATED);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("pricing update failed",null),HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
 

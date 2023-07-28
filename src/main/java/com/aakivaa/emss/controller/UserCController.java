@@ -3,9 +3,11 @@ import com.aakivaa.emss.dto.BookingDto;
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.UserDto;
-import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.UserC;
+import com.aakivaa.emss.models.*;
+import com.aakivaa.emss.models.users.UserC;
+import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.services.BookingServices;
+import com.aakivaa.emss.services.RatingAndReviewService;
 import com.aakivaa.emss.services.UserCService;
 import com.aakivaa.emss.services.VenueService;
 import com.aakivaa.emss.utils.EmailSenderService;
@@ -28,13 +30,15 @@ public class UserCController extends BaseController{
         private final VenueService venueService;
         private final UserCService userCService;
         private final EmailSenderService emailSenderService;
+        private final RatingAndReviewService ratingAndReviewService;
 
 
-    public UserCController(BookingServices bookingServices, VenueService venueService, UserCService userCService, EmailSenderService emailSenderService) {
+    public UserCController(BookingServices bookingServices, VenueService venueService, UserCService userCService, EmailSenderService emailSenderService, RatingAndReviewService ratingAndReviewService) {
         this.bookingServices = bookingServices;
         this.venueService = venueService;
         this.userCService = userCService;
         this.emailSenderService = emailSenderService;
+        this.ratingAndReviewService = ratingAndReviewService;
     }
 
     @GetMapping("clientHome")
@@ -120,5 +124,45 @@ public class UserCController extends BaseController{
                         (errorResponse("Venue Fetched Failed", null), HttpStatus.BAD_REQUEST);
             }
         }
+
+
+    @PostMapping(path="rateVenue/{rating}/{vid}/{id}")
+    public ResponseEntity<ResponseDto> RateVenue(@PathVariable("rating") int rating , @PathVariable("vid") Long vid,
+                                                   @PathVariable("id") Long id) throws IOException {
+        VenueRatingsAndReviews venueRatingsAndReviews = ratingAndReviewService.rateVenue(rating,vid,id);
+        if(venueRatingsAndReviews !=null){
+            return new ResponseEntity<>
+                    (successResponse("Rating successful", venueRatingsAndReviews), HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity<>
+                    (errorResponse("Rating Denied",null),HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping(path="review/{vid}/{id}")
+    public ResponseEntity<ResponseDto> RateVenue(@PathVariable("vid") Long vid,
+                                                 @PathVariable("id") Long id,@RequestBody VenueRatingsAndReviews reviews) throws IOException {
+        VenueRatingsAndReviews review = ratingAndReviewService.reviewOfVenue(vid,id,reviews);
+        if(review !=null){
+            return new ResponseEntity<>
+                    (successResponse("Review successful", review), HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity<>
+                    (errorResponse("Review Denied",null),HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path="recommend/{email}")
+    public ResponseEntity<ResponseDto>Recommender(@PathVariable String email){
+        List<Venue> venue =venueService.getRecommendation(email);
+        if(venue != null ){
+            return new ResponseEntity<>
+                    (successResponse("Recommendation venue fetched.", venue), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Recommendation Failed", null), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

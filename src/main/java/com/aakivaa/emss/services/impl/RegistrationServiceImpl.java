@@ -4,9 +4,9 @@ import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
-import com.aakivaa.emss.models.Admin;
-import com.aakivaa.emss.models.UserC;
-import com.aakivaa.emss.models.Venue;
+import com.aakivaa.emss.models.users.Admin;
+import com.aakivaa.emss.models.users.UserC;
+import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.AdminRepo;
 import com.aakivaa.emss.repo.UserCRepo;
 import com.aakivaa.emss.repo.VenueRepo;
@@ -114,7 +114,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
     }
 
     @Override
-    public Integer updateVenueStatus(Integer status, Integer id) {
+    public Integer updateVenueStatus(Integer status, Long id) {
         Optional<Venue> venue = venueRepo.findById(id);
         if (status == 0) {
             if (venue.isPresent()) {

@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface BookingRepo extends JpaRepository<Booking,Integer> {
+public interface BookingRepo extends JpaRepository<Booking,Long> {
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE Booking b SET b.bookingStatus = :s where b.id = :i")
-    Integer updateBookingStatus(@Param("s") BookingStatus bStatus, @Param("i")Integer id);
+    Integer updateBookingStatus(@Param("s") BookingStatus bStatus, @Param("i")Long id);
 }

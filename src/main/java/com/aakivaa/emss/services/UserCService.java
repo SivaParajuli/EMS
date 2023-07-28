@@ -2,7 +2,7 @@ package com.aakivaa.emss.services;
 
 import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.UserC;
+import com.aakivaa.emss.models.users.UserC;
 
 import java.util.List;
 

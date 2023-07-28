@@ -3,8 +3,8 @@ package com.aakivaa.emss.controller;
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.StatusChangeReq;
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.models.Admin;
-import com.aakivaa.emss.models.UserC;
+import com.aakivaa.emss.models.users.Admin;
+import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.services.AdminService;
 import com.aakivaa.emss.services.RegistrationServices;
 import com.aakivaa.emss.services.UserCService;
@@ -59,7 +59,7 @@ public class AdminController extends BaseController {
 
     @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
     @PutMapping("update/{id}")
-    public ResponseEntity<ResponseDto>verifyVenue(@RequestBody StatusChangeReq statusChangeReq, @PathVariable("id") Integer id) {
+    public ResponseEntity<ResponseDto>verifyVenue(@RequestBody StatusChangeReq statusChangeReq, @PathVariable("id") Long id) {
         Integer venue = registerService.updateVenueStatus(statusChangeReq.getStatus(), id);
         if (venue != null) {
             return new ResponseEntity<>

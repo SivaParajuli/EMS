@@ -5,8 +5,8 @@ import com.aakivaa.emss.dto.EventsCostCalculation;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.EventType;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.UserC;
-import com.aakivaa.emss.models.Venue;
+import com.aakivaa.emss.models.users.UserC;
+import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.BookingRepo;
 import com.aakivaa.emss.repo.UserCRepo;
 import com.aakivaa.emss.repo.VenueRepo;
@@ -67,7 +67,7 @@ public class BookingServicesImpl implements BookingServices {
     }
 
     @Override
-    public Integer VenueBookingResponse(Integer bookingStatus, Integer id) {
+    public Integer VenueBookingResponse(Integer bookingStatus, Long id) {
         if (bookingStatus == 1) {
             Optional<Booking> booking = bookingRepo.findById(id);
             if (booking.isPresent()) {
@@ -94,7 +94,7 @@ public class BookingServicesImpl implements BookingServices {
     }
 
     @Override
-    public Booking findById(Integer id) {
+    public Booking findById(Long id) {
         Optional<Booking> optionalBooking =bookingRepo.findById(id);
         if(optionalBooking.isPresent()){
             Booking booking = optionalBooking.get();
