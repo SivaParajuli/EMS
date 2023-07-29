@@ -15,7 +15,8 @@ import java.io.Serializable;
 public class AvailableServices implements Serializable {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @SequenceGenerator(name = "service_id_sequence", sequenceName = "service_id_sequence")
+    @GeneratedValue(generator = "service_id_sequence", strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;

@@ -15,7 +15,8 @@ import java.io.Serializable;
 public class Images implements Serializable {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @SequenceGenerator(name = "function_id_sequence", sequenceName = "function_id_sequence")
+    @GeneratedValue(generator = "function_id_sequence", strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String filePath;

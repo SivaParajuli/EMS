@@ -2,6 +2,7 @@ package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,7 +23,7 @@ public class VenueRatingsAndReviews implements Serializable {
 
     private Long id;
 
-    private double ratings;
+    private Double ratings;
 
     private String reviews;
 
@@ -30,6 +31,7 @@ public class VenueRatingsAndReviews implements Serializable {
     @JoinColumn(name="userC_id")
     private UserC userC;
 
+    @JsonIgnoreProperties({"venueRatingsAndReviewsList","id","applicationUserRole"})
     @ManyToOne(targetEntity = Venue.class,fetch = FetchType.EAGER)
     @JoinColumn(name="venue_id")
     private Venue venue;

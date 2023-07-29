@@ -1,5 +1,7 @@
 package com.aakivaa.emss.services.impl;
 
+import com.aakivaa.emss.dto.EventTypeAndServicesDto;
+import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.VenueStatus;
@@ -15,8 +17,11 @@ import com.aakivaa.emss.services.VenueService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import com.aakivaa.emss.utils.RecommenderUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,10 +38,11 @@ public class VenueServiceImpl implements VenueService {
     private final AvailableServicesRepo availableServicesRepo;
     private final RecipeMenuRepo recipeMenuRepo;
     private final PricingForBookingRepo pricingForBookingRepo;
+    private final RatingAndReviewsRepo ratingAndReviewsRepo;
 
 
 
-    public VenueServiceImpl(VenueRepo venueRepo, FileStorageUtils fileStorageUtils, RecommenderUtils recommenderUtils, ImagesRepo imagesRepo, FunctionsTypesRepo functionsTypesRepo, AvailableServicesRepo availableServicesRepo, RecipeMenuRepo recipeMenuRepo, PricingForBookingRepo pricingForBookingRepo) {
+    public VenueServiceImpl(VenueRepo venueRepo, FileStorageUtils fileStorageUtils, RecommenderUtils recommenderUtils, ImagesRepo imagesRepo, FunctionsTypesRepo functionsTypesRepo, AvailableServicesRepo availableServicesRepo, RecipeMenuRepo recipeMenuRepo, PricingForBookingRepo pricingForBookingRepo, RatingAndReviewsRepo ratingAndReviewsRepo) {
         this.venueRepo = venueRepo;
         this.fileStorageUtils = fileStorageUtils;
         this.recommenderUtils = recommenderUtils;
@@ -45,6 +51,7 @@ public class VenueServiceImpl implements VenueService {
         this.availableServicesRepo = availableServicesRepo;
         this.recipeMenuRepo = recipeMenuRepo;
         this.pricingForBookingRepo = pricingForBookingRepo;
+        this.ratingAndReviewsRepo = ratingAndReviewsRepo;
     }
 
     @Override
@@ -75,9 +82,18 @@ public class VenueServiceImpl implements VenueService {
                     .email(venue1.getEmail())
                     .mobile_no(venue1.getMobile_no())
                     .city_name(venue1.getCity_name())
+                    .filePath(fileStorageUtils.getBase64FileFromFilePath(venue1.getFile()))
+                    .ratings(ratingAndReviewsRepo.findAverageRatingByVenue(venueRepo.getById(venue1.getId())))
+                    .availableRooms(venue1.getAvailableRooms())
                     .build();
         }
         return null;
+    }
+
+
+    @Override
+    public List<Venue> getVenuesByIds(List<Long> venueIdList) {
+        return venueRepo.findAllById(venueIdList);
     }
 
     @Override
@@ -103,24 +119,31 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
-    public Integer update(VenueDto venueDto, String email) {
-        return null;
-    }
-
-    @Override
-    public List<Booking> getRequestedBooking(String email) {
-        List<Booking> requestList = venueRepo.getAllPendingBookingRequest(email, BookingStatus.PENDING);
+    public List<Booking> getRequestedBooking(Long id) {
+        List<Booking> requestList = venueRepo.getAllPendingBookingRequest(id, BookingStatus.PENDING);
         return requestList.stream().map(entity -> Booking.builder()
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
                 .userC(entity.getUserC())
-                .contactNumber(entity.getContactNumber())
                 .eventType(entity.getEventType())
-                .calculatedPayment(entity.getCalculatedPayment())
                 .requiredCapacity(entity.getRequiredCapacity())
+                .bookingStatus(entity.getBookingStatus())
+                .preference(entity.getPreference())
                 .build()).collect(Collectors.toList());
     }
 
+
+    @Override
+    public List<PricingForBooking> getAllPricing(Long id) {
+        List<PricingForBooking> requestList = venueRepo.getAllPriceRate(id);
+        return requestList.stream().map(entity -> PricingForBooking.builder()
+                .id(entity.getId())
+                .functionName(entity.getFunctionName())
+                .price(entity.getPrice())
+                .guest(entity.getGuest())
+                .preference(entity.getPreference())
+                .build()).collect(Collectors.toList());
+    }
 
 
     public List<VenueDto> getAllVerifiedVenue() {
@@ -136,52 +159,57 @@ public class VenueServiceImpl implements VenueService {
                 .userName(entity.getUserName())
                 .description(entity.getDescription())
                 .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
+                .ratings(ratingAndReviewsRepo.findAverageRatingByVenue(venueRepo.getById(entity.getId())))
                 .build()).collect(Collectors.toList());
     }
 
     @Override
-    public List<Booking> getBookingList(String email) {
-        List<Booking> requestList = venueRepo.getAllBookingList(email);
+    public List<Booking> getBookingList(Long id) {
+        List<Booking> requestList = venueRepo.getAllBookingList(id);
         return requestList.stream().map(entity -> Booking.builder()
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
                 .userC(entity.getUserC())
-                .contactNumber(entity.getContactNumber())
                 .bookingStatus(entity.getBookingStatus())
                 .eventType(entity.getEventType())
-                .calculatedPayment(entity.getCalculatedPayment())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());
     }
 
     @Override
     public VenueDto getDetailsOfVenue(Long id) {
+        List<Images> images = venueRepo.getImagesList(id);
+        List<FunctionTypes> functions= venueRepo.getFunctionList(id);
+        List<AvailableServices> services = venueRepo.getAvailableServiceList(id);
+        List<RecipeMenu> menus = venueRepo.getRecipeList(id);
         List<String> files = new ArrayList<>();
         Venue venue = venueRepo.getById(id);
-        List<Images> imagesList = venue.getListOfImages();
-        imagesList.forEach(images -> {
-             String filePath = fileStorageUtils.getBase64FileFromFilePath(images.getFilePath());
+        images.forEach(image-> {
+             String filePath = fileStorageUtils.getBase64FileFromFilePath(image.getFilePath());
              files.add(filePath);
         });
-//        List<Images> imagesList = venueRepo.getImagesList(id);
-//        List<FunctionTypes> functionTypesList = venueRepo.getFunctionList(id);
-//        List<AvailableServices> availableServicesList = venueRepo.getAvailableServiceList(id);
-//        List<RecipeMenu> recipeMenuList = venueRepo.getRecipeList(id);
+
         return VenueDto.builder()
                 .venueName(venue.getVenueName())
                 .availableRooms(venue.getAvailableRooms())
                 .mobile_no(venue.getMobile_no())
                 .city_name(venue.getCity_name())
                 .listOfFilePaths(files)
-                .availableServicesList(venue.getAvailableServicesList())
-                .recipeMenuLists(venue.getRecipeMenuList())
+                .availableServicesList(services.stream().map(availableServices -> AvailableServices.builder()
+                        .name(availableServices.getName())
+                        .build()).collect(Collectors.toList()))
+                .functionTypesList(functions.stream().map(functionTypes -> FunctionTypes.builder()
+                        .functionName(functionTypes.getFunctionName())
+                        .build()).collect(Collectors.toList()))
+                .recipeMenuLists(menus.stream().map(recipeMenu -> RecipeMenu.builder()
+                        .name(recipeMenu.getName())
+                        .build()).collect(Collectors.toList()))
                 .capacity(venue.getCapacity())
                 .email(venue.getEmail())
                 .userName(venue.getUserName())
                 .description(venue.getDescription())
                 .filePath(fileStorageUtils.getBase64FileFromFilePath(venue.getFile()))
-                .ratings(venue.getTotalRatings()/venue.getNumberOfRatedClients())
-                .ratingsAndReviewsList(venue.getVenueRatingsAndReviewsList())
+                .ratings(ratingAndReviewsRepo.findAverageRatingByVenue(venueRepo.getById(id)))
                 .build();
     }
 
@@ -202,76 +230,100 @@ public class VenueServiceImpl implements VenueService {
         return venueRepo.getNumberOfBooking(email , BookingStatus.PENDING);
     }
 
-    public List<Venue> getRecommendation(String email) {
+    public List<VenueDto> getRecommendation(Long id) {
         List<Venue> venueList = new ArrayList<>();
-         List <Long> venueIdList = recommenderUtils.getVenueRecommendations(findVenueByEmail(email).getId(),10);
+         List <Long> venueIdList = recommenderUtils.getVenueRecommendations(id,10);
          for(Long venueId : venueIdList){
              Venue venue = venueRepo.getById(venueId);
              venueList.add(venue);
          }
-         return venueList;
+        return venueList.stream().map(entity -> VenueDto.builder()
+                .id(entity.getId())
+                .venueName(entity.getVenueName())
+                .availableRooms(entity.getAvailableRooms())
+                .capacity(entity.getCapacity())
+                .city_name(entity.getCity_name())
+                .description(entity.getDescription())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
+                .email(entity.getEmail())
+                .mobile_no(entity.getMobile_no())
+                .userName(entity.getUserName())
+                .availableServicesList(entity.getAvailableServicesList())
+                .build()).collect(Collectors.toList());
     }
 
     @Override
-    public Integer updateDetails(VenueDto venueDto, Long id) {
+    public Integer updateDetails(EventTypeAndServicesDto eventTypeAndServicesDto, Long id) {
         Venue venue = venueRepo.getById(id);
-        venueDto.getMultipartFileList().forEach(file ->{
-             try {
-                 String path = fileStorageUtils.storeFile(file);
-                 Images image=Images.builder()
-                         .filePath(path)
-                         .venue(venue)
-                         .build();
-                 imagesRepo.save(image);
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-         });
-        venueDto.getFunctionTypesList().forEach(functionTypes -> {
+
+        Arrays.stream(eventTypeAndServicesDto.getFunctionTypes()).forEach(functionTypes -> {
             FunctionTypes functionTypes1 = FunctionTypes.builder()
-                    .functionName(functionTypes.getFunctionName())
+                    .functionName(functionTypes)
                     .venue(venue)
-                    .price(functionTypes.getPrice())
                     .build();
             functionsTypesRepo.save(functionTypes1);
         });
 
-        venueDto.getAvailableServicesList().forEach(availableServices -> {
+        Arrays.stream(eventTypeAndServicesDto.getAvailableServices()).forEach(availableServices -> {
             AvailableServices availableServices1 = AvailableServices.builder()
-                    .name(availableServices.getName())
+                    .name(availableServices)
                     .venue(venue)
                     .build();
             availableServicesRepo.save(availableServices1);
         });
-        venueDto.getRecipeMenuList().forEach(recipeMenu -> {
-            RecipeMenu recipeMenu1 = RecipeMenu.builder()
-                    .items(recipeMenu.getItems())
-                    .price(recipeMenu.getPrice())
-                    .name(recipeMenu.getName())
-                    .venue(venue)
-                    .build();
-            recipeMenuRepo.save(recipeMenu1);
-        });
+//        venueDto.getRecipeMenuList().forEach(recipeMenu -> {
+//            RecipeMenu recipeMenu1 = RecipeMenu.builder()
+//                    .items(recipeMenu.getItems())
+//                    .price(recipeMenu.getPrice())
+//                    .name(recipeMenu.getName())
+//                    .venue(venue)
+//                    .build();
+//            recipeMenuRepo.save(recipeMenu1);
+//        });
         venueRepo.updateDetails(
-                venueDto.getCapacity(),
-                venueDto.getAvailableRooms(),
-                venue.getDescription(),
+                eventTypeAndServicesDto.getCapacity(),
+                eventTypeAndServicesDto.getAvailableRooms(),
                 id
         );
         return 1;
     }
 
     @Override
-    public Integer updatePricing(PricingForBooking pricing, Long id) {
+    public Integer uploadImage(MultipartFile[] multipartFiles, Long id) {
+        Venue venue = venueRepo.getById(id);
+        Arrays.stream(multipartFiles).forEach(file ->{
+            try {
+                Images image=Images.builder()
+                        .filePath(fileStorageUtils.storeFile(file))
+                        .venue(venue)
+                        .build();
+                imagesRepo.save(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return 1;
+    }
+
+    @Override
+    public Integer updatePricing(PricingDto pricingDto, Long id) {
         Venue venue = venueRepo.getById(id);
         PricingForBooking pricing1 = PricingForBooking.builder()
-                .functionName(pricing.getFunctionName())
-                .guest(pricing.getGuest())
-                .preference(pricing.getPreference())
-                .price(pricing.getPrice())
+                .functionName(pricingDto.getFunctionName())
+                .guest(pricingDto.getGuest())
+                .preference(pricingDto.getPreference())
+                .price(pricingDto.getPrice())
                 .venue(venue)
                 .build();
-        pricingForBookingRepo.save(pricing1);
+        PricingForBooking pricing = pricingForBookingRepo.save(pricing1);
+        Arrays.stream(pricingDto.getRecipe()).forEach(recipeMenu -> {
+            RecipeMenu recipeMenu1 = RecipeMenu.builder()
+                    .name(recipeMenu)
+                    .pricingForBooking(pricingForBookingRepo.getById(pricing.getId()))
+                    .venue(venue)
+                    .build();
+            recipeMenuRepo.save(recipeMenu1);
+        });
         return 1;
     }
 }

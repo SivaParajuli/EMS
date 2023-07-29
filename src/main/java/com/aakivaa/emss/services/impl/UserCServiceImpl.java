@@ -55,10 +55,8 @@ public class UserCServiceImpl implements UserCService {
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
                 .venue(entity.getVenue())
-                .contactNumber(entity.getContactNumber())
                 .bookingStatus(entity.getBookingStatus())
                 .eventType(entity.getEventType())
-                .calculatedPayment(entity.getCalculatedPayment())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());
     }

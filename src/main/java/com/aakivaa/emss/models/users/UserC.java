@@ -53,9 +53,6 @@ public class UserC implements Serializable {
     @OneToMany(targetEntity = Booking.class,mappedBy = "userC",cascade = CascadeType.ALL)
     private List<Booking> bookingList;
 
-    @OneToMany(targetEntity = VenueRatingsAndReviews.class,mappedBy = "userC",cascade = CascadeType.ALL)
-    private List<VenueRatingsAndReviews> venueRatingsAndReviewsList;
-
 
 
 }

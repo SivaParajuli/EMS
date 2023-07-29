@@ -85,26 +85,16 @@ public class Venue implements Serializable {
     private List<EventsCostRate> functionList;
 
 
-    private Long totalRatings;
-
-    private int numberOfRatedClients;
-
-    @OneToMany(targetEntity = VenueRatingsAndReviews.class, mappedBy = "venue",cascade = CascadeType.ALL)
-    private List<VenueRatingsAndReviews> venueRatingsAndReviewsList;
-
-    @OneToMany
+    @OneToMany(targetEntity = RecipeMenu.class,mappedBy = "venue",cascade = CascadeType.ALL)
     private List<RecipeMenu> recipeMenuList;
 
-    @OneToMany
+    @OneToMany(targetEntity = FunctionTypes.class,mappedBy = "venue",cascade = CascadeType.ALL)
     private List<FunctionTypes> functionTypesList;
 
-    @OneToMany
-    private List<PricingForBooking> pricing;
-
-    @OneToMany
+    @OneToMany(targetEntity = AvailableServices.class,mappedBy = "venue",cascade = CascadeType.ALL)
     private List<AvailableServices> availableServicesList;
 
-
-
+    @OneToMany(targetEntity = PricingForBooking.class,mappedBy = "venue",cascade = CascadeType.ALL)
+    private List<PricingForBooking> pricing;
 
 }

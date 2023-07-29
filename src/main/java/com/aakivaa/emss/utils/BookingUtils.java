@@ -1,5 +1,4 @@
 package com.aakivaa.emss.utils;
-import com.aakivaa.emss.dto.EventsCostCalculation;
 import com.aakivaa.emss.enums.EventType;
 import com.aakivaa.emss.repo.VenueRepo;
 import org.springframework.stereotype.Component;
@@ -73,27 +72,27 @@ public class BookingUtils {
                 return (baseCost + (baseCost * (rate + 200) / 100));
         }
 
-    public Double getCost(String event,String vEmail) {
-
-        Double cost = null;
-        EventsCostCalculation eventsCostAndRate = venueRepo.getRateCost(vEmail);
-        switch (event) {
-            case "Marriage":
-               cost = eventsCostAndRate.getMarriage();
-               break;
-            case "Conclave":
-                cost = eventsCostAndRate.getConclave();
-                break;
-            case "College Function":
-                cost = eventsCostAndRate.getCollegeEvent();
-                break;
-            case "Annual Meet":
-               cost = eventsCostAndRate.getAnnualMeet();
-               break;
-            case "Family Party":
-                cost = eventsCostAndRate.getFamilyParty();
-                break;
-        }
-        return cost;
-    }
+//    public Double getCost(String event,String vEmail) {
+//
+//        Double cost = null;
+//        EventsCostCalculation eventsCostAndRate = venueRepo.getRateCost(vEmail);
+//        switch (event) {
+//            case "Marriage":
+//               cost = eventsCostAndRate.getMarriage();
+//               break;
+//            case "Conclave":
+//                cost = eventsCostAndRate.getConclave();
+//                break;
+//            case "College Function":
+//                cost = eventsCostAndRate.getCollegeEvent();
+//                break;
+//            case "Annual Meet":
+//               cost = eventsCostAndRate.getAnnualMeet();
+//               break;
+//            case "Family Party":
+//                cost = eventsCostAndRate.getFamilyParty();
+//                break;
+//        }
+//        return cost;
+//    }
 }

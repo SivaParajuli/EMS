@@ -1,10 +1,10 @@
 package com.aakivaa.emss.repo;
 
-import com.aakivaa.emss.dto.EventsCostCalculation;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.Images;
+import com.aakivaa.emss.models.PricingForBooking;
 import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
 import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
 import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
@@ -35,8 +35,8 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     @Query(value="SELECT r.bookingDate from Venue v join v.bookingList r where v.email= :e and r.bookingStatus <> :d")
     List<?> getBookedVenueDateById(@Param("e")String email,@Param("d") BookingStatus bookingStatus);
 
-    @Query(value = "SELECT r from Venue v join v.bookingList r where v.email= :e and r.bookingStatus= :p")
-    List<Booking> getAllPendingBookingRequest(@Param("e") String email, @Param("p")BookingStatus bookingStatus);
+    @Query(value = "SELECT r from Venue v join v.bookingList r where v.id= :i and r.bookingStatus= :p")
+    List<Booking> getAllPendingBookingRequest(@Param("i") Long id, @Param("p")BookingStatus bookingStatus);
 
     @Transactional
     @Modifying
@@ -55,19 +55,26 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
                    @Param("e")String email);
     @Transactional
     @Modifying
-    @Query(value = "UPDATE Venue v SET v.capacity= :c,v.availableRooms= :r,v.description= :d where v.id = :i")
-    Integer updateDetails(@Param("c")String capacity,
+    @Query(value = "UPDATE Venue v SET v.capacity= :c,v.availableRooms= :r where v.id = :i")
+    void updateDetails(@Param("c")String capacity,
                    @Param("r") String availableRooms,
-                   @Param("d") String description,
                    @Param("i") Long id
     );
 
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE Venue v SET v.description= :d where v.id = :i")
+    void updateDescription(
+                          @Param("d") String description,
+                          @Param("i") Long id
+    );
 
-    @Query(value = "SELECT r from Venue v join v.bookingList r where v.email= :e order by r.id desc")
-    List<Booking> getAllBookingList(@Param("e") String email);
 
-    @Query(value = "SELECT new com.aakivaa.emss.dto.EventsCostCalculation(f.marriageCost,f.annualMeetCost,f.conclaveCost,f.collegeEventCost,f.familyFunctionCost,f.rate) from Venue v join v.functionList f where v.email= :e")
-    EventsCostCalculation getRateCost(@Param("e") String vEmail);
+    @Query(value = "SELECT r from Venue v join v.bookingList r where v.id= :i order by r.id desc")
+    List<Booking> getAllBookingList(@Param("i") Long id);
+
+    @Query(value = "SELECT p from Venue v join v.pricing p where v.id= :i")
+    List<PricingForBooking> getAllPriceRate(@Param("i") Long id);
 
     @Query(value = "SELECT COUNT(v) from Venue v where v.venueStatus= :p")
     Integer newRegistration(@Param("p")VenueStatus venueStatus);
@@ -75,22 +82,6 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     @Query(value = "SELECT COUNT(r.bookingStatus) from Venue v join v.bookingList r where v.email= :e and r.bookingStatus = :p")
     Integer getNumberOfBooking(@Param("e") String email,@Param("p")BookingStatus bookingStatus);
 
-    @Query(value="Select v.totalRatings from Venue v where v.id= :i")
-    Integer getTotalRatings(@Param("i") Long id);
-
-    @Transactional
-    @Modifying
-    @Query(value="UPDATE Venue  v SET v.totalRatings=:tr where v.id=:i")
-    Integer updateTotalRatings(@Param("tr") Integer rating,@Param("i") Long id);
-
-
-    @Query(value="Select v.numberOfRatedClients from Venue v where v.id= :n")
-    Integer getNumberOfRatedClients(@Param("n") Long id);
-
-    @Transactional
-    @Modifying
-    @Query(value="UPDATE Venue  v SET v.numberOfRatedClients=:tr where v.id=:i")
-    Integer updateNumberOfRatedClients(@Param("tr") Integer integer,@Param("i") Long id);
 
     @Query(value = "SELECT f from Venue v join v.functionList f where v.id= :i")
     List<FunctionTypes> getFunctionList(@Param("i") Long id);
@@ -103,6 +94,7 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
 
     @Query(value = "SELECT im from Venue v join v.listOfImages im where v.id= :i")
     List<Images> getImagesList(@Param("i") Long id);
+
 
 
 }

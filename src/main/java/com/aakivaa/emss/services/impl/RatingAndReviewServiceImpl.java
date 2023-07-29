@@ -9,6 +9,8 @@ import com.aakivaa.emss.repo.VenueRepo;
 import com.aakivaa.emss.services.RatingAndReviewService;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 
 @Service
 public class RatingAndReviewServiceImpl implements RatingAndReviewService {
@@ -23,25 +25,20 @@ public class RatingAndReviewServiceImpl implements RatingAndReviewService {
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
     }
 
+    @Transactional
     @Override
-    public VenueRatingsAndReviews rateVenue(int rating, Long vid, Long id)  {
-        venueRepo.updateTotalRatings(rating + venueRepo.getTotalRatings(vid),vid);
-        int num = venueRepo.getNumberOfRatedClients(vid);
-        venueRepo.updateNumberOfRatedClients(1+num,vid);
+    public void addRating(Venue venue, UserC user, Double rating) {
+        VenueRatingsAndReviews newRating = new VenueRatingsAndReviews();
+        newRating.setVenue(venue);
+        newRating.setUserC(user);
+        newRating.setRatings(rating);
+        ratingAndReviewsRepo.save(newRating);
+    }
 
-        UserC userC = userCRepo.getById(id);
-        Venue venue = venueRepo.getById(vid);
 
-        VenueRatingsAndReviews entity = VenueRatingsAndReviews.builder()
-                .venue(venue)
-                .userC(userC)
-                .ratings(rating)
-                .build();
-        entity = ratingAndReviewsRepo.save(entity);
-       return VenueRatingsAndReviews.builder()
-               .ratings(entity.getRatings())
-               .venue(entity.getVenue())
-               .build();
+    @Override
+    public Double getAverageRating(Venue venue) {
+        return ratingAndReviewsRepo.findAverageRatingByVenue(venue);
     }
 
     @Override

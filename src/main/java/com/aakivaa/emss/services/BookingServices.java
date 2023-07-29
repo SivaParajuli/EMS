@@ -10,9 +10,9 @@ import java.io.IOException;
 public interface BookingServices {
 
 
-    Booking VenueBookingRequest(BookingDto bookingDto, String vEmail, String email) throws IOException;
+    Booking VenueBookingRequest(BookingDto bookingDto, Long vid ,Long id) throws IOException;
 
-    Integer VenueBookingResponse(Integer bookingStatus, Long id);
+    Integer VenueBookingResponse(Long id , Integer integer);
 
     Booking findById(Long id);
 }

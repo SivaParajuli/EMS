@@ -17,16 +17,17 @@ import java.util.List;
 public class PricingForBooking implements Serializable {
 
         @Id
-        @Column(name = "id", nullable = false)
+        @SequenceGenerator(name = "pricing_id_sequence", sequenceName = "pricing_id_sequence")
+        @GeneratedValue(generator = "pricing_id_sequence", strategy = GenerationType.SEQUENCE)
         private Long id;
 
         private String functionName;
 
-        private Long price;
+        private String price;
 
         private String preference;
 
-        private Long guest;
+        private String guest;
 
         @OneToMany
         private List<RecipeMenu> recipeMenuList;

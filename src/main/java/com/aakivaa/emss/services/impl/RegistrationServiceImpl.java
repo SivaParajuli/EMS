@@ -74,6 +74,7 @@ public class RegistrationServiceImpl implements RegistrationServices {
 
     @Override
     public VenueDto venueRegistration(VenueDto venueDto) throws IOException {
+        int num = 1;
         MultipartFile multipartFile = venueDto.getVenueFile();
         String file = fileStorageUtils.storeFile(multipartFile);
         Venue entity = Venue.builder()
@@ -107,9 +108,8 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .applicationUserRole(entity.getApplicationUserRole())
                 .venueStatus(entity.getVenueStatus())
                 .userName(entity.getUserName())
-                .capacity(entity.getCapacity())
-                .filePath(entity.getFile())
-                .description(entity.getDescription())
+                .citizenShipNo(entity.getCitizenshipNo())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
                 .build()).collect(Collectors.toList());
     }
 

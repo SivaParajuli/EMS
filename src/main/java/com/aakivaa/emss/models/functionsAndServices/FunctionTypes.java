@@ -17,17 +17,10 @@ import java.util.List;
 public class FunctionTypes implements Serializable {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @SequenceGenerator(name = "function_id_sequence", sequenceName = "function_id_sequence")
+    @GeneratedValue(generator = "function_id_sequence", strategy = GenerationType.SEQUENCE)
     private Long id;
-
     private String functionName;
-
-    private Long price;
-
-
-    @OneToMany
-    private List<AvailableServices> availableServices;
-
 
     @ManyToOne(targetEntity = Venue.class,fetch =FetchType.EAGER)
     @JoinColumn(name="venue_id")
