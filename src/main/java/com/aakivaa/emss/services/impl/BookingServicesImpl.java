@@ -3,15 +3,12 @@ package com.aakivaa.emss.services.impl;
 import com.aakivaa.emss.dto.BookingDto;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.BookingRepo;
-import com.aakivaa.emss.repo.RecipeMenuRepo;
-import com.aakivaa.emss.repo.UserCRepo;
-import com.aakivaa.emss.repo.VenueRepo;
+import com.aakivaa.emss.repo.usersRepo.UserCRepo;
+import com.aakivaa.emss.repo.usersRepo.VenueRepo;
 import com.aakivaa.emss.services.BookingServices;
-import com.aakivaa.emss.utils.BookingUtils;
 import com.aakivaa.emss.utils.EmailSenderService;
 import org.springframework.stereotype.Service;
 
@@ -26,15 +23,13 @@ public class BookingServicesImpl implements BookingServices {
     private final VenueRepo venueRepo;
     private final UserCRepo userCRepo;
     private final EmailSenderService emailSenderService;
-    private final RecipeMenuRepo recipeMenuRepo;
 
 
-    public BookingServicesImpl(BookingRepo bookingRepo, VenueRepo venueRepo, UserCRepo userCRepo, EmailSenderService emailSenderService, RecipeMenuRepo recipeMenuRepo) {
+    public BookingServicesImpl(BookingRepo bookingRepo, VenueRepo venueRepo, UserCRepo userCRepo, EmailSenderService emailSenderService) {
         this.bookingRepo = bookingRepo;
         this.venueRepo = venueRepo;
         this.userCRepo = userCRepo;
         this.emailSenderService = emailSenderService;
-        this.recipeMenuRepo = recipeMenuRepo;
     }
 
     @Override
@@ -48,28 +43,13 @@ public class BookingServicesImpl implements BookingServices {
                 .bookingDate(bookingDto.getBookingDate())
                 .bookingStatus(BookingStatus.PENDING)
                 .requiredCapacity(bookingDto.getRequiredCapacity())
+                .recipeMenu(bookingDto.getRecipeList())
                 .userC(userC1)
                 .venue(venue1)
                 .preference(bookingDto.getPreference())
                 .eventType(bookingDto.getFunctionType())
                 .build();
-        entity = bookingRepo.save(entity);
-        Booking finalEntity = entity;
-        Arrays.stream(bookingDto.getCategory()).forEach(recipeMenu -> {
-            RecipeMenu recipeMenu1 = RecipeMenu.builder()
-                    .name(recipeMenu)
-                    .booking(bookingRepo.getById(finalEntity.getId()))
-                    .venue(venue1)
-                    .build();
-            recipeMenuRepo.save(recipeMenu1);
-        });
-
-        return Booking.builder()
-                .venue(entity.getVenue())
-                .bookingDate(entity.getBookingDate())
-                .eventType(entity.getEventType())
-                .bookingStatus(entity.getBookingStatus())
-                .build();
+        return bookingRepo.save(entity);
 
     }
 

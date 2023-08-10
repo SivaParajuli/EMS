@@ -1,4 +1,4 @@
-package com.aakivaa.emss.security.utils;
+package com.aakivaa.emss.utils.security.util;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;

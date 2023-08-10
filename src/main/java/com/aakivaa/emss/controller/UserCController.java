@@ -3,11 +3,11 @@ import com.aakivaa.emss.dto.*;
 import com.aakivaa.emss.models.*;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
-import com.aakivaa.emss.repo.VenueRepo;
+import com.aakivaa.emss.repo.usersRepo.VenueRepo;
 import com.aakivaa.emss.services.BookingServices;
 import com.aakivaa.emss.services.RatingAndReviewService;
-import com.aakivaa.emss.services.UserCService;
-import com.aakivaa.emss.services.VenueService;
+import com.aakivaa.emss.services.usersServices.UserCService;
+import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.EmailSenderService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import com.aakivaa.emss.utils.RecommenderUtils;
@@ -48,16 +48,15 @@ public class UserCController extends BaseController{
         this.fileStorageUtils = fileStorageUtils;
     }
 
-    @GetMapping("clientHome")
-        public ResponseEntity<ResponseDto> getAllVerifiedVenue(){
-            List<VenueDto> venueList =venueService.getAllVerifiedVenue();
-            return new ResponseEntity<>
-                    (successResponse("Verified venue fetched", venueList), HttpStatus.OK);
-        }
+//    @GetMapping("clientHome")
+//    public ResponseEntity<List<Venue>> getAllVerifiedVenuesWithImages() {
+//        List<Venue> verifiedVenues = venueService.getAllVerifiedVenuesWithImages();
+//        return ResponseEntity.ok(verifiedVenues);
+//    }
 
         @GetMapping(path="{email}")
         public ResponseEntity<ResponseDto> findUser(@PathVariable String email){
-            UserC currentUser =userCService.findClientByEmail(email);
+            UserC currentUser =userCService.findByEmail(email);
             if(currentUser !=null){
                 return new ResponseEntity<>
                         (successResponse("CurrentUser", currentUser), HttpStatus.OK);
@@ -71,8 +70,8 @@ public class UserCController extends BaseController{
         @PostMapping(path="book-venue/{vEmail}/{email}")
         public ResponseEntity<ResponseDto> BookingRequest(@RequestBody BookingDto bookingDto, @PathVariable("vEmail") String vEmail,
                                                           @PathVariable("email") String email) throws IOException {
-            Booking booking1 = bookingServices.VenueBookingRequest(bookingDto,venueService.findVenueByEmail(vEmail).getId(),
-                    userCService.findClientByEmail(email).getId());
+            Booking booking1 = bookingServices.VenueBookingRequest(bookingDto,venueService.findByEmail(vEmail).getId(),
+                    userCService.findByEmail(email).getId());
             if(booking1 !=null){
                 emailSenderService.sendEmail(vEmail,
                         "Booking Request",
@@ -88,24 +87,11 @@ public class UserCController extends BaseController{
 
         @GetMapping(path="bookedDate/{email}")
         public ResponseEntity<ResponseDto> getAllBookedDate(@PathVariable("email")String email){
-            List<?> dateList =venueService.getAllBookedDate(email);
+            List<?> dateList =venueService.getAllBookedDate(venueService.findByEmail(email).getId());
             return new ResponseEntity<>
                     (successResponse("Date List fetched.", dateList),HttpStatus.OK);
         }
 
-        @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
-        @PutMapping(path="update/{email}")
-        public ResponseEntity<ResponseDto> updateVenue(@RequestBody UserDto userDto, @PathVariable("email") String email){
-            Integer userC1 =userCService.updateClient(userDto,email);
-            if(userC1!=null){
-                return new ResponseEntity<>
-                        (successResponse("data Updated.",userDto), HttpStatus.CREATED);
-            }
-            else{
-                return new ResponseEntity<>
-                        (errorResponse("Update failed.",null),HttpStatus.BAD_REQUEST);
-            }
-        }
 
         @GetMapping("booking/{email}")
         public ResponseEntity<ResponseDto>getBooking(@PathVariable("email") String email){
@@ -122,7 +108,7 @@ public class UserCController extends BaseController{
 
         @GetMapping(path="venue/{email}")
         public ResponseEntity<ResponseDto>findVenueByEmail(@PathVariable String email){
-            VenueDto venue =venueService.findVenueByEmail(email);
+            Venue venue =venueService.findByEmail(email);
             if(venue != null ){
                 return new ResponseEntity<>
                         (successResponse("Venue   Fetched.", venue), HttpStatus.OK);
@@ -134,32 +120,44 @@ public class UserCController extends BaseController{
         }
 
     @PostMapping(path="rateVenue/{vemail}/{uemail}")
-    public ResponseEntity<Void> addRating(@PathVariable String vemail,String uemail,
+    public ResponseEntity<ResponseDto> addRating(@PathVariable String vemail,String uemail,
                                           @RequestBody Rating rating) {
-        Venue venue = venueRepo.getById(venueService.findVenueByEmail(vemail).getId());
+        Venue venue = venueService.findByEmail(vemail);
+        UserC user = userCService.findByEmail(uemail);
 
-        UserC user = userCService.findClientByEmail(uemail);
-
-        ratingAndReviewService.addRating(venue, user,rating.getRating());
-        return ResponseEntity.ok().build();
+        Integer integer = ratingAndReviewService.addRating(venue, user,rating.getRating());
+        if(integer != null ){
+            return new ResponseEntity<>
+                    (successResponse("Rating successful.", rating.getRating()), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Rating denied", null), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("getrating/{vemail}")
-    public ResponseEntity<Double> getAverageRating(@PathVariable String vemail) {
-        Venue venue = venueRepo.getById(venueService.findVenueByEmail(vemail).getId());
-
+    public ResponseEntity<ResponseDto> getAverageRating(@PathVariable("vemail") String vemail) {
+        Venue venue = venueRepo.getById(venueService.findByEmail(vemail).getId());
         Double averageRating = ratingAndReviewService.getAverageRating(venue);
-        return ResponseEntity.ok(averageRating);
+        if(averageRating != null ){
+            return new ResponseEntity<>
+                    (successResponse("Rating of Venue Fetched.", averageRating), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Fetching Failed", null), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
     @PutMapping(path="review/{vemail}/{uemail}")
     public ResponseEntity<ResponseDto> reviewVenue(@PathVariable("vemail") String vEmail,
-                                                 @PathVariable("uemail") String uEmail,@RequestBody VenueRatingsAndReviews reviews) throws IOException {
-        VenueRatingsAndReviews review = ratingAndReviewService
+                                                 @PathVariable("uemail") String uEmail,@RequestBody RatingsAndReviews reviews) throws IOException {
+        RatingsAndReviews review = ratingAndReviewService
                 .reviewOfVenue(
-                        venueService.findVenueByEmail(vEmail).getId(),
-                        userCService.findClientByEmail(uEmail).getId(),
+                        venueService.findByEmail(vEmail).getId(),
+                        userCService.findByEmail(uEmail).getId(),
                         reviews
                 );
         if(review !=null){
@@ -173,7 +171,7 @@ public class UserCController extends BaseController{
 
     @GetMapping(path="recommend/{email}")
     public ResponseEntity<ResponseDto> Recommender(@PathVariable("email") String email) {
-        UserC user = userCService.findClientByEmail(email);
+        UserC user = userCService.findByEmail(email);
         if (user != null) {
             List<VenueDto> venues = getRecommendedVenues(user.getId());
             if (!venues.isEmpty()) {
@@ -206,28 +204,27 @@ public class UserCController extends BaseController{
                 .email(venue.getEmail())
                 .mobile_no(venue.getMobile_no())
                 .userName(venue.getUserName())
-                .availableServicesList(venue.getAvailableServicesList())
                 .build();
     }
 
 
 
-    @GetMapping(path="venueDetails/{email}")
-    public ResponseEntity<ResponseDto>getDetailsOfVenue(@PathVariable("email") String email){
-        VenueDto venue =venueService.getDetailsOfVenue(venueService.findVenueByEmail(email).getId());
-        if(venue != null ){
-            return new ResponseEntity<>
-                    (successResponse("Details fetched.", venue), HttpStatus.OK);
-        }
-        else{
-            return new ResponseEntity<>
-                    (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @GetMapping(path="venueDetails/{email}")
+//    public ResponseEntity<ResponseDto>getDetailsOfVenue(@PathVariable("email") String email){
+//        VenueDto venue =venueService.getDetailsOfVenue(venueService.findVenueByEmail(email).getId());
+//        if(venue != null ){
+//            return new ResponseEntity<>
+//                    (successResponse("Details fetched.", venue), HttpStatus.OK);
+//        }
+//        else{
+//            return new ResponseEntity<>
+//                    (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @GetMapping(path="getPricing/{email}")
     public ResponseEntity<ResponseDto>getPricingOfVenue(@PathVariable("email") String email){
-        List<PricingForBooking> venue =venueService.getAllPricing(venueService.findVenueByEmail(email).getId());
+        List<Pricing> venue =venueService.getAllPricing(venueService.findByEmail(email).getId());
         if(venue != null ){
             return new ResponseEntity<>
                     (successResponse("Details fetched.", venue), HttpStatus.OK);

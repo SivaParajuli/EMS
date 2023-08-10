@@ -1,7 +1,6 @@
 package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.enums.BookingStatus;
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -44,8 +43,10 @@ public class Booking implements Serializable {
     @JoinColumn(name = "client_id")
     private UserC userC;
 
-    @OneToMany
-    private List<RecipeMenu> recipeMenuList;
+    @ElementCollection
+    @CollectionTable(name = "booking_recipe_menu", joinColumns = @JoinColumn(name = "booking_id"))
+    @Column(name = "recipe_menu")
+    private List<String> recipeMenu;
 
     @JsonIgnoreProperties({"password","description","bookingList","applicationUserRole"})
     @ManyToOne(targetEntity = Venue.class,fetch =FetchType.EAGER)

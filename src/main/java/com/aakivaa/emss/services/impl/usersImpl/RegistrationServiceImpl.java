@@ -1,4 +1,4 @@
-package com.aakivaa.emss.services.impl;
+package com.aakivaa.emss.services.impl.usersImpl;
 
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.UserDto;
@@ -10,9 +10,9 @@ import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.usersRepo.AdminRepo;
 import com.aakivaa.emss.repo.usersRepo.UserCRepo;
 import com.aakivaa.emss.repo.usersRepo.VenueRepo;
-import com.aakivaa.emss.security.user.User;
-import com.aakivaa.emss.security.user.UserRepo;
-import com.aakivaa.emss.services.RegistrationServices;
+import com.aakivaa.emss.utils.security.user.User;
+import com.aakivaa.emss.utils.security.user.UserRepo;
+import com.aakivaa.emss.services.usersServices.RegistrationServices;
 import com.aakivaa.emss.utils.EmailSenderService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;

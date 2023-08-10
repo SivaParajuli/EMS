@@ -1,4 +1,4 @@
-package com.aakivaa.emss.repo;
+package com.aakivaa.emss.repo.usersRepo;
 
 import com.aakivaa.emss.models.users.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;

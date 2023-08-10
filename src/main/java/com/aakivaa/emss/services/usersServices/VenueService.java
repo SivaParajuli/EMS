@@ -1,21 +1,20 @@
-package com.aakivaa.emss.services;
+package com.aakivaa.emss.services.usersServices;
 
-import com.aakivaa.emss.dto.EventTypeAndServicesDto;
+import com.aakivaa.emss.dto.EventAndServicesDto;
 import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.PricingForBooking;
+import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface VenueService {
 
     List<VenueDto> findAll();
 
-    VenueDto findVenueById(Long id);
+    Venue findVenueById(Long id);
 
 
     Venue findByEmail(String email);
@@ -26,7 +25,7 @@ public interface VenueService {
 
     List<Booking> getRequestedBooking(Long id);
 
-    List<PricingForBooking> getAllPricing(Long id);
+    List<Pricing> getAllPricing(Long id);
 
     List<VenueDto> getAllVerifiedVenue();
 
@@ -41,7 +40,7 @@ public interface VenueService {
 
     List<VenueDto> getRecommendation(Long id);
 
-    Integer updateDetails(EventTypeAndServicesDto eventTypeAndServicesDto, Long id);
+    Integer updateDetails(EventAndServicesDto eventAndServicesDto, Long id);
 
     Integer uploadImage(MultipartFile[] multipartFiles, Long id);
 

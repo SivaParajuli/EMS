@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Rating {
-
     private Double rating;
 
 }

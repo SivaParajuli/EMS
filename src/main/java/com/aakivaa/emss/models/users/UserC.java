@@ -2,7 +2,6 @@ package com.aakivaa.emss.models.users;
 
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.VenueRatingsAndReviews;
 import lombok.*;
 
 import javax.persistence.*;

@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Builder
 @Table
 @Entity
-public class VenueRatingsAndReviews implements Serializable {
+public class RatingsAndReviews implements Serializable {
 
     @Id
     @SequenceGenerator(name="VenueRatings_SEG_GEN",sequenceName = "VenueRatings_SEG_GEN")

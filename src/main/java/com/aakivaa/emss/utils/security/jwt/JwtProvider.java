@@ -1,6 +1,6 @@
-package com.aakivaa.emss.security.jwt;
+package com.aakivaa.emss.utils.security.jwt;
 
-import com.aakivaa.emss.security.user.ApplicationUser;
+import com.aakivaa.emss.utils.security.user.ApplicationUser;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -17,5 +18,5 @@ public class BookingDto {
     private Date bookingDate;
     private String requiredCapacity;
     private String preference;
-    private String[] category;
+    private List<String> recipeList;
 }

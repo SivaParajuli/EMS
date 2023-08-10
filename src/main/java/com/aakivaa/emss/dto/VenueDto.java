@@ -2,19 +2,14 @@ package com.aakivaa.emss.dto;
 
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import com.aakivaa.emss.enums.VenueStatus;
-import com.aakivaa.emss.models.EventsCostRate;
-import com.aakivaa.emss.models.PricingForBooking;
-import com.aakivaa.emss.models.VenueRatingsAndReviews;
-import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
-import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
+import com.aakivaa.emss.models.Pricing;
+import com.aakivaa.emss.models.RatingsAndReviews;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.OneToMany;
 import java.util.List;
 @AllArgsConstructor
 @Getter
@@ -35,42 +30,19 @@ public class VenueDto {
     private String citizenShipNo;
     //used while saving
     private MultipartFile venueFile;
-
-
     private VenueStatus venueStatus;
     private String description;
     private String capacity;
     //used while listing and sending data to front end
     private String filePath;
-
     //used while saving list of images
     private List<MultipartFile> multipartFileList;
-
+    //used while listing and sending data to front end
     private List<String> listOfFilePaths;
-
-    private List<EventsCostRate> functionList;
-
-    private List<VenueRatingsAndReviews> venueRatingsAndReviewsList;
-
-    private List<RecipeMenu> recipeMenuList;
-
-    private List<FunctionTypes> functionTypesList;
-
-    private List<AvailableServices> availableServices;
-
-    private List<AvailableServices> availableServicesList;
-
-    private List<RecipeMenu> recipeMenuLists;
-
-    private RecipeMenu recipeMenu;
-
-    private FunctionTypes functionTypes;
-
+    private List<String> recipeMenuLists;
     private Double ratings;
-
-    private List<VenueRatingsAndReviews> ratingsAndReviewsList;
-
-    private List<PricingForBooking> pricingForBookingList;
+    private List<RatingsAndReviews> ratingsAndReviewsList;
+    private List<Pricing> pricingList;
 
 
 }

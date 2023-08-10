@@ -1,4 +1,4 @@
-package com.aakivaa.emss.security.user;
+package com.aakivaa.emss.utils.security.user;
 
 import com.aakivaa.emss.enums.ApplicationUserRole;
 import lombok.*;

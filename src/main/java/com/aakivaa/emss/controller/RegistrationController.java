@@ -4,7 +4,7 @@ import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.users.Admin;
-import com.aakivaa.emss.services.RegistrationServices;
+import com.aakivaa.emss.services.usersServices.RegistrationServices;
 import com.aakivaa.emss.utils.EmailSenderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

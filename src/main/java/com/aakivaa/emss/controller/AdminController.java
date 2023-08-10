@@ -1,14 +1,14 @@
 package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.ResponseDto;
-import com.aakivaa.emss.dto.StatusChangeReq;
+import com.aakivaa.emss.dto.Request;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.users.Admin;
 import com.aakivaa.emss.models.users.UserC;
-import com.aakivaa.emss.services.AdminService;
-import com.aakivaa.emss.services.RegistrationServices;
-import com.aakivaa.emss.services.UserCService;
-import com.aakivaa.emss.services.VenueService;
+import com.aakivaa.emss.services.usersServices.AdminService;
+import com.aakivaa.emss.services.usersServices.RegistrationServices;
+import com.aakivaa.emss.services.usersServices.UserCService;
+import com.aakivaa.emss.services.usersServices.VenueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,8 +59,8 @@ public class AdminController extends BaseController {
 
     @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
     @PutMapping("update/{id}")
-    public ResponseEntity<ResponseDto>verifyVenue(@RequestBody StatusChangeReq statusChangeReq, @PathVariable("id") Long id) {
-        Integer venue = registerService.updateVenueStatus(statusChangeReq.getStatus(), id);
+    public ResponseEntity<ResponseDto>verifyVenue(@RequestBody Request request, @PathVariable("id") Long id) {
+        Integer venue = registerService.updateVenueStatus(request.getStatus(), id);
         if (venue != null) {
             return new ResponseEntity<>
                     (successResponse("verification updated successfully..", venue), HttpStatus.OK);

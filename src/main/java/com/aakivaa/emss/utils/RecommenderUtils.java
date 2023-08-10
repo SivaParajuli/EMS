@@ -3,7 +3,7 @@ package com.aakivaa.emss.utils;
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 import com.aakivaa.emss.enums.VenueStatus;
-import com.aakivaa.emss.models.VenueRatingsAndReviews;
+import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.repo.RatingAndReviewsRepo;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class RecommenderUtils {
     }
 
     private MatrixFactorizationResult matrixFactorization(Long userId) {
-        List<VenueRatingsAndReviews> userRatings = ratingAndReviewsRepo.findUserCById(userId, VenueStatus.VERIFIED);
+        List<RatingsAndReviews> userRatings = ratingAndReviewsRepo.findUserCById(userId, VenueStatus.VERIFIED);
 
         // Build the user-item rating matrix
         int numUsers = 0;
@@ -26,7 +26,7 @@ public class RecommenderUtils {
         Map<Long, Integer> userIndexMap = new HashMap<>();
         Map<Long, Integer> venueIndexMap = new HashMap<>();
 
-        for (VenueRatingsAndReviews rating : userRatings) {
+        for (RatingsAndReviews rating : userRatings) {
             long uId = rating.getUserC().getId();
             long vId = rating.getVenue().getId();
 
@@ -45,7 +45,7 @@ public class RecommenderUtils {
 
         double[][] ratingsMatrix = new double[numUsers][numVenues];
 
-        for (VenueRatingsAndReviews rating : userRatings) {
+        for (RatingsAndReviews rating : userRatings) {
             long uId = rating.getUserC().getId();
             long vId = rating.getVenue().getId();
 
@@ -58,7 +58,8 @@ public class RecommenderUtils {
         Matrix matrix = new Matrix(ratingsMatrix);
         SingularValueDecomposition svd = matrix.svd();
 
-        double threshold = 1; // Adjust this threshold value based on the dataset
+        // Adjust this threshold value based on the dataset
+        double threshold = 1;
         Matrix userMatrix = svd.getU();
         Matrix singularValues = svd.getS();
         Matrix venueMatrix = svd.getV();

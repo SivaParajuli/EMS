@@ -5,9 +5,6 @@ import com.aakivaa.emss.enums.VenueStatus;
 import javax.persistence.*;
 
 import com.aakivaa.emss.models.*;
-import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
-import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
 import lombok.*;
 
 import java.io.Serializable;
@@ -22,7 +19,8 @@ import java.util.List;
 @Table(name="tbl_venue",uniqueConstraints = {
         @UniqueConstraint(name="unique_venue_email",columnNames = "email"),
         @UniqueConstraint(name="unique_venue_contactNumber",columnNames = "contactNumber"),
-        @UniqueConstraint(name="unique_venue_userName",columnNames = "userName")
+        @UniqueConstraint(name="unique_venue_userName",columnNames = "userName"),
+        @UniqueConstraint(name="unique_venue_citizenship_no",columnNames = "citizenshipNo")
 
 })
 
@@ -73,28 +71,30 @@ public class Venue implements Serializable {
     private String availableRooms;
 
 
-    @Column(columnDefinition = "MEDIUMBLOB")
-    @OneToMany
-    private List<Images> listOfImages;
-
+    @ElementCollection
+    @CollectionTable(name = "venue_images", joinColumns = @JoinColumn(name = "venue_id"))
+    @Column(name = "venue_images")
+    private List<String> listOfImages;
 
     @OneToMany(targetEntity = Booking.class,mappedBy = "venue",cascade = CascadeType.ALL)
     private List<Booking> bookingList;
 
-    @OneToMany(targetEntity = EventsCostRate.class,mappedBy = "venue1",cascade = CascadeType.ALL)
-    private List<EventsCostRate> functionList;
+    @ElementCollection
+    @CollectionTable(name = "venue_services", joinColumns = @JoinColumn(name = "venue_id"))
+    @Column(name = "services")
+    private List<String> availableServices;
 
+    @ElementCollection
+    @CollectionTable(name = "venue_functions", joinColumns = @JoinColumn(name = "venue_id"))
+    @Column(name = "functions")
+    private List<String> functionTypes;
 
-    @OneToMany(targetEntity = RecipeMenu.class,mappedBy = "venue",cascade = CascadeType.ALL)
-    private List<RecipeMenu> recipeMenuList;
+    @ElementCollection
+    @CollectionTable(name = "venue_recipe_menu", joinColumns = @JoinColumn(name = "venue_id"))
+    @Column(name = "recipe_menu")
+    private List<String> recipeMenu;
 
-    @OneToMany(targetEntity = FunctionTypes.class,mappedBy = "venue",cascade = CascadeType.ALL)
-    private List<FunctionTypes> functionTypesList;
-
-    @OneToMany(targetEntity = AvailableServices.class,mappedBy = "venue",cascade = CascadeType.ALL)
-    private List<AvailableServices> availableServicesList;
-
-    @OneToMany(targetEntity = PricingForBooking.class,mappedBy = "venue",cascade = CascadeType.ALL)
-    private List<PricingForBooking> pricing;
+    @OneToMany(targetEntity = Pricing.class,mappedBy = "venue",cascade = CascadeType.ALL)
+    private List<Pricing> pricing;
 
 }

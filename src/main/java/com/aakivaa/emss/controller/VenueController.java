@@ -2,8 +2,9 @@ package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.*;
 import com.aakivaa.emss.models.Booking;
+import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.services.BookingServices;
-import com.aakivaa.emss.services.VenueService;
+import com.aakivaa.emss.services.usersServices.VenueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class VenueController extends BaseController {
 
         @GetMapping(path="{email}")
         public ResponseEntity<ResponseDto> findVenueByEmail(@PathVariable String email){
-            VenueDto venue =venueService.findVenueByEmail(email);
+            Venue venue =venueService.findByEmail(email);
             if(venue != null ){
                 return new ResponseEntity<>
                         (successResponse("Venue   Fetched.", venue), HttpStatus.OK);
@@ -41,7 +42,7 @@ public class VenueController extends BaseController {
 
         @GetMapping("requests/{email}")
         public ResponseEntity<ResponseDto>getBookingRequests(@PathVariable("email") String email){
-            List<Booking> booking =venueService.getRequestedBooking(venueService.findVenueByEmail(email).getId());
+            List<Booking> booking =venueService.getRequestedBooking(venueService.findByEmail(email).getId());
             if(booking !=null) {
                 return new ResponseEntity<>
                         (successResponse("Requested Booking List  Fetched.", booking), HttpStatus.OK);
@@ -54,8 +55,8 @@ public class VenueController extends BaseController {
 
         @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
         @PutMapping("response/{id}")
-        public ResponseEntity<ResponseDto> BookingResponse(@PathVariable("id")Long id,@RequestBody StatusChangeReq statusChangeReq){
-            Integer bookingResponse = bookingServices.VenueBookingResponse(id,statusChangeReq.getStatus());
+        public ResponseEntity<ResponseDto> BookingResponse(@PathVariable("id")Long id,@RequestBody Request request){
+            Integer bookingResponse = bookingServices.VenueBookingResponse(id, request.getStatus());
             if(bookingResponse != null){
                 return new ResponseEntity<>
                         (successResponse("response sent",bookingResponse),HttpStatus.OK);
@@ -69,7 +70,7 @@ public class VenueController extends BaseController {
 
         @GetMapping("booking/{email}")
         public ResponseEntity<ResponseDto>getBooking(@PathVariable("email") String email){
-            List<Booking> booking =venueService.getBookingList(venueService.findVenueByEmail(email).getId());
+            List<Booking> booking =venueService.getBookingList(venueService.findByEmail(email).getId());
             if(booking !=null) {
                 return new ResponseEntity<>
                         (successResponse("Requested Booking List  Fetched.", booking), HttpStatus.OK);
@@ -91,8 +92,8 @@ public class VenueController extends BaseController {
 
     @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
     @PutMapping(path="update/{email}")
-    public ResponseEntity<ResponseDto> updateVenueDetails(@RequestBody EventTypeAndServicesDto eventTypeAndServicesDto, @PathVariable("email") String email){
-        Integer venue =venueService.updateDetails(eventTypeAndServicesDto,venueService.findVenueByEmail(email).getId());
+    public ResponseEntity<ResponseDto> updateVenueDetails(@RequestBody EventAndServicesDto eventAndServicesDto, @PathVariable("email") String email){
+        Integer venue =venueService.updateDetails(eventAndServicesDto,venueService.findByEmail(email).getId());
         if(venue!=null){
             return new ResponseEntity<>
                     (successResponse("Venue Details  Updated.", venue), HttpStatus.CREATED);
@@ -105,7 +106,7 @@ public class VenueController extends BaseController {
 
     @PostMapping(path="uploadimage/{email}",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResponseDto> uploadImages(@RequestParam("images") MultipartFile[] multipartFileList, @PathVariable("email") String email){
-        Integer integer =venueService.uploadImage(multipartFileList,venueService.findVenueByEmail(email).getId());
+        Integer integer =venueService.uploadImage(multipartFileList,venueService.findByEmail(email).getId());
         if(integer!=null){
             return new ResponseEntity<>
                     (successResponse("Image uploaded.", integer), HttpStatus.CREATED);
@@ -118,7 +119,7 @@ public class VenueController extends BaseController {
 
     @PostMapping(path="updatePricing/{email}")
     public ResponseEntity<ResponseDto> createVenue(@RequestBody PricingDto pricingDto, @PathVariable("email") String email) {
-       Integer integer = venueService.updatePricing(pricingDto,venueService.findVenueByEmail(email).getId());
+       Integer integer = venueService.updatePricing(pricingDto,venueService.findByEmail(email).getId());
         if(integer !=null){
             return new ResponseEntity<>
                     (successResponse("PricingDetails updated",pricingDto), HttpStatus.CREATED);

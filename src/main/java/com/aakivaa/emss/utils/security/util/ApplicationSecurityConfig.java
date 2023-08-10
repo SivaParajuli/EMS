@@ -1,7 +1,7 @@
-package com.aakivaa.emss.security.utils;
+package com.aakivaa.emss.utils.security.util;
 
-import com.aakivaa.emss.security.jwt.JwtAuthorizationFilter;
-import com.aakivaa.emss.security.service.ApplicationUserService;
+import com.aakivaa.emss.utils.security.jwt.JwtAuthorizationFilter;
+import com.aakivaa.emss.utils.security.service.ApplicationUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

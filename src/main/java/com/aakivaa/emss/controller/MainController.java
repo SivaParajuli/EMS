@@ -1,7 +1,7 @@
 package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.services.VenueService;
+import com.aakivaa.emss.services.usersServices.VenueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

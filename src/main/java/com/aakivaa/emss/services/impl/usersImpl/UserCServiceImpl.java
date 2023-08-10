@@ -1,14 +1,12 @@
-package com.aakivaa.emss.services.impl;
+package com.aakivaa.emss.services.impl.usersImpl;
 
-import com.aakivaa.emss.dto.UserDto;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.users.UserC;
-import com.aakivaa.emss.repo.UserCRepo;
-import com.aakivaa.emss.services.UserCService;
+import com.aakivaa.emss.repo.usersRepo.UserCRepo;
+import com.aakivaa.emss.services.usersServices.UserCService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

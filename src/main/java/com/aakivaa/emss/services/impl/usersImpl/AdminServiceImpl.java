@@ -1,8 +1,8 @@
-package com.aakivaa.emss.services.impl;
+package com.aakivaa.emss.services.impl.usersImpl;
 
 import com.aakivaa.emss.models.users.Admin;
-import com.aakivaa.emss.repo.AdminRepo;
-import com.aakivaa.emss.services.AdminService;
+import com.aakivaa.emss.repo.usersRepo.AdminRepo;
+import com.aakivaa.emss.services.usersServices.AdminService;
 import org.springframework.stereotype.Service;
 
 @Service

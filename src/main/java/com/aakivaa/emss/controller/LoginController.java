@@ -1,8 +1,8 @@
 package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.SignInRequest;
-import com.aakivaa.emss.security.service.AuthenticationService;
-import com.aakivaa.emss.security.user.User;
+import com.aakivaa.emss.utils.security.service.AuthenticationService;
+import com.aakivaa.emss.utils.security.user.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,11 +1,9 @@
-package com.aakivaa.emss.repo;
+package com.aakivaa.emss.repo.usersRepo;
 
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.Images;
-import com.aakivaa.emss.models.PricingForBooking;
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
+import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface VenueRepo extends JpaRepository<Venue, Long> {
@@ -67,22 +64,14 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
                           @Param("i") Long id
     );
 
-
-    @Query(value = "SELECT r from Venue v join v.bookingList r where v.id= :i order by r.id desc")
-    List<Booking> getAllBookingList(@Param("i") Long id);
-
     @Query(value = "SELECT p from Venue v join v.pricing p where v.id= :i")
-    List<PricingForBooking> getAllPriceRate(@Param("i") Long id);
+    List<Pricing> getAllPriceRate(@Param("i") Long id);
 
     @Query(value = "SELECT COUNT(v) from Venue v where v.venueStatus= :p")
     Integer newRegistration(@Param("p")VenueStatus venueStatus);
 
     @Query(value = "SELECT COUNT(r.bookingStatus) from Venue v join v.bookingList r where v.email= :e and r.bookingStatus = :p")
     Integer getNumberOfBooking(@Param("e") String email,@Param("p")BookingStatus bookingStatus);
-
-
-    @Query(value = "SELECT im from Venue v join v.listOfImages im where v.id= :i")
-    List<Images> getImagesList(@Param("i") Long id);
 
 
 

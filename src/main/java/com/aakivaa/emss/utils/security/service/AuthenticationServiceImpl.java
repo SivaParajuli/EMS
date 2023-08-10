@@ -1,9 +1,9 @@
-package com.aakivaa.emss.security.service;
+package com.aakivaa.emss.utils.security.service;
 
 import com.aakivaa.emss.dto.SignInRequest;
-import com.aakivaa.emss.security.jwt.JwtProvider;
-import com.aakivaa.emss.security.user.ApplicationUser;
-import com.aakivaa.emss.security.user.User;
+import com.aakivaa.emss.utils.security.jwt.JwtProvider;
+import com.aakivaa.emss.utils.security.user.ApplicationUser;
+import com.aakivaa.emss.utils.security.user.User;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

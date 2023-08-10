@@ -1,4 +1,4 @@
-package com.aakivaa.emss.services;
+package com.aakivaa.emss.services.usersServices;
 
 
 import com.aakivaa.emss.dto.VenueDto;

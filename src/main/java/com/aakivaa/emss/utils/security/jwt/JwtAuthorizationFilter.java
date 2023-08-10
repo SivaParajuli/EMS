@@ -1,4 +1,4 @@
-package com.aakivaa.emss.security.jwt;
+package com.aakivaa.emss.utils.security.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

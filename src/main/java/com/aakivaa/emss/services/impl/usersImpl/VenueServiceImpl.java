@@ -1,24 +1,21 @@
-package com.aakivaa.emss.services.impl;
+package com.aakivaa.emss.services.impl.usersImpl;
 
-import com.aakivaa.emss.dto.EventTypeAndServicesDto;
+import com.aakivaa.emss.dto.EventAndServicesDto;
 import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.enums.BookingStatus;
 import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Booking;
-import com.aakivaa.emss.models.Images;
-import com.aakivaa.emss.models.PricingForBooking;
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
+import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.*;
-import com.aakivaa.emss.services.VenueService;
+import com.aakivaa.emss.repo.usersRepo.VenueRepo;
+import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import com.aakivaa.emss.utils.RecommenderUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,21 +26,19 @@ public class VenueServiceImpl implements VenueService {
     private final VenueRepo venueRepo;
     private final FileStorageUtils fileStorageUtils;
     private final RecommenderUtils recommenderUtils;
-    private final ImagesRepo imagesRepo;
-    private final RecipeMenuRepo recipeMenuRepo;
-    private final PricingForBookingRepo pricingForBookingRepo;
+    private final PricingRepo pricingRepo;
     private final RatingAndReviewsRepo ratingAndReviewsRepo;
+    private final BookingRepo bookingRepo;
 
 
 
-    public VenueServiceImpl(VenueRepo venueRepo, FileStorageUtils fileStorageUtils, RecommenderUtils recommenderUtils, ImagesRepo imagesRepo, RecipeMenuRepo recipeMenuRepo, PricingForBookingRepo pricingForBookingRepo, RatingAndReviewsRepo ratingAndReviewsRepo) {
+    public VenueServiceImpl(VenueRepo venueRepo, FileStorageUtils fileStorageUtils, RecommenderUtils recommenderUtils, PricingRepo pricingRepo, RatingAndReviewsRepo ratingAndReviewsRepo, BookingRepo bookingRepo) {
         this.venueRepo = venueRepo;
         this.fileStorageUtils = fileStorageUtils;
         this.recommenderUtils = recommenderUtils;
-        this.imagesRepo = imagesRepo;
-        this.recipeMenuRepo = recipeMenuRepo;
-        this.pricingForBookingRepo = pricingForBookingRepo;
+        this.pricingRepo = pricingRepo;
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
+        this.bookingRepo = bookingRepo;
     }
 
     @Override
@@ -63,21 +58,8 @@ public class VenueServiceImpl implements VenueService {
 
 
     @Override
-    public VenueDto findVenueById(Long id) {
-       Venue venue1 = venueRepo.getById(id);
-            return VenueDto.builder()
-                    .id(venue1.getId())
-                    .userName(venue1.getUserName())
-                    .description(venue1.getDescription())
-                    .venueName(venue1.getVenueName())
-                    .capacity(venue1.getCapacity())
-                    .email(venue1.getEmail())
-                    .mobile_no(venue1.getMobile_no())
-                    .city_name(venue1.getCity_name())
-                    .filePath(fileStorageUtils.getBase64FileFromFilePath(venue1.getFile()))
-                    .ratings(ratingAndReviewsRepo.findAverageRatingByVenue(venueRepo.getById(venue1.getId())))
-                    .availableRooms(venue1.getAvailableRooms())
-                    .build();
+    public Venue findVenueById(Long id) {
+       return venueRepo.getById(id);
     }
 
     @Override
@@ -113,14 +95,14 @@ public class VenueServiceImpl implements VenueService {
 
 
     @Override
-    public List<PricingForBooking> getAllPricing(Long id) {
-        List<PricingForBooking> requestList = venueRepo.getAllPriceRate(id);
-        return requestList.stream().map(entity -> PricingForBooking.builder()
-                .id(entity.getId())
+    public List<Pricing> getAllPricing(Long id) {
+        List<Pricing> requestList = pricingRepo.getAllPricing(id);
+        return requestList.stream().map(entity -> Pricing.builder()
                 .functionName(entity.getFunctionName())
                 .priceRange(entity.getPriceRange())
                 .guestRange(entity.getGuestRange())
                 .preference(entity.getPreference())
+                .recipeMenu(entity.getRecipeMenu())
                 .build()).collect(Collectors.toList());
     }
 
@@ -144,7 +126,7 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
     public List<Booking> getBookingList(Long id) {
-        List<Booking> requestList = venueRepo.getAllBookingList(id);
+        List<Booking> requestList = bookingRepo.getAllBookingList(id);
         return requestList.stream().map(entity -> Booking.builder()
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
@@ -194,46 +176,28 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
-    public Integer updateDetails(EventTypeAndServicesDto eventTypeAndServicesDto, Long id) {
+    public Integer updateDetails(EventAndServicesDto eventAndServicesDto, Long id) {
        return 1;
     }
 
     @Override
     public Integer uploadImage(MultipartFile[] multipartFiles, Long id) {
         Venue venue = venueRepo.getById(id);
-        Arrays.stream(multipartFiles).forEach(file ->{
-            try {
-                Images image=Images.builder()
-                        .filePath(fileStorageUtils.storeFile(file))
-                        .venue(venue)
-                        .build();
-                imagesRepo.save(image);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
         return 1;
     }
 
     @Override
     public Integer updatePricing(PricingDto pricingDto, Long id) {
         Venue venue = venueRepo.getById(id);
-        PricingForBooking pricing1 = PricingForBooking.builder()
+        Pricing pricing1 = Pricing.builder()
                 .functionName(pricingDto.getFunctionName())
                 .guestRange(pricingDto.getGuest())
+                .recipeMenu(pricingDto.getRecipe())
                 .preference(pricingDto.getPreference())
                 .priceRange(pricingDto.getPrice())
                 .venue(venue)
                 .build();
-        PricingForBooking pricing = pricingForBookingRepo.save(pricing1);
-        Arrays.stream(pricingDto.getRecipe()).forEach(recipeMenu -> {
-            RecipeMenu recipeMenu1 = RecipeMenu.builder()
-                    .name(recipeMenu)
-                    .pricingForBooking(pricingForBookingRepo.getById(pricing.getId()))
-                    .venue(venue)
-                    .build();
-            recipeMenuRepo.save(recipeMenu1);
-        });
+        Pricing pricing = pricingRepo.save(pricing1);
         return 1;
     }
 

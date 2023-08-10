@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-public class PricingForBooking implements Serializable {
+public class Pricing implements Serializable {
 
         @Id
         @SequenceGenerator(name = "pricing_id_sequence", sequenceName = "pricing_id_sequence")
@@ -31,8 +31,8 @@ public class PricingForBooking implements Serializable {
         private String guestRange;
 
         @ElementCollection
-        @CollectionTable(name = "pricing_recipe_menu", joinColumns = @JoinColumn(name = "pricing_id"))
-        @Column(name = "recipe_menu")
+        @CollectionTable(name = "pricing_recipe", joinColumns = @JoinColumn(name = "pricing_id"))
+        @Column(name = "recipe")
         private List<String> recipeMenu;
 
 

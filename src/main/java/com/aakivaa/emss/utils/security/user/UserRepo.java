@@ -1,4 +1,4 @@
-package com.aakivaa.emss.security.user;
+package com.aakivaa.emss.utils.security.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
