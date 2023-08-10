@@ -20,20 +20,11 @@ public class UserCServiceImpl implements UserCService {
     }
 
     @Override
-    public UserC findClientByEmail(String email) {
-        Optional<UserC> clientOptional= userCRepo.findClientByEmail(email);
-        if(clientOptional.isPresent()){
-            UserC entity=clientOptional.get();
-            return UserC.builder()
-                    .id(entity.getId())
-                    .name(entity.getName())
-                    .email(entity.getEmail())
-                    .city_name(entity.getCity_name())
-                    .street_name(entity.getStreet_name())
-                    .mobile_no(entity.getMobile_no())
-                    .build();
-        }
-        return null;
+    public UserC findById(Long id) {
+       return userCRepo.getById(id);
+    }
+    public UserC findByEmail(String email) {
+        return userCRepo.getByEmail(email);
     }
 
     @Override
@@ -59,11 +50,6 @@ public class UserCServiceImpl implements UserCService {
                 .eventType(entity.getEventType())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());
-    }
-
-    @Override
-    public Integer updateClient(UserDto userDto, String email) {
-        return null;
     }
 
 }

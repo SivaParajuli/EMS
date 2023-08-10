@@ -3,7 +3,7 @@ package com.aakivaa.emss.security.service;
 import com.aakivaa.emss.security.user.ApplicationUser;
 import com.aakivaa.emss.security.user.User;
 import com.aakivaa.emss.security.user.UserRepo;
-import com.aakivaa.emss.utils.SecurityUtils;
+import com.aakivaa.emss.security.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 

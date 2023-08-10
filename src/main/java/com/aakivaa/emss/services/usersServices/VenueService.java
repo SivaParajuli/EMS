@@ -8,18 +8,19 @@ import com.aakivaa.emss.models.PricingForBooking;
 import com.aakivaa.emss.models.users.Venue;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface VenueService {
 
     List<VenueDto> findAll();
 
-    VenueDto findVenueByEmail(String email);
+    VenueDto findVenueById(Long id);
 
+
+    Venue findByEmail(String email);
 
     List<Venue> getVenuesByIds(List<Long> venueIdList);
-
-    VenueDto findById(Long id);
 
     void deleteBYId(Long id);
 
@@ -31,9 +32,8 @@ public interface VenueService {
 
     List<Booking> getBookingList(Long id);
 
-    VenueDto getDetailsOfVenue(Long id);
 
-    List<?> getAllBookedDate(String email);
+    List<?> getAllBookedDate(Long id);
 
     Integer getNumberOfNewRegistration();
 
@@ -46,9 +46,4 @@ public interface VenueService {
     Integer uploadImage(MultipartFile[] multipartFiles, Long id);
 
     Integer updatePricing(PricingDto pricing, Long id);
-
-
-
-
-
 }

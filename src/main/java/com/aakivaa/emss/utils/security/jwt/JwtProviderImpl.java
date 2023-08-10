@@ -1,7 +1,7 @@
 package com.aakivaa.emss.security.jwt;
 
 import com.aakivaa.emss.security.user.ApplicationUser;
-import com.aakivaa.emss.utils.SecurityUtils;
+import com.aakivaa.emss.security.utils.SecurityUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

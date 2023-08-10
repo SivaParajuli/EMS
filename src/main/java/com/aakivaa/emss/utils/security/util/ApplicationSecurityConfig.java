@@ -1,4 +1,4 @@
-package com.aakivaa.emss.security;
+package com.aakivaa.emss.security.utils;
 
 import com.aakivaa.emss.security.jwt.JwtAuthorizationFilter;
 import com.aakivaa.emss.security.service.ApplicationUserService;

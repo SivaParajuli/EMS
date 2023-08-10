@@ -1,6 +1,5 @@
 package com.aakivaa.emss.models;
 
-import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.users.Venue;
 import lombok.*;
 
@@ -23,14 +22,18 @@ public class PricingForBooking implements Serializable {
 
         private String functionName;
 
-        private String price;
+        @Column(name = "price_range")
+        private String priceRange;
 
         private String preference;
 
-        private String guest;
+        @Column(name = "guest_range")
+        private String guestRange;
 
-        @OneToMany
-        private List<RecipeMenu> recipeMenuList;
+        @ElementCollection
+        @CollectionTable(name = "pricing_recipe_menu", joinColumns = @JoinColumn(name = "pricing_id"))
+        @Column(name = "recipe_menu")
+        private List<String> recipeMenu;
 
 
         @ManyToOne(targetEntity = Venue.class,fetch =FetchType.EAGER)

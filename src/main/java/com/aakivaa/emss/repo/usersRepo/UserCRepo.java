@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface UserCRepo extends JpaRepository<UserC,Long> {
     @Query(value = "SELECT c from UserC c where c.email = :e")
-    Optional<UserC> findClientByEmail(@Param("e") String email);
+    UserC getByEmail(@Param("e") String email);
 
     @Query(value = "SELECT r from UserC c join c.bookingList r where c.email= :e order by r.id desc")
     List<Booking> getAllBookingRequests(@Param("e") String email);

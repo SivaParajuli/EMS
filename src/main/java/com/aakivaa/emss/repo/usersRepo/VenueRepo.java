@@ -5,8 +5,6 @@ import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.Images;
 import com.aakivaa.emss.models.PricingForBooking;
-import com.aakivaa.emss.models.functionsAndServices.AvailableServices;
-import com.aakivaa.emss.models.functionsAndServices.FunctionTypes;
 import com.aakivaa.emss.models.functionsAndServices.RecipeMenu;
 import com.aakivaa.emss.models.users.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +21,7 @@ import java.util.Optional;
 public interface VenueRepo extends JpaRepository<Venue, Long> {
 
     @Query(value = "select  v from Venue v  where  v.email= :e")
-    Optional<Venue> findVenueByEmail(@Param("e") String email);
+    Venue  getByEmail(@Param("e") String email);
 
     @Query(value="select v from Venue v where v.venueStatus= :p ")
     List<Venue> findPendingRegister(@Param("p") VenueStatus status);
@@ -32,8 +30,8 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     List<Venue>findAllVerifiedVenue(@Param("a")VenueStatus venueStatus);
 
 
-    @Query(value="SELECT r.bookingDate from Venue v join v.bookingList r where v.email= :e and r.bookingStatus <> :d")
-    List<?> getBookedVenueDateById(@Param("e")String email,@Param("d") BookingStatus bookingStatus);
+    @Query(value="SELECT r.bookingDate from Venue v join v.bookingList r where v.id= :i and r.bookingStatus <> :d")
+    List<?> getBookedVenueDateById(@Param("i")Long id,@Param("d") BookingStatus bookingStatus);
 
     @Query(value = "SELECT r from Venue v join v.bookingList r where v.id= :i and r.bookingStatus= :p")
     List<Booking> getAllPendingBookingRequest(@Param("i") Long id, @Param("p")BookingStatus bookingStatus);
@@ -83,17 +81,9 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     Integer getNumberOfBooking(@Param("e") String email,@Param("p")BookingStatus bookingStatus);
 
 
-    @Query(value = "SELECT f from Venue v join v.functionList f where v.id= :i")
-    List<FunctionTypes> getFunctionList(@Param("i") Long id);
-
-    @Query(value = "SELECT r from Venue v join v.recipeMenuList r where v.id= :i")
-    List<RecipeMenu> getRecipeList(@Param("i") Long id);
-
-    @Query(value = "SELECT a from Venue v join v.availableServicesList a where v.id= :i")
-    List<AvailableServices> getAvailableServiceList(@Param("i") Long id);
-
     @Query(value = "SELECT im from Venue v join v.listOfImages im where v.id= :i")
     List<Images> getImagesList(@Param("i") Long id);
+
 
 
 
