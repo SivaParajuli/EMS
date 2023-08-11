@@ -35,14 +35,14 @@ public class VenueDto {
     private String capacity;
     //used while listing and sending data to front end
     private String filePath;
-    //used while saving list of images
-    private List<MultipartFile> multipartFileList;
     //used while listing and sending data to front end
-    private List<String> listOfFilePaths;
+    private List<String> images;
     private List<String> recipeMenuLists;
     private Double ratings;
-    private List<RatingsAndReviews> ratingsAndReviewsList;
+    private List<String> reviews;
     private List<Pricing> pricingList;
+    private List<String> functionTypes;
+    private List<String> services;
 
 
 }

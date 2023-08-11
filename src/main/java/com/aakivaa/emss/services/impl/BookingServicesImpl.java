@@ -36,7 +36,7 @@ public class BookingServicesImpl implements BookingServices {
     public Booking VenueBookingRequest(BookingDto bookingDto, Long vid, Long id ) throws IOException {
         UserC userC1 = userCRepo.getById(id);
         Venue venue1 = venueRepo.getById(vid);
-        if(Integer.parseInt(bookingDto.getRequiredCapacity()) > Integer.parseInt(venue1.getCapacity())){
+        if(!(bookingDto.getRequiredCapacity()).equals(venue1.getCapacity())){
             throw new IOException("invalid requirement");
         }
         Booking entity = Booking.builder()

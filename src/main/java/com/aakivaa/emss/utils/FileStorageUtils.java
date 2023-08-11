@@ -19,7 +19,7 @@ public class FileStorageUtils {
 
     @Value("${venue.file.storage.directory}")
     private String venueFileStoragePath;
-    private String userHome = System.getProperty("user.home");
+    private final String userHome = System.getProperty("user.home");
 
     public FileStorageUtils(){
     }
@@ -29,34 +29,22 @@ public class FileStorageUtils {
         String directoryPath = userHome+venueFileStoragePath;
         File directoryFile = new File(directoryPath);
         if(!directoryFile.exists()){
-            directoryFile.mkdirs();
+           directoryFile.mkdirs();
         }else {
             System.out.println("directory already exists..");
         }
         String fileStorageLocation = directoryPath+File.separator+UUID.randomUUID()+"_"+multipartFile.getOriginalFilename();
         File fileToSave = new File(fileStorageLocation);
         multipartFile.transferTo(fileToSave);
+        return fileStorageLocation;
 
 //        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 //        if(fileName.contains("..")){
 //            throw new IOException("not valid file");
 //        }
 //        String image = Base64.getEncoder().encodeToString(multipartFile.getBytes());
-        return fileStorageLocation;
+
     }
-                    //check
-//    public List<String> storeMultipleImages(List<MultipartFile> multipartFileList) throws IOException{
-//        List<String> imagePathList = new ArrayList<>();
-//        for (MultipartFile multipartFile : multipartFileList) {
-//            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-//            if (fileName.contains("..")) {
-//                throw new IOException("not valid file");
-//            }
-//            String image = Base64.getEncoder().encodeToString(multipartFile.getBytes());
-//            imagePathList.add(image);
-//        }
-//        return imagePathList;
-//    }
 
     public String getBase64FileFromFilePath(String filePath) {
         File readingFile = new File(filePath);
@@ -77,6 +65,16 @@ public class FileStorageUtils {
             System.out.println("file not found");
             return null;
         }
+    }
+
+    public List<String> makePathToImage(List<String> paths){
+        List<String> images = new ArrayList<>();
+        FileStorageUtils fileStorageUtils = new FileStorageUtils();
+        for(String path :paths) {
+            String image = fileStorageUtils.getBase64FileFromFilePath(path);
+            images.add(image);
+        }
+        return images;
     }
 
 }

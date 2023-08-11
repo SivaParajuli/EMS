@@ -2,6 +2,7 @@ package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.*;
 import com.aakivaa.emss.models.Booking;
+import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.services.BookingServices;
 import com.aakivaa.emss.services.usersServices.VenueService;
@@ -93,10 +94,10 @@ public class VenueController extends BaseController {
     @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
     @PutMapping(path="update/{email}")
     public ResponseEntity<ResponseDto> updateVenueDetails(@RequestBody EventAndServicesDto eventAndServicesDto, @PathVariable("email") String email){
-        Integer venue =venueService.updateDetails(eventAndServicesDto,venueService.findByEmail(email).getId());
-        if(venue!=null){
+        Integer integer =venueService.updateDetails(eventAndServicesDto,venueService.findByEmail(email).getId());
+        if(integer !=null){
             return new ResponseEntity<>
-                    (successResponse("Venue Details  Updated.", venue), HttpStatus.CREATED);
+                    (successResponse("Venue Details  Updated.", integer), HttpStatus.CREATED);
         }
         else{
             return new ResponseEntity<>
@@ -104,9 +105,10 @@ public class VenueController extends BaseController {
         }
     }
 
-    @PostMapping(path="uploadimage/{email}",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ResponseDto> uploadImages(@RequestParam("images") MultipartFile[] multipartFileList, @PathVariable("email") String email){
-        Integer integer =venueService.uploadImage(multipartFileList,venueService.findByEmail(email).getId());
+    @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
+    @PutMapping(path="uploadimage/{email}",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ResponseDto> uploadImages( @PathVariable("email") String email,@ModelAttribute ImgDesDto imgDesDto){
+        Integer integer =venueService.uploadImage(imgDesDto,venueService.findByEmail(email).getId());
         if(integer!=null){
             return new ResponseEntity<>
                     (successResponse("Image uploaded.", integer), HttpStatus.CREATED);
@@ -119,10 +121,10 @@ public class VenueController extends BaseController {
 
     @PostMapping(path="updatePricing/{email}")
     public ResponseEntity<ResponseDto> createVenue(@RequestBody PricingDto pricingDto, @PathVariable("email") String email) {
-       Integer integer = venueService.updatePricing(pricingDto,venueService.findByEmail(email).getId());
-        if(integer !=null){
+       Pricing pricing = venueService.updatePricing(pricingDto,venueService.findByEmail(email).getId());
+        if(pricing !=null){
             return new ResponseEntity<>
-                    (successResponse("PricingDetails updated",pricingDto), HttpStatus.CREATED);
+                    (successResponse("PricingDetails updated",pricing), HttpStatus.CREATED);
         }
         else{
             return new ResponseEntity<>

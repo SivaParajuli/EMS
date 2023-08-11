@@ -8,6 +8,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -25,8 +26,7 @@ public class Booking implements Serializable {
     @GeneratedValue(generator = "BookingRequest_SEG_GEN",strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Temporal(TemporalType.DATE)
-    private Date bookingDate;
+    private LocalDate bookingDate;
 
     @Column(name="event_type")
     private String eventType;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -15,7 +16,7 @@ import java.util.List;
 public class BookingDto {
     private Integer id;
     private String functionType;
-    private Date bookingDate;
+    private LocalDate bookingDate;
     private String requiredCapacity;
     private String preference;
     private List<String> recipeList;

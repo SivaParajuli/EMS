@@ -1,6 +1,7 @@
 package com.aakivaa.emss.services.usersServices;
 
 import com.aakivaa.emss.dto.EventAndServicesDto;
+import com.aakivaa.emss.dto.ImgDesDto;
 import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.Booking;
@@ -31,6 +32,8 @@ public interface VenueService {
 
     List<Booking> getBookingList(Long id);
 
+    VenueDto getDetailsOfVenue(Long id);
+
 
     List<?> getAllBookedDate(Long id);
 
@@ -42,7 +45,7 @@ public interface VenueService {
 
     Integer updateDetails(EventAndServicesDto eventAndServicesDto, Long id);
 
-    Integer uploadImage(MultipartFile[] multipartFiles, Long id);
+    Integer uploadImage(ImgDesDto imgDesDto, Long id);
 
-    Integer updatePricing(PricingDto pricing, Long id);
+    Pricing updatePricing(PricingDto pricing, Long id);
 }

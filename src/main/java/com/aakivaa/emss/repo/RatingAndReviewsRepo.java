@@ -4,6 +4,7 @@ import com.aakivaa.emss.enums.VenueStatus;
 import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
+import org.hibernate.sql.Select;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,8 +24,7 @@ public interface RatingAndReviewsRepo extends JpaRepository<RatingsAndReviews,Lo
     @Query("SELECT AVG(r.ratings) FROM RatingsAndReviews r WHERE r.venue = :venue")
     Double findAverageRatingByVenue(@Param("venue") Venue venue);
 
-    @Transactional
-    @Query("SELECT r.ratings FROM RatingsAndReviews r WHERE r.venue = :venue AND r.userC = :user")
-    Integer findUserRatingByVenueAndUser(@Param("venue") Venue venue, @Param("user") UserC user);
+   @Query("select r.reviews from RatingsAndReviews r WHERE r.venue= :v")
+    List<String>getReviews(@Param("v") Venue venue);
 
 }

@@ -48,11 +48,11 @@ public class UserCController extends BaseController{
         this.fileStorageUtils = fileStorageUtils;
     }
 
-//    @GetMapping("clientHome")
-//    public ResponseEntity<List<Venue>> getAllVerifiedVenuesWithImages() {
-//        List<Venue> verifiedVenues = venueService.getAllVerifiedVenuesWithImages();
-//        return ResponseEntity.ok(verifiedVenues);
-//    }
+    @GetMapping("clientHome")
+    public ResponseEntity<List<VenueDto>> getAllVerifiedVenues() {
+        List<VenueDto> verifiedVenues = venueService.getAllVerifiedVenue();
+        return ResponseEntity.ok(verifiedVenues);
+    }
 
         @GetMapping(path="{email}")
         public ResponseEntity<ResponseDto> findUser(@PathVariable String email){
@@ -209,18 +209,18 @@ public class UserCController extends BaseController{
 
 
 
-//    @GetMapping(path="venueDetails/{email}")
-//    public ResponseEntity<ResponseDto>getDetailsOfVenue(@PathVariable("email") String email){
-//        VenueDto venue =venueService.getDetailsOfVenue(venueService.findVenueByEmail(email).getId());
-//        if(venue != null ){
-//            return new ResponseEntity<>
-//                    (successResponse("Details fetched.", venue), HttpStatus.OK);
-//        }
-//        else{
-//            return new ResponseEntity<>
-//                    (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @GetMapping(path="venueDetails/{email}")
+    public ResponseEntity<ResponseDto>getDetailsOfVenue(@PathVariable("email") String email){
+        VenueDto venue =venueService.getDetailsOfVenue(venueService.findByEmail(email).getId());
+        if(venue != null ){
+            return new ResponseEntity<>
+                    (successResponse("Details fetched.", venue), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping(path="getPricing/{email}")
     public ResponseEntity<ResponseDto>getPricingOfVenue(@PathVariable("email") String email){

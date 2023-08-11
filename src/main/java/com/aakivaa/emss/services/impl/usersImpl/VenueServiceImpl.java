@@ -1,6 +1,7 @@
 package com.aakivaa.emss.services.impl.usersImpl;
 
 import com.aakivaa.emss.dto.EventAndServicesDto;
+import com.aakivaa.emss.dto.ImgDesDto;
 import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.enums.BookingStatus;
@@ -14,9 +15,13 @@ import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.FileStorageUtils;
 import com.aakivaa.emss.utils.RecommenderUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,6 +143,29 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
+    public VenueDto getDetailsOfVenue(Long id) {
+        Venue venue = venueRepo.getById(id);
+        return VenueDto.builder()
+                .venueName(venue.getVenueName())
+                .userName(venue.getUserName())
+                .citizenShipNo(venue.getCitizenshipNo())
+                .availableRooms(venue.getAvailableRooms())
+                .description(venue.getDescription())
+                .email(venue.getEmail())
+                .capacity(venue.getCapacity())
+                .city_name(venue.getCity_name())
+                .mobile_no(venue.getMobile_no())
+                .ratings(ratingAndReviewsRepo.findAverageRatingByVenue(venueRepo.getById(id)))
+                .recipeMenuLists(venue.getRecipeMenu())
+                .functionTypes(venue.getFunctionTypes())
+                .services(venue.getAvailableServices())
+                .filePath(fileStorageUtils.getBase64FileFromFilePath(venue.getFile()))
+                .images(fileStorageUtils.makePathToImage(venue.getListOfImages()))
+                .reviews(ratingAndReviewsRepo.getReviews(venue))
+                .build();
+    }
+
+    @Override
     public List<?> getAllBookedDate(Long id) {
         List<?> dateList = venueRepo.getBookedVenueDateById(id, BookingStatus.CANCELED);
         return new ArrayList<>(dateList);
@@ -176,18 +204,46 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
+    @Transactional
     public Integer updateDetails(EventAndServicesDto eventAndServicesDto, Long id) {
-       return 1;
-    }
+        Optional<Venue> optionalVenue = venueRepo.findById(id);
+        if (optionalVenue.isPresent()) {
+            Venue venue = optionalVenue.get();
+            venue.setRecipeMenu(eventAndServicesDto.getRecipe());
+            venue.setFunctionTypes(eventAndServicesDto.getFunctionTypes());
+            venue.setAvailableServices(eventAndServicesDto.getAvailableServices());
+            venue.setAvailableRooms(eventAndServicesDto.getAvailableRooms());
+            venue.setCapacity(eventAndServicesDto.getCapacity());
 
-    @Override
-    public Integer uploadImage(MultipartFile[] multipartFiles, Long id) {
-        Venue venue = venueRepo.getById(id);
+        }
         return 1;
     }
 
+    @Transactional
     @Override
-    public Integer updatePricing(PricingDto pricingDto, Long id) {
+    public Integer uploadImage(ImgDesDto imgDesDto, Long id) {
+        List<MultipartFile> imageList = imgDesDto.getImageList();
+        List<String> listOfImages = new ArrayList<>();
+        for(MultipartFile image:imageList) {
+            try {
+                String path = fileStorageUtils.storeFile(image);
+                listOfImages.add(path);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        Optional<Venue> optionalVenue = venueRepo.findById(id);
+        if (optionalVenue.isPresent()) {
+            Venue venue = optionalVenue.get();
+            venue.setDescription(imgDesDto.getDescription());
+            venue.setListOfImages(listOfImages);
+        }
+        return 1;
+    }
+
+
+    @Override
+    public Pricing updatePricing(PricingDto pricingDto, Long id) {
         Venue venue = venueRepo.getById(id);
         Pricing pricing1 = Pricing.builder()
                 .functionName(pricingDto.getFunctionName())
@@ -197,8 +253,6 @@ public class VenueServiceImpl implements VenueService {
                 .priceRange(pricingDto.getPrice())
                 .venue(venue)
                 .build();
-        Pricing pricing = pricingRepo.save(pricing1);
-        return 1;
+         return pricingRepo.save(pricing1);
     }
-
 }
