@@ -1,7 +1,11 @@
-import React,{useReducer} from 'react';
+import React,{useReducer, useState} from 'react';
 import  styled  from '@emotion/styled';
-import { Container, Typography, TextField, Button, Grid,MenuItem, Paper, createTheme, ThemeProvider } from '@mui/material';
+import { Container, Typography, TextField, Button, Grid,MenuItem, Paper, createTheme, ThemeProvider, Snackbar, IconButton } from '@mui/material';
 import registerimage from '../images/forlogin.jpg'
+import SnackbarComponent from './SnackbarComponent';
+import TextFieldComponent from './TextFieldComponent';
+import { UserTextFieldData } from './TableData';
+import { RequestParam } from './RequestParam';
 
 
 
@@ -145,11 +149,11 @@ const reducer = (userdetail , action)=> {
         return {...userdetail, role: action.payload}
       }
       break;
-      case "address":{
+      case "city_name":{
         return {...userdetail, city_name: action.payload}
       }
       break;
-      case "contact":{
+      case "mobile_no":{
         return {...userdetail, mobile_no: action.payload}
       }
       break;
@@ -161,28 +165,28 @@ const reducer = (userdetail , action)=> {
 const RegistrationPageForUser = () => {
 
   const [userdetail, dispatch] = useReducer(reducer,initialState);
-  
-  
+  const [open, setOpen] = React.useState(false);
+  const[valid,setvalid] = useState(false)
+
   const handleSubmit = async(event) => {
     event.preventDefault();
     try{
     const url = "http://localhost:8888/register/user";
     const request = await fetch(url,{
+      ...RequestParam,
     method: "POST", 
-    mode: "cors", 
-    cache: "no-cache", 
-    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json"
     },
-    redirect: "follow", 
-    referrerPolicy: "no-referrer",
     body: JSON.stringify(userdetail)
     });
     const response = await request.json();
     console.log(response)
-    
-  }catch(error){
+    setvalid((prevValue) => prevValue = true)
+    setOpen((prevValue) => prevValue = true)
+    }catch(error){
+    setvalid((prevValue) => prevValue = false)
+    setOpen((prevValue) => prevValue = true)
     console.log(error)
   }
   };
@@ -194,57 +198,19 @@ const RegistrationPageForUser = () => {
       <img src={registerimage} loading='lazy' style={{width:'100%',
       backgroundSize:'object-fit'}} alt="Login"/>
       </LeftWrapper>
-      <RightWrapper>   
+      <RightWrapper> 
+      <SnackbarComponent setopen={open} funcopen={setOpen} setvalid={valid}/>
       <Paper elevation={12} sx={{borderRadius:'15px'}}>
       <FormWrapper onSubmit={handleSubmit} >
         <Typography variant="h5">Registration for User</Typography>
         <Grid container spacing={1}>
+            {UserTextFieldData?.map((item,index)=>(
+            <Grid item xs={12} lg={6} key={index}>
+            <TextFieldComponent id={item.id} type={item.type} label={item.label} 
+            value={userdetail[index]} reducer={""} setTerm={dispatch} name={item.name}/>
+            </Grid>
+            ))}
           <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="username"
-              type="text"
-              label="Username"
-              name="username"
-              autoComplete="given-name"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"username",payload:event.target.value})}
-              value={userdetail.username}
-            />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="password"
-              type="password"
-              label="Password"
-              name="password"
-              autoComplete="password"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"password",payload:event.target.value})}
-              value={userdetail.password}
-            />
-          </Grid>
-          <Grid item xs={12} lg={8}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="email"
-              type="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"email",payload:event.target.value})}
-              value={userdetail.email}
-            />
-          </Grid>
-          <Grid item xs={12} lg={4}>
             <RoleDropdown
               select
               label="Role"
@@ -256,36 +222,6 @@ const RegistrationPageForUser = () => {
               <MenuItem value="user">User</MenuItem>
               <MenuItem value="organizer">Organizer</MenuItem>
             </RoleDropdown>
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="address"
-              type="text"
-              label="Address"
-              name="address"
-              autoComplete="address"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"address",payload:event.target.value})}
-              value={userdetail.city_name}
-            />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="phoneNumber"
-              type="number"
-              label="Phone Number"
-              name="phoneNumber"
-              autoComplete="tel"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"contact",payload:event.target.value})}
-              value={userdetail.mobile_no}
-            />
           </Grid>
         </Grid>
         <Button type="submit" fullWidth variant="contained" color="primary">Register</Button>

@@ -7,7 +7,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Typography, createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
-import { AdminData, ClientTableData } from "./TableData";
+import { AdminData, VenueData } from "./TableData";
+import { Fragment, useState } from "react";
+import { MultipleStop } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import SnackbarComponent from "./SnackbarComponent";
 
 const theme = createTheme({
     components:{
@@ -25,9 +29,19 @@ const theme = createTheme({
 
 const TableContent = (props)=> {
 
+  const [open, setOpen] = useState(false);
+  const[valid,setvalid] = useState(false)
+  const navigate = useNavigate()
+
+  const handleToClose = (event, reason) => {
+    if ("clickaway" == reason) return;
+    setOpen(false);
+  };
+  
   const handleAcceptance = async(id)=> {
+    if(props.type=="ADMIN"){
     try{
-      let request = await fetch(`http://localhost:8888/admin-/update/${id}`,{
+        let request = await fetch(`http://localhost:8888/admin-/update/${id}`,{
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
@@ -35,15 +49,17 @@ const TableContent = (props)=> {
       },body: JSON.stringify({status:0})
       })
       let response = await request.json()
+      setvalid(true)
+      setOpen(true)
       console.log(response)
     }catch(error){
+      setvalid(false)
+      setOpen(true)
       console.log(error)
     }
-  }
-
-  const handleRejection = async(id)=> {
+  }else if(props.type == "VENUE"){
     try{
-      let request = await fetch(`http://localhost:8888/admin-/update/${id}`,{
+      let request = await fetch(`http://localhost:8888/venue-/response/${id}`,{
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
@@ -56,9 +72,43 @@ const TableContent = (props)=> {
       console.log(error)
     }
   }
+  }
+
+  const handleRejection = async(id)=> {
+    if(props.type=="ADMIN"){
+      try{
+        let request = await fetch(`http://localhost:8888/admin-/update/${id}`,{
+          method:"PUT",
+          headers:{
+            "Content-Type":"application/json",
+            Authorization : "Bearer" +" "+ JSON.parse(sessionStorage.getItem("token"))
+        },body: JSON.stringify({status:2})
+        })
+        let response = await request.json()
+        console.log(response)
+      }catch(error){
+        console.log(error)
+      }
+    }else if(props.type == "VENUE"){
+      try{
+        let request = await fetch(`http://localhost:8888/venue-/response/${id}`,{
+          method:"PUT",
+          headers:{
+            "Content-Type":"application/json",
+            Authorization : "Bearer" +" "+ JSON.parse(sessionStorage.getItem("token"))
+        },body: JSON.stringify({status:2})
+        })
+        let response = await request.json()
+        console.log(response)
+      }catch(error){
+        console.log(error)
+      }
+    }
+  }
 
   return(
     <ThemeProvider theme={theme}>   
+    <SnackbarComponent setopen={open} funcopen={setOpen} setvalid={valid}/>
     <Typography variant="h6" fontSize="large" gutterBottom>
           Latest Requests
     </Typography> 
@@ -67,11 +117,24 @@ const TableContent = (props)=> {
         <TableHead>
           <TableRow>
             <TableCell className="tableCell">Request ID</TableCell>
-            <TableCell className="tableCell">Image</TableCell>
-            <TableCell className="tableCell">Username</TableCell>
-            <TableCell className="tableCell">VenueName</TableCell>
-            <TableCell className="tableCell">Address</TableCell>
-            <TableCell className="tableCell">Contact</TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "" : props.type == "ADMIN" ? "Image" : " "}
+              </TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "BookingDate" : props.type == "ADMIN" ? "VenueName" : " "}
+              </TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "EventType" : props.type == "ADMIN" ? "UserName" : " "}
+              </TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "RequiredCapacity" : props.type == "ADMIN" ? "Email" : " "}
+              </TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "Preference" : props.type == "ADMIN" ? "Contact" : " "}
+              </TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "ClientName" : props.type == "ADMIN" ? "Address" : " "}
+              </TableCell>
             <TableCell className="tableCell">Status</TableCell>
           </TableRow>
         </TableHead>
@@ -79,19 +142,27 @@ const TableContent = (props)=> {
           {props.data?.map((row) => (
             <TableRow key={row.id}>
               <TableCell className="tableCell">{row.id}</TableCell>
+              <TableCell className="tableCell" sx={{cursor:"pointer"}} onClick={()=>{ navigate(`/dashboard/list/detail/${props.type == "ADMIN" && row.email }`)}}>
+                <img src={props.type == "VENUE" ? " " : props.type == "ADMIN" ? row.filePath : " "} style={{width:"40px",height:"40px"}} alt="Image"/>
+                </TableCell>
               <TableCell className="tableCell">
-                <div className="cellWrapper">
-                  <img src={row.filePath} alt="image" className="image" style={{height:'20px',width:'30px'}}/>
-                  {row.product}
-                </div>
+                {props.type == "VENUE" ? row.bookingDate : props.type == "ADMIN" ? row.venueName : " "}
+                </TableCell>
+              <TableCell className="tableCell">
+              {props.type == "VENUE" ? row.eventType: props.type == "ADMIN" ? row.userName : " "}
+                </TableCell>
+              <TableCell className="tableCell">
+              {props.type == "VENUE" ? row.requiredCapacity: props.type == "ADMIN" ? row.email : " "}
               </TableCell>
-              <TableCell className="tableCell">{row.userName}</TableCell>
-              <TableCell className="tableCell">{row.venueName}</TableCell>
-              <TableCell className="tableCell">{row.city_name}</TableCell>
-              <TableCell className="tableCell">{row.mobile_no}</TableCell>
+              <TableCell className="tableCell">
+              {props.type == "VENUE" ? row.preference: props.type == "ADMIN" ? row.mobile_no : " "}
+              </TableCell>
+              <TableCell className="tableCell">
+              {props.type == "VENUE" ? row.userC.name: props.type == "ADMIN" ? row.city_name : " "}
+              </TableCell>
               <TableCell className="tableCell" sx={{display:'flex',flexDirection:'row',alignItems:'center',gap:'10px'}}>
-              <span onClick={()=>handleAcceptance(row.id)} style={{cursor:'pointer',padding:'7px 5px',backgroundColor:'slategrey'}}>Accept</span>                
-              <span onClick={()=>handleRejection(row.id)} style={{cursor:'pointer',padding:'7px 5px',backgroundColor:'slategrey'}}>Reject</span>
+              <span onClick={()=>handleAcceptance(row.id)} style={{cursor:'pointer',padding:'7px 5px',fontWeight:"600",backgroundColor:'#15616D',color:"#f5f5f5"}}>Accept</span>                
+              <span onClick={()=>handleRejection(row.id)} style={{cursor:'pointer',padding:'7px 5px',fontWeight:"600",backgroundColor:'#9A8C98',color:"#f5f5f5"}}>Reject</span>
               </TableCell>
             </TableRow>
           ))}
@@ -106,10 +177,10 @@ const DashboardTable = (props) => {
 
   switch(props.type){
       case "VENUE":
-      return (<TableContent data={ClientTableData} />)
+      return (<TableContent data={VenueData()} type={props.type}/>)
       break;
       case "ADMIN":
-      return <TableContent data={AdminData()}/>
+      return <TableContent data={AdminData()} type={props.type}/>
       break;
       default:
       break;

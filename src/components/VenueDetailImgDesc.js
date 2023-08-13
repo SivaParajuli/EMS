@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { Button, Container, Grid, TextField, createTheme } from '@mui/material';
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import  {  ThemeProvider } from '@mui/material';
 import {  VisibilityOutlined } from '@mui/icons-material';
 import { Form } from 'react-router-dom';
@@ -65,22 +65,48 @@ const theme = createTheme({
 });
 
 function VenueDetailImgDesc() {
-    const [selectedFile, setSelectedFiles] = useState([]);
-    const [value, setValue] = useState('');
+    const [multipartFileList, setMultipartFileList] = useState([]);
+    const [description, setdescription] = useState('');
+
+
+    const handleSubmit = async(e)=> {
+        e.preventDefault()
+
+        const formdata = new FormData()
+        formdata.append("imageList",multipartFileList)
+
+        console.log(formdata.get("images"))
+        console.log({multipartFileList,description})
+        // console.log(formdata.get("description"))
+        // console.log(formdata.get("multipartFileList"))
+        try{
+            const request = await fetch(
+            `http://localhost:8888/venue-/uploadimage/${JSON.parse(sessionStorage.getItem("email"))}`,{
+                method:"PUT",
+                headers:{
+                  Authorization : "Bearer" +" "+ JSON.parse(sessionStorage.getItem("token"))
+              },body: formdata
+            });
+            const response = await request.json()
+            console.log(response)
+        }catch(error){
+            console.log(error)
+        }
+    }
 
     const handleChange = (event) => {
-    setValue(event.target.value);
+    setdescription(event.target.value);
     };
 
     
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
-        setSelectedFiles(files);
+        setMultipartFileList(files);
       };
-      console.log(selectedFile)
+      console.log(multipartFileList)
       const handleOverlayClick = () => {
-        if (selectedFile.length > 0) {
-            selectedFile.forEach((item)=>{
+        if (multipartFileList.length > 0) {
+            multipartFileList.forEach((item)=>{
                 const fileUrl = URL.createObjectURL(item);
                 window.open(fileUrl, '_blank');
             }
@@ -90,7 +116,7 @@ function VenueDetailImgDesc() {
 
   return (
     <ThemeProvider theme={theme}>
-    <Form onSubmit={()=>console.log("hello")}>
+    <Form onSubmit={handleSubmit} encType="multipart/form-data">
     <Container maxWidth={'xl'} >
         <Grid item xs={12} >
             <FileInputLabel>
@@ -105,9 +131,9 @@ function VenueDetailImgDesc() {
               />
         <VisibilityOutlined onClick={handleOverlayClick} sx={{cursor:'pointer'}}/>
         </Grid>
-        <TextField type="textarea" value={value} required onChange={handleChange} 
+        {/* <TextField type="textarea" value={description} required onChange={handleChange} 
         label="Write Description" multiline 
-        fullWidth rows={8}/>
+        fullWidth rows={8}/> */}
         <Grid xs={2}>
         <Button type="submit">Submit</Button>
         </Grid>

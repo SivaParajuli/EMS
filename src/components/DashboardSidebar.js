@@ -13,7 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import {AuthContext} from '../context/AuthContext.js'
 import { Typography, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import UpdateIcon from '@mui/icons-material/Update';
 import { Explore } from '@mui/icons-material';
@@ -96,26 +96,22 @@ export default function DashboardSidebar() {
   const [state,setState] = React.useContext(AuthContext);
   const authrole = JSON.parse(sessionStorage.getItem("isoftype"))
 
-
   switch(authrole){
     case "ADMIN":
     data = [
-        {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"Update Details",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Home",route:`/dashboard/preview`,icon:<DashboardIcon/>},
       ]
       break;
       case "CLIENT":
       data = [
-        {text:"Main",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"Update",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>},
+        {text:"Main",route:`/dashboard/preview`,icon:<DashboardIcon/>},
         {text:"Explore",route:"/dashboard/list",icon:<Explore/>}
       ]
       break;
       case "VENUE":
       data = [
-        {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"Requests",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>},
-        {text:"History",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Home",route:`/dashboard/preview`,icon:<DashboardIcon/>},
+        {text:"Requests",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
       ]
       break;
       default:

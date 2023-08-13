@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import {  Container, Typography, createTheme } from '@mui/material';
+import {  Button, Container, Typography, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -53,30 +53,38 @@ function StandardImageList() {
 const DetailDescription = (props)=> {
 
     const [venueDetail,setVenueDetail] = React.useState([])
-    const {id} = useParams()  
+    const {email} = useParams()  
     const [value, setValue] = React.useState(1);
     const[state] = React.useContext(AuthContext);
+    const[programList,setProgramList] = React.useState([])
+    const[recipemenuList,setRecipeMenuList] = React.useState([])
+   
+
+    console.log(value)
 
     React.useEffect(()=>{
-
       async function getVenueById(){
         if(state.logstate !== null){
         try{
-        const request = await fetch(`http://localhost:8888/client-/venue/${id}`,{
+        const request = await fetch(`http://localhost:8888/client-/venueDetails/${email}`,{
           method:"GET",
           headers:{
             Authorization : 'Bearer' +" "+ JSON.parse(sessionStorage.getItem("token"))
         }
         });
         const response = await request.json()
-        setVenueDetail((prevValue) => prevValue = response.data)
+        setVenueDetail((prevValue) => prevValue = response?.data)
+        setValue((prevValue)=> prevValue = response.data?.ratings)
+        let recipelist = response.data?.functionTypes
+        setProgramList((prevValue) => prevValue = recipelist)
+        setRecipeMenuList((prevValue)=> prevValue = response.data?.recipeMenuLists)
         console.log(response)
       }catch(error){
         console.log(error)
       }
       }else{
         try{
-          const request = await fetch(`http://localhost:8888/home-/venue/${id}`,{
+          const request = await fetch(`http://localhost:8888/home-/venue/${email}`,{
             method:"GET"
           });
           const response = await request.json()
@@ -88,16 +96,100 @@ const DetailDescription = (props)=> {
       }
       }
       getVenueById()
+      },[])
 
-    },[])
+     
+      // React.useEffect(()=>{
+      //   let value = true
+      //   async function getVenueRatings(){
+
+      //       try{
+      //         const request = await fetch(`http://localhost:8888/client-/getrating/${email}`,
+      //         {
+      //         method:"GET",
+      //         headers:{
+      //         Authorization : 'Bearer' +" "+ JSON.parse(sessionStorage.getItem("token"))
+      //         }
+      //         })
+      //         const response = await request.json()
+      //         console.log(response)
+      //         }catch(error){
+      //         console.log(error)
+      //       }
+      //   }
+      //   getVenueRatings()
+      //   return ()=> {
+      //     value = false
+      //   }
+      // },[])
+
+      const handleRate = async (e)=> {
+      e.preventDefault()
+      try{
+        const request = await fetch(`http://localhost:8888/client-/rateVenue/${email}/${JSON.parse(sessionStorage.getItem("email"))}`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            Authorization : "Bearer" +" "+ JSON.parse(sessionStorage.getItem("token"))
+        },body: JSON.stringify({rating:value})
+        })
+        const response = await request.json()
+        console.log(response)
+      }catch(error){
+        console.log(error)
+      }
+    }
 
     return(
       <React.Fragment>
-     <Container sx={{width:"fit-content",display:"flex",flexDirection:"column",gap:"0px"}}>
+     <Container sx={{width:"fit-content",display:"flex",flexDirection:"column",gap:"10px"}}>
       <Typography sx={{fontSize:"30px",fontWeight:"800"}}>{venueDetail.venueName}</Typography>
       <Typography sx={{fontSize:"25px",fontWeight:"700"}}>{venueDetail.userName}</Typography>
-      <Typography sx={{fontSize:"18px",fontWeight:"600"}}>{venueDetail.city_name}</Typography>
-      {state.logstate !== null && (
+      <Typography sx={{fontSize:"21px",fontWeight:"700"}}>{venueDetail.city_name}</Typography>
+      <Container disableGutters sx={{display:'flex',flexDirection:'row',alignItems:"flex-start"}}>
+        <Container  disableGutters sx={{display:'flex',flexDirection:'column'}}>
+        <Typography sx={{fontSize:"18px",fontWeight:"700",
+        fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+      }}>Available Events</Typography>
+        <ul style={{paddingLeft:"18px"}}>
+        {programList?.map((item,index)=>(
+          <li key={index} style={{fontSize:"16px",
+          fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+          fontWeight:"600",paddingLeft:"0px"}}>
+            {item}
+            </li>
+        ))}
+        </ul>
+        <Typography sx={{fontSize:"18px",fontWeight:"700",
+        fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+      }}>Available RecipeList</Typography>
+        <ul style={{paddingLeft:"18px"}}>
+        {recipemenuList?.map((item,index)=>(
+          <li key={index} style={{fontSize:"16px",
+          fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+          fontWeight:"600",paddingLeft:"0px"}}>
+            {item}
+            </li>
+        ))}
+        </ul>
+        </Container>
+         <Container disableGutters sx={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+      <Typography sx={{fontSize:"18px",fontWeight:"700",
+      fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+    }}>Available Services</Typography>
+      <ul style={{paddingLeft:"18px"}}>
+        {venueDetail?.services?.map((item,index)=>(
+          <li key={index} style={{fontSize:"16px",
+          fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+          fontWeight:"600",paddingLeft:"0px"}}>
+            {item}
+            </li>
+        ))}
+        </ul>
+        </Container>
+        </Container>
+      {/* {state.logstate == "CLIENT" && (
+        <form onSubmit={handleRate}>
       <Box
       sx={{
         '& > legend': { mt: 2 },
@@ -111,7 +203,25 @@ const DetailDescription = (props)=> {
           setValue(newValue);
         }}
       />
-      </Box>)}
+      <Button type="Submit" sx={{backgroundColor:"#fb3a00f"}}>Rate</Button>
+      </Box>
+      </form>
+      )} */}
+      {state.logstate == "CLIENT" && (
+        <form onSubmit={handleRate}>
+      <Box
+      sx={{
+        '& > legend': { mt: 2 },
+      }}
+    >
+      <Typography component="legend">Rating</Typography>
+      <Rating
+        name="simple-uncontrolled"
+        value={value}
+      />
+      </Box>
+      </form>
+      )}
      </Container> 
       </React.Fragment>
     )
@@ -119,8 +229,30 @@ const DetailDescription = (props)=> {
 
 export const DescriptionPanel = ()=> {
 
+  const [state,setState] = React.useContext(AuthContext);
+  const siderbarT = state.siderbarToggle;
+
+  const handleScroll = ()=>{
+    if(window.scrollY >= 30 ){
+        setState((prevState)=>{return {...prevState,pageScroll:true}})
+    }else{
+      setState((prevState)=>{return {...prevState,pageScroll:false}})
+    }
+}
+
+React.useEffect(()=>{
+  let value = true
+    if(value){
+    window.addEventListener("scroll",handleScroll)
+    }
+    return ()=> {
+    window.removeEventListener("scroll",handleScroll)
+    value = false
+    }
+},[])
+
     return(
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme} siderbarT={siderbarT}>
         <Container>
         <StandardImageList/>
         <DetailDescription/>

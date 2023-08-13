@@ -84,7 +84,7 @@ const App = () => {
         path: "/explorepage",
         element:<ExploreSectionComponent/>
       },{
-        path: state.logstate == null ? "/explorepage/list/:id" : "/dashboard/list/detail/:id",
+        path: state.logstate == null ? "/explorepage/list/:email" : "/dashboard/list/detail/:email",
         element: <ExploreVenueTabPanel/>
       },
       {
@@ -112,7 +112,7 @@ const App = () => {
           path:"/dashboard/list",
         element:<ExploreVenue/>,
       },{
-        path: state.logstate == null ? "/dashboard/list/detail/:id" : "/explorepage/list/:id",
+        path: state.logstate == null ? "/dashboard/list/detail/:email" : "/explorepage/list/:email",
         element:<ExploreVenueTabPanel/>
       }
     ]

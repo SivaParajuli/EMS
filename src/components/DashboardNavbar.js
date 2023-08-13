@@ -77,6 +77,7 @@ const DashboardNavbar = () => {
     const handleLogout =() => {
       sessionStorage.removeItem("isoftype")
       sessionStorage.removeItem("token")
+      sessionStorage.removeItem("email")
       setState((prevState)=>{return {...prevState,logstate:""}})
       navigate("/loginpage")
     }

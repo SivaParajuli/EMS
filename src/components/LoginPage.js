@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import  styled from '@emotion/styled';
-import { Container, Typography, TextField, Button, Paper, createTheme, ThemeProvider, Snackbar } from '@mui/material';
+import { Container, Typography, TextField, Button, Paper, createTheme, ThemeProvider } from '@mui/material';
 import loginimage from '../images/forlogin.jpg'
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import SnackbarComponent from './SnackbarComponent';
+import TextFieldComponent from './TextFieldComponent';
 
 
 const theme = createTheme({
@@ -124,30 +126,36 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const[logindetail,setLoginDetail] = useState({username:"",password:""})
   const [state,setState] = useContext(AuthContext)
+  const [open, setOpen] = useState(false);
+  const[valid,setvalid] = useState(false)
   
-
   const handleSubmit = async(e) => {
     e.preventDefault();
-    
     try{
       const url = "http://localhost:8888/login";
       const request = await fetch(url,{
         method:"POST",
-        headers:{"Content-Type":"application/json"},
+        headers:{
+          "Content-Type":"application/json"
+        },
         body:JSON.stringify(logindetail)
-      });
+        });
       const response = await request.json();
       if(response.status == true){
         sessionStorage.setItem("token",JSON.stringify(response.data.token))
         sessionStorage.setItem("isoftype",JSON.stringify(response.data.applicationUserRole))
+        sessionStorage.setItem("email",JSON.stringify(response.data.email))
+        setvalid((prevValue) => prevValue = true)
+        setOpen((prevValue) => prevValue = true)
         setState((prevState)=>{
         return {...prevState,logstate:JSON.parse(sessionStorage.getItem("isoftype"))}})
-        setTimeout(()=>{navigate("/dashboard/preview")},4000) 
+        setTimeout(()=>{navigate(`/dashboard/preview/`)},4000) 
       }else{
         alert("Invalid Login!")
       }
-      }catch(error){  
-        alert("Invalid Login!")
+      }catch(error){ 
+        setvalid((prevValue) => prevValue = false) 
+        setOpen((prevValue) => prevValue = true)
     }
   };
 
@@ -158,47 +166,21 @@ const LoginPage = () => {
       <img src={loginimage} loading='lazy' style={{width:'100%',backgroundSize:'object-fit'}} alt="Login"/>
       </LeftWrapper>
       <RightWrapper>
+        <SnackbarComponent setopen={open} funcopen={setOpen} setvalid={valid}/>
        <Paper elevation={12} sx={{borderRadius:'15px'}}>
         <ThemeProvider theme={theme}>
       <FormWrapper onSubmit={handleSubmit}>
         <Title variant="h5">Login</Title>
-          <CustomTextField
-            variant="outlined"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            type="email"
-            name="username"
-            autoComplete="email"
-            margin="normal"
-            onChange={(e)=>setLoginDetail((prevState)=> {
-              return {...prevState,username : e.target.value}
-            })}
-            value={logindetail.username}
-          />
-          <CustomTextField
-            variant="outlined"
-            required
-            fullWidth
-            id="password"
-            label="Password"
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            margin="normal"
-            onChange={(e)=>setLoginDetail((prevState)=>{
-              return {...prevState,password : e.target.value}
-            })}
-            value={logindetail.password}
-          />
-        <SubmitButton
+          <TextFieldComponent id={"email"} type={"email"} label={"Email"} 
+            value={logindetail.username} arrayitem={logindetail} setTerm={setLoginDetail} name={"username"}/>
+          <TextFieldComponent id={"password"} type={"password"} label={"Password"} 
+            value={logindetail.password} arrayitem={logindetail} setTerm={setLoginDetail} name={"password"}/>
+          <SubmitButton
           type="submit"
           fullWidth
           variant="contained"
           sx={{
             fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-
             fontSize: '14px',
             fontWeight: 'bold',
           }} 

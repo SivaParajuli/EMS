@@ -1,7 +1,10 @@
 import React ,{useReducer, useState} from 'react';
 import  styled  from '@emotion/styled';
-import { Container, Typography, TextField, Button, Grid, Paper, createTheme, ThemeProvider } from '@mui/material';
+import { Container, Typography, TextField, Button, Grid, Paper, createTheme, ThemeProvider, Snackbar, IconButton } from '@mui/material';
 import registerimage from '../images/forlogin.jpg'
+import SnackbarComponent from './SnackbarComponent';
+import {DealerTextFieldData} from './TableData.js'
+import TextFieldComponent from './TextFieldComponent';
 
 const theme = createTheme({
   components:{
@@ -152,11 +155,11 @@ const reducer = (dealerdetail , action)=> {
         return {...dealerdetail, email: action.payload}
       }
       break;
-      case "address":{
+      case "city_name":{
         return {...dealerdetail, city_name: action.payload}
       }
       break;
-      case "contact":{
+      case "mobile_no":{
         return {...dealerdetail, mobile_no: action.payload}
       }
       break;
@@ -173,7 +176,8 @@ const reducer = (dealerdetail , action)=> {
 const RegistrationPageForDealer = () => {
     const [venueFile, setVenueFile] = useState([]);
     const [dealerdetail,dispatch] = useReducer(reducer,initialState);
-    
+    const [open, setOpen] = React.useState(false);
+    const[valid,setvalid] = useState(false)
 
     const handleFileChange = (event) => {
       setVenueFile((prevFile)=> prevFile = event.target.files[0])
@@ -182,9 +186,15 @@ const RegistrationPageForDealer = () => {
       // return prevState})
 
     }
+
+    const handleToClose = (event, reason) => {
+      if ("clickaway" == reason) return;
+      setOpen(false);
+    };
     
     console.log(venueFile)
-    
+
+
     const handleSubmit = async(event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -212,8 +222,11 @@ const RegistrationPageForDealer = () => {
       });
       const response = await request.json();
       console.log(response)
-
+      setvalid((prevValue) => prevValue = true)
+      setOpen((prevValue) => prevValue = true)
     }catch(error){
+      setvalid((prevValue) => prevValue = false)
+        setOpen((prevValue) => prevValue = true)
       console.log(error)
     }
     };
@@ -226,100 +239,17 @@ const RegistrationPageForDealer = () => {
       backgroundSize:'object-fit'}} alt="Register"/>
       </LeftWrapper>
       <RightWrapper> 
+      <SnackbarComponent setopen={open} funcopen={setOpen} setvalid={valid}/>
         <Paper elevation={12} sx={{borderRadius:'15px'}}>     
         <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data">
         <Typography variant="h5">Registration for Dealer</Typography>
         <Grid container spacing={1}>
+          {DealerTextFieldData.map((item,index)=>
           <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="username"
-              type="text"
-              label="Username"
-              name="username"
-              autoComplete="given-name"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"userName",payload:event.target.value})}
-              value={dealerdetail.userName}
-            />
+            <TextFieldComponent id={item.id} type={item.type} label={item.label} reducer={""} name={item.name}
+              margin={item.margin} setTerm={dispatch} value={dealerdetail[index]}/>
           </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="password"
-              type="password"
-              label="Password"
-              name="password"
-              autoComplete="password"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"password",payload:event.target.value})}
-              value={dealerdetail.password}
-            />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="email"
-              type="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"email",payload:event.target.value})}
-              value={dealerdetail.email}
-            />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="address"
-              type="text"
-              label="Address"
-              name="city_name"
-              autoComplete="city_name"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"address",payload:event.target.value})}
-              value={dealerdetail.city_name}
-            />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="venueName"
-              type="text"
-              label="VenueName"
-              name="venueName"
-              autoComplete="venueName"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"venueName",payload:event.target.value})}
-              value={dealerdetail.venueName}
-            />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="contact"
-              type="number"
-              label="Contact"
-              name="mobile_no"
-              autoComplete="tel"
-              margin="normal"
-              onChange={(event)=>dispatch({type:"contact",payload:event.target.value})}
-              value={dealerdetail.mobile_no}
-            />
-          </Grid>
+          )}
           <Grid item xs={12} lg={12}>
             <FileInputLabel>
               Upload venue verification file(PDF or Image):

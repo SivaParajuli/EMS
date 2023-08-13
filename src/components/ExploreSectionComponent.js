@@ -1,39 +1,26 @@
-import React,{useContext, useMemo, useState} from 'react';
+import React,{useContext, useState} from 'react';
 import { lazy } from 'react';
 import dayjs from 'dayjs';
-import { Button, Container, Skeleton, TextField, Typography} from '@mui/material'
+import { Button, Container,Typography} from '@mui/material'
 import  styled  from '@emotion/styled';
 import { Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { useJsApiLoader,Autocomplete } from '@react-google-maps/api';
-import Stack from '@mui/material/Stack';
 import { AuthContext } from '../context/AuthContext';
-
-
+import DatePickerComponent from './DatePickerComponent';
+import TextFieldComponent from './TextFieldComponent';
+import { Form } from 'react-router-dom';
 const DropdownComponentNames = lazy(()=> import("./DropdownComponent").then(module=>{
   return { default: module.DropdownComponentNames}
 }));
-
 const DropdownComponentValues = lazy(()=>import("./DropdownComponent").then(module=>{
   return { default: module.DropdownComponentValues}
 }));
-
 const GridItemsExplorePage = lazy(()=> import('./GridItemsExplorePage'));
-
-
 
 const nextMonth = dayjs().add(30,'day');
 const tomorrow = dayjs().add(1,'day');
-
-const CustomTextField = styled(TextField )({
-    fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-    fontWeight: 'bold',
-  
-});
-
 
 const SubmitButton = styled(Button)`
   background-color: #384E77; /* Update the button background color */
@@ -48,13 +35,9 @@ const SubmitButton = styled(Button)`
   }
 `;
 
-const center = {
-  lat: 27.734649721065097, 
-  lng: 85.35900791127253, 
-};
 
 const EventDetails = {
-  "Professional Event":["500","1000","2000","3000","4000","5000","200000","400000","600000","800000","1000000"],
+  "Professional Event":["5000","200000","400000","600000","800000","1000000"],
   "Family Function":["400000","600000","800000","1000000","1200000"],
   "Personal Program":["50000","100000","200000","300000","400000"]
 }
@@ -136,9 +119,8 @@ const theme = createTheme({
 
 const ExploreSectionComponent = ()=> {
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [role, setRole] = useState("");
-  const [pricing,setPricing] = useState("");
+  const[searchfilter,setSearchFilter] = useState({searchTerm:"",role:"",pricing:"",
+  startingDate:dayjs('2023-08-10'),endingDate:dayjs('2023-08-20')})
   const [state] = useContext(AuthContext);
   let extrabutton;
   
@@ -149,7 +131,7 @@ const ExploreSectionComponent = ()=> {
       }
       break;
       case null:
-        extrabutton={
+      extrabutton={
          
         }
         break;
@@ -160,48 +142,26 @@ const ExploreSectionComponent = ()=> {
 
   const filterEventValue = ()=>{
     for(let item in EventDetails){
-        if(item == role){
+        if(item == searchfilter.role){
             return EventDetails[item]
         }
     }
   }
 
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-
-  };
-
-  const handlePricing = (event)=> {
-    setPricing(event.target.value);
+  const handleFilterChange = (e)=> {
+    setSearchFilter((prevValue) => ({...prevValue,[e.target.name]:e.target.value}))
   }
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries:['places']
-  });
-
-  if(!isLoaded){
-    return (
-      <Stack spacing={1} sx={{marginTop:'50px'}}>
-      {/* For variant="text", adjust the height via font-size */}
-      <Skeleton variant="text" sx={{ fontSize: '20px',marginTop:'50px' }} />
-      {/* For other variants, adjust the size with `width` and `height` */}
-      <Skeleton variant="circular" width={80} sx={{marginTop:'50px'}} height={80} />
-      <Skeleton variant="rectangular" width={1500} sx={{marginTop:'50px'}} height={60} />
-      <Skeleton variant="rounded" width={1500} sx={{marginTop:'50px'}} height={60} />
-    </Stack>
-    )
+  const handleSubmit = ()=> {
+    console.log(searchfilter)
   }
-  
-  const handlePlaceSelect = (place) => {
-    setSearchTerm(place.formatted_address);
-  };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <ThemeProvider theme={theme}>
-        <Container sx={{position:"relative"}}>
-        <Grid container spacing={2} sx={{
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ThemeProvider theme={theme}>
+        <Container sx={{position:"relative"}}  disableGutters maxWidth={false}>
+          <Form onSubmit={handleSubmit}>
+          <Grid container spacing={2} sx={{
           display:'flex',
           flexDirection:'row',
           justifyContent:'center',
@@ -209,63 +169,21 @@ const ExploreSectionComponent = ()=> {
           marginBottom:'40px'
           }}>
           <Grid xs={6} lg={2}>
-          <DateTimePicker
-          label="StartingDate"
-            defaultValue={tomorrow}
-            disablePast
-            views={['year', 'month', 'day', 'hours', 'minutes']}
-          />
-        </Grid>
-        <Grid xs={6} lg={2}>
-          <DateTimePicker
-          label="EndingDate"
-          disablePast
-            defaultValue={nextMonth}
-            views={['year', 'month', 'day', 'hours', 'minutes']}
-          />
+          <DatePickerComponent arrayitem={searchfilter} label={"StartingDate"} value={searchfilter.startingDate} 
+          setTerm={setSearchFilter} defaultDate={tomorrow} name={"startingDate"}/>
           </Grid>
           <Grid xs={6} lg={2}>
-            <Autocomplete
-            onLoad={(autocomplete) => {
-            autocomplete.addListener('place_changed', () => {
-            const place = autocomplete.getPlace();
-            handlePlaceSelect(place);
-            });
-            }}
-            >
-              <CustomTextField 
-              variant="outlined"
-              required
-              fullWidth
-              id="location"
-              type="text"
-              label="Location"
-              InputProps={{
-                style: { fontSize: '14px', fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-              }
-              }}
-              InputLabelProps={{
-                style: { fontSize: '13px' , fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-              },
-              }}
-              value={searchTerm}
-              onChange={(e)=>setSearchTerm((prevTerm)=> prevTerm = e.target.value)}
-              name="location"
-              margin="normal"
-            />
-            </Autocomplete>
-            </Grid>
-            {/* <Box position="absolute" left={50} top={100} height="100%" width="100%">
-              <GoogleMap center={center} zoom={15} mapContainerStyle={{width:'100%',height:'100%'}}>
-              
-              </GoogleMap>
-            </Box> */}
-          <DropdownComponentNames role={role} eventDetails={EventDetails} 
-          setRole={setRole} handleRoleChange={handleRoleChange}/>
-          
-          <DropdownComponentValues role={role} pricing={pricing} eventValues={filterEventValue()}
-          setPricing={setPricing} handlePricing={handlePricing}/>
-          
+          <DatePickerComponent arrayitem={searchfilter} label={"EndingDate"} value={searchfilter.endingDate} 
+          setTerm={setSearchFilter} defaultDate={nextMonth} name={"endingDate"}/>
+          </Grid>
+          <Grid xs={6} lg={2}>
+          <TextFieldComponent id={"location"} type={"text"} label={"Location"} 
+          value={searchfilter.searchTerm} arrayitem={searchfilter} setTerm={setSearchFilter} name={"searchTerm"}/>
+          </Grid>
+          <DropdownComponentNames arrayitem={searchfilter} role={searchfilter.role} 
+          eventDetails={EventDetails} setRole={setSearchFilter}/>
+          <DropdownComponentValues arrayitem={searchfilter} role={searchfilter.role} pricing={searchfilter.pricing} 
+          eventValues={filterEventValue()} setPricing={setSearchFilter}/>
           <SubmitButton type="submit" fullWidth variant="contained" sx={{
           fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
           fontSize: '14px',
@@ -274,6 +192,7 @@ const ExploreSectionComponent = ()=> {
           Search
         </SubmitButton>
         </Grid>
+        </Form>
         <GridItemsExplorePage extraprops={extrabutton}/>
         </Container>
         </ThemeProvider>

@@ -8,10 +8,27 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useState } from 'react';
 import styled from '@emotion/styled';
-import { Container } from '@mui/material';
+import { Container, ThemeProvider, createTheme } from '@mui/material';
 import { DescriptionPanel } from './ExpImgandDesc';
 import PaymentForm from './PaymentDetail';
+import { useParams } from 'react-router-dom';
 
+const theme = createTheme({
+  components:{
+    MuiTab:{
+      styleOverrides:{
+        root:{
+          fontSize:"14px",
+          fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+          fontWeight:"600",
+          "&:hover":{
+            backgroundColor:"#f0f0f0",
+            color:"#2F3E46"
+          }
+        }
+      }
+    }
+  }})
 
 const scrollbarStyle = {
   '&::-webkit-scrollbar':{
@@ -70,19 +87,22 @@ export function ExploreVenueTabPanel() {
   const [value, setValue] = useState(0);
   const[state] = useContext(AuthContext);
   const siderbarT = state.siderbarToggle;
+  const {venueemail} = useParams()
 
   const handleChange = (event, newValue) => {
     setValue((prevValue)=>prevValue=newValue);
   };
+  console.log(venueemail)
 
   return (
+    <ThemeProvider theme={theme}>
     <ContainerWrapper siderbarT={siderbarT} 
     disableGutters sx={{marginTop:'30px'}}>
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Details" {...a11yProps(0)} />
-          {state.logstate !== null && <Tab label="Payment" {...a11yProps(1)} />}
+          {state.logstate == "CLIENT"  && <Tab label="Payment" {...a11yProps(1)} />}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -93,6 +113,7 @@ export function ExploreVenueTabPanel() {
       </TabPanel>
     </Box>
     </ContainerWrapper>
+    </ThemeProvider>
   );
 }
 

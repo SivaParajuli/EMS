@@ -1,57 +1,88 @@
 import { Fragment, useEffect, useState } from "react"
 
-export const ClientTableData = [
-    {
-      id: 1143155,
-      product: "Acer Nitro 5",
-      img: "https://m.media-amazon.com/images/I/81bc8mA3nKL._AC_UY327_FMwebp_QL65_.jpg",
-      customer: "John Smith",
-      date: "1 March",
-      amount: 785,
-      method: "Cash on Delivery",
-      status: "Approved",
-    },
-    {
-      id: 2235235,
-      product: "Playstation 5",
-      img: "https://m.media-amazon.com/images/I/31JaiPXYI8L._AC_UY327_FMwebp_QL65_.jpg",
-      customer: "Michael Doe",
-      date: "1 March",
-      amount: 900,
-      method: "Online Payment",
-      status: "Pending",
-    },
-    {
-      id: 2342353,
-      product: "Redragon S101",
-      img: "https://m.media-amazon.com/images/I/71kr3WAj1FL._AC_UY327_FMwebp_QL65_.jpg",
-      customer: "John Smith",
-      date: "1 March",
-      amount: 35,
-      method: "Cash on Delivery",
-      status: "Pending",
-    },
-    {
-      id: 2357741,
-      product: "Razer Blade 15",
-      img: "https://m.media-amazon.com/images/I/71wF7YDIQkL._AC_UY327_FMwebp_QL65_.jpg",
-      customer: "Jane Smith",
-      date: "1 March",
-      amount: 920,
-      method: "Online",
-      status: "Approved",
-    },
-    {
-      id: 2342355,
-      product: "ASUS ROG Strix",
-      img: "https://m.media-amazon.com/images/I/81hH5vK-MCL._AC_UY327_FMwebp_QL65_.jpg",
-      customer: "Harold Carol",
-      date: "1 March",
-      amount: 2000,
-      method: "Online",
-      status: "Pending",
-    },
-  ]
+
+export const DealerTextFieldData = [{
+  variant:"outlined",
+  id:"username",
+  type:"text",
+  label:"Username",
+  name:"userName",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"password",
+  type:"password",
+  label:"Password",
+  name:"password",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"email",
+  type:"email",
+  label:"Email",
+  name:"email",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"address",
+  type:"text",
+  label:"Address",
+  name:"city_name",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"contact",
+  type:"number",
+  label:"ContactNo",
+  name:"mobile_no",
+  margin:"normal"
+},
+{
+  variant:"outlined",
+  id:"venueName",
+  type:"text",
+  label:"VenueName",
+  name:"venueName",
+  margin:"normal"
+}
+]
+export const UserTextFieldData = [{
+  variant:"outlined",
+  id:"username",
+  type:"text",
+  label:"Username",
+  name:"username",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"password",
+  type:"password",
+  label:"Password",
+  name:"password",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"email",
+  type:"email",
+  label:"Email",
+  name:"email",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"city_name",
+  type:"text",
+  label:"Address",
+  name:"city_name",
+  margin:"normal"
+},{
+  variant:"outlined",
+  id:"mobile_no",
+  type:"number",
+  label:"ContactNo",
+  name:"mobile_no",
+  margin:"normal"
+}
+]
 
 export const AdminData = ()=> {
 
@@ -78,6 +109,35 @@ export const AdminData = ()=> {
         }
     },[])
 
+  return adminrequest
+}
 
-    return adminrequest
+export const VenueData = ()=> {
+
+  const[venueRequest,setVenueRequest] = useState([])
+
+  useEffect(()=>{
+    let value = true
+    async function getData(){
+    if(value){
+       let request = await fetch(`http://localhost:8888/venue-/requests/${JSON.parse(sessionStorage.getItem("email"))}`,{
+       method:"GET", 
+       headers:{
+            Authorization : 'Bearer' +" "+ JSON.parse(sessionStorage.getItem("token"))
+        }
+       })
+       let response = await request.json()
+       console.log(response)
+       let data = response.data
+       setVenueRequest((prevValue) => prevValue = data)
+    }
+    }
+    getData()
+    return ()=>{
+        value = false
+    }
+},[]
+)
+
+return venueRequest
 }

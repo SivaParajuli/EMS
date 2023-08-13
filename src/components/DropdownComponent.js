@@ -9,10 +9,12 @@ const RoleDropdown = styled(TextField)`
   }
 `;
 
-export function DropdownComponentNames({role,setRole,handleRoleChange,eventDetails}) {
+export function DropdownComponentNames({role,setRole,arrayitem,eventDetails}) {
     
-    handleRoleChange = (event) => {
-        setRole(event.target.value);
+    const handleRoleChange = (event) => {
+        if(arrayitem !== ""){
+        setRole((prevValue)=>({...arrayitem, [event.target.name]:event.target.value}));
+        }
     };
     
     const eventNames = Object.keys(eventDetails);
@@ -28,6 +30,7 @@ export function DropdownComponentNames({role,setRole,handleRoleChange,eventDetai
                 fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
               }
               }}
+              name="role"
               InputLabelProps={{
                 style: { fontSize: '13px' ,
                 fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
@@ -50,10 +53,12 @@ export function DropdownComponentNames({role,setRole,handleRoleChange,eventDetai
   )
 }
 
-export function DropdownComponentValues({role,pricing,eventValues,setPricing,handlePricing}) {
+export function DropdownComponentValues({role,pricing,eventValues,setPricing,arrayitem}) {
 
-    handlePricing = (event)=> {
-        setPricing(event.target.value);
+    const handlePricing = (event)=> {
+      if(arrayitem !== ""){
+        setPricing((prevValue)=>({...arrayitem, [event.target.name]:event.target.value}));
+        }
     }
     
     console.log(eventValues);
@@ -73,13 +78,14 @@ export function DropdownComponentValues({role,pricing,eventValues,setPricing,han
                 fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
               },
               }}
+              name="pricing"
               value={pricing}
               onChange={handlePricing}
               variant="outlined"
               required
               > 
               { role !="" && eventValues.map((value)=>(
-                        <MenuItem value={value}
+              <MenuItem value={value}
               sx={{
                 fontSize:'13px',
                 fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',

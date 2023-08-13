@@ -85,20 +85,25 @@ const DashboardPreview = () => {
       <Grid container spacing={2}>
           <DashboardWidget type={authrole}/>
       </Grid>
-      <Grid container spacing={2} marginTop={4}>
+      
+      {/* 
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
           <DashboardFeatured />
-        </Grid>
+        </Grid> */}
+        {state.logstate == "ADMIN" && (
+        <Grid container spacing={2} marginTop={4}>
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
           <DashboardChart />
         </Grid>
-      </Grid>
+        </Grid>)}
+        {state.logstate !== "CLIENT" &&(
       <Box marginTop={4} sx={{webkitBoxShadow: '2px 4px 10px 1px rgba(0, 0, 0, 0.47)',
             boxShadow: '2px 4px 10px 1px rgba(201, 201, 201, 0.47)',
             padding:'10px 10px',
             borderRadius: '10px'}}>
-        <DashboardTable type={authrole}/>
+         <DashboardTable type={authrole}/>
       </Box>
+    )}
       </ContainerWrapper>
       </ThemeProvider>
   );
