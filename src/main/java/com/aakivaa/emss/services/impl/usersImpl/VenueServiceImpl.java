@@ -93,6 +93,8 @@ public class VenueServiceImpl implements VenueService {
                 .userC(entity.getUserC())
                 .eventType(entity.getEventType())
                 .requiredCapacity(entity.getRequiredCapacity())
+                .recipeMenu(entity.getRecipeMenu())
+                .items(entity.getItems())
                 .bookingStatus(entity.getBookingStatus())
                 .preference(entity.getPreference())
                 .build()).collect(Collectors.toList());
@@ -137,6 +139,8 @@ public class VenueServiceImpl implements VenueService {
                 .bookingDate(entity.getBookingDate())
                 .userC(entity.getUserC())
                 .bookingStatus(entity.getBookingStatus())
+                .items(entity.getItems())
+                .recipeMenu(entity.getRecipeMenu())
                 .eventType(entity.getEventType())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());

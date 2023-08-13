@@ -44,6 +44,7 @@ public class BookingServicesImpl implements BookingServices {
                 .bookingStatus(BookingStatus.PENDING)
                 .requiredCapacity(bookingDto.getRequiredCapacity())
                 .recipeMenu(bookingDto.getRecipeList())
+                .items(bookingDto.getItems())
                 .userC(userC1)
                 .venue(venue1)
                 .preference(bookingDto.getPreference())

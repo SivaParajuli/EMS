@@ -36,6 +36,12 @@ public class Booking implements Serializable {
 
     private String preference;
 
+
+    @ElementCollection
+    @CollectionTable(name = "booking_items", joinColumns = @JoinColumn(name = "booking_id"))
+    @Column(name = "items")
+    private List<String> items;
+
     private BookingStatus bookingStatus;
 
     @JsonIgnoreProperties({"password","bookingList","id","applicationUserRole"})

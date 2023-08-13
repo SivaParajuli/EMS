@@ -20,4 +20,5 @@ public class BookingDto {
     private String requiredCapacity;
     private String preference;
     private List<String> recipeList;
+    private List<String> items;
 }
