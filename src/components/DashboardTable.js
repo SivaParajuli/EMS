@@ -9,7 +9,6 @@ import { Typography, createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { AdminData, VenueData } from "./TableData";
 import { Fragment, useState } from "react";
-import { MultipleStop } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import SnackbarComponent from "./SnackbarComponent";
 
@@ -129,6 +128,12 @@ const TableContent = (props)=> {
             <TableCell className="tableCell">
             {props.type == "VENUE" ? "RequiredCapacity" : props.type == "ADMIN" ? "Email" : " "}
               </TableCell>
+              <TableCell className="tableCell">
+            {props.type == "VENUE" ? "ItemsSelected" : props.type == "ADMIN" ? "CitizenshipNo" : " "}
+              </TableCell>
+            <TableCell className="tableCell">
+            {props.type == "VENUE" ? "Category" : props.type == "ADMIN" ? "" : " "}
+              </TableCell>
             <TableCell className="tableCell">
             {props.type == "VENUE" ? "Preference" : props.type == "ADMIN" ? "Contact" : " "}
               </TableCell>
@@ -143,7 +148,10 @@ const TableContent = (props)=> {
             <TableRow key={row.id}>
               <TableCell className="tableCell">{row.id}</TableCell>
               <TableCell className="tableCell" sx={{cursor:"pointer"}} onClick={()=>{ navigate(`/dashboard/list/detail/${props.type == "ADMIN" && row.email }`)}}>
-                <img src={props.type == "VENUE" ? " " : props.type == "ADMIN" ? row.filePath : " "} style={{width:"40px",height:"40px"}} alt="Image"/>
+              {props.type == "VENUE" ?
+                ""
+                : props.type == "ADMIN" ? <img src={row.filePath} style={{width:"40px",height:"40px"}} alt="Image"/>
+                : ""}
                 </TableCell>
               <TableCell className="tableCell">
                 {props.type == "VENUE" ? row.bookingDate : props.type == "ADMIN" ? row.venueName : " "}
@@ -153,6 +161,17 @@ const TableContent = (props)=> {
                 </TableCell>
               <TableCell className="tableCell">
               {props.type == "VENUE" ? row.requiredCapacity: props.type == "ADMIN" ? row.email : " "}
+              </TableCell>
+              <TableCell className="tableCell" style={{width:"fit-content"}}>
+              {props.type == "VENUE" ? row?.items+"," : props.type == "ADMIN" ? row.citizenShipNo : " "}
+              </TableCell>
+              <TableCell className="tableCell">
+              {props.type == "VENUE" ? 
+              <span style={{display:"flex",flexDirection:"column"}}>
+              {row?.recipeMenu+","} 
+              </span> 
+              : 
+              props.type == "ADMIN" ? row.citizenShipNo : " "}
               </TableCell>
               <TableCell className="tableCell">
               {props.type == "VENUE" ? row.preference: props.type == "ADMIN" ? row.mobile_no : " "}

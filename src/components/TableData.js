@@ -44,6 +44,14 @@ export const DealerTextFieldData = [{
   label:"VenueName",
   name:"venueName",
   margin:"normal"
+},
+{
+  variant:"outlined",
+  id:"citizenShipNumber",
+  type:"text",
+  label:"CitizenshipNumber",
+  name:"citizenShipNo",
+  margin:"normal"
 }
 ]
 export const UserTextFieldData = [{

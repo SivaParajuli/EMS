@@ -66,15 +66,15 @@ const theme = createTheme({
 
 function VenueDetailImgDesc() {
     const [multipartFileList, setMultipartFileList] = useState([]);
-    const [description, setdescription] = useState('');
+    const [description, setdescription] = useState("");
 
 
     const handleSubmit = async(e)=> {
         e.preventDefault()
 
         const formdata = new FormData()
-        formdata.append("imageList",multipartFileList)
-
+        multipartFileList.forEach((item)=> formdata.append("imageList",item))
+        
         console.log(formdata.get("images"))
         console.log({multipartFileList,description})
         // console.log(formdata.get("description"))
@@ -125,6 +125,7 @@ function VenueDetailImgDesc() {
             <input
                 type="file"
                 accept=".pdf,.png,.jpg"
+                name="imageList"
                 onChange={handleFileChange}
                 multiple
                 required

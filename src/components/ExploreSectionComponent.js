@@ -37,9 +37,9 @@ const SubmitButton = styled(Button)`
 
 
 const EventDetails = {
-  "Professional Event":["5000","200000","400000","600000","800000","1000000"],
-  "Family Function":["400000","600000","800000","1000000","1200000"],
-  "Personal Program":["50000","100000","200000","300000","400000"]
+  "ProfessionalEvent":["5000","200000","400000","600000","800000","1000000"],
+  "FamilyFunction":["400000","600000","800000","1000000","1200000"],
+  "PersonalProgram":["50000","100000","200000","300000","400000"]
 }
 
 const theme = createTheme({
@@ -119,8 +119,9 @@ const theme = createTheme({
 
 const ExploreSectionComponent = ()=> {
 
+  const[valid,setvalid] = React.useState(false)
   const[searchfilter,setSearchFilter] = useState({searchTerm:"",role:"",pricing:"",
-  startingDate:dayjs('2023-08-10'),endingDate:dayjs('2023-08-20')})
+  startingDate:dayjs('2023-08-20'),endingDate:dayjs('2023-09-20')})
   const [state] = useContext(AuthContext);
   let extrabutton;
   
@@ -142,19 +143,18 @@ const ExploreSectionComponent = ()=> {
 
   const filterEventValue = ()=>{
     for(let item in EventDetails){
-        if(item == searchfilter.role){
+        if(item == searchfilter?.role){
             return EventDetails[item]
         }
     }
   }
+  console.log(filterEventValue())
 
-  const handleFilterChange = (e)=> {
-    setSearchFilter((prevValue) => ({...prevValue,[e.target.name]:e.target.value}))
-  }
-
+  
   const handleSubmit = ()=> {
     console.log(searchfilter)
   }
+
 
   return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -170,11 +170,11 @@ const ExploreSectionComponent = ()=> {
           }}>
           <Grid xs={6} lg={2}>
           <DatePickerComponent arrayitem={searchfilter} label={"StartingDate"} value={searchfilter.startingDate} 
-          setTerm={setSearchFilter} defaultDate={tomorrow} name={"startingDate"}/>
+          setTerm={setSearchFilter} setClick={setvalid} defaultDate={tomorrow} name={"startingDate"}/>
           </Grid>
           <Grid xs={6} lg={2}>
           <DatePickerComponent arrayitem={searchfilter} label={"EndingDate"} value={searchfilter.endingDate} 
-          setTerm={setSearchFilter} defaultDate={nextMonth} name={"endingDate"}/>
+          setTerm={setSearchFilter} setClick={setvalid} defaultDate={nextMonth} name={"endingDate"}/>
           </Grid>
           <Grid xs={6} lg={2}>
           <TextFieldComponent id={"location"} type={"text"} label={"Location"} 

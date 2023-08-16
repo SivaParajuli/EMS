@@ -166,6 +166,9 @@ const reducer = (dealerdetail , action)=> {
       case "venueName":
         return {...dealerdetail,venueName:action.payload}
         break;
+      case "citizenShipNo":
+        return {...dealerdetail,citizenShipNo:action.payload}
+        break;
       default:
       return dealerdetail
     }
@@ -205,7 +208,7 @@ const RegistrationPageForDealer = () => {
     formData.append("city_name",dealerdetail.city_name)
     formData.append("mobile_no",dealerdetail.mobile_no)
     formData.append("venueName",dealerdetail.venueName)
-    
+    formData.append("citizenShipNo",dealerdetail.citizenShipNo)
     // for (let i = 0; i < selectedFile.length; i++) {
     //   formData.append(`image${i}`, selectedFile[i]);
     // }

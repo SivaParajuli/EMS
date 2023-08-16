@@ -173,12 +173,15 @@ function validateRecipe(){
   for(let value of pricingdetail){
     for(let item in value){
       if(item == "recipeMenu" && dropdownValues?.recipeList){
-      const valone = value[item].sort()
-      const valtwo = dropdownValues?.recipeList.sort()
-      return JSON.stringify(valone) == JSON.stringify(valtwo)
+        if((dropdownValues?.recipeList.length) == (value["recipeMenu"].length)){
+        console.log(dropdownValues?.recipeList.length+"+"+(value["recipeMenu"]).length)
+        const valone = value[item].sort()
+        const valtwo = dropdownValues?.recipeList.sort()
+        return JSON.stringify(valone) == JSON.stringify(valtwo)
+        }
   }}
   }
-  }
+}
 
 
 
@@ -453,7 +456,7 @@ React.useEffect(()=>{
               value={item}>{item}</MenuItem>))}
               </RoleDropdown>
           </Grid>
-          {/* <Grid item xs={2} lg={4}>
+          <Grid item xs={2} lg={4}>
               <FormControl fullWidth>
               <InputLabel id="dropdown0-label" sx={{fontSize:'13px',paddingLeft:'4px',
               backgroundColor:'#fff',width:'83px',
@@ -462,7 +465,7 @@ React.useEffect(()=>{
               <Select
                 labelId="dropdown1-label"
                 id="dropdown0"
-                name="recipe"
+                name="items"
                 multiple
                 required
                 InputLabelProps={{
@@ -473,7 +476,7 @@ React.useEffect(()=>{
                 }}
                 variant="outlined"
                 disabled={bookingDetail.preference == "" ? true : false}
-                value={dropdownValues.recipe || []}
+                value={dropdownValues.items || []}
                 onChange={handleDropdownChange}
                 renderValue={(selected) => selected.join(',')}
               >
@@ -486,7 +489,7 @@ React.useEffect(()=>{
               }
               </Select>
               </FormControl>
-              </Grid> */}
+              </Grid>
 
         <div className="book_model_footer" style={{display:'flex',flexDirection:'row',alignItems:"center"}}>
         {state.logstate !== null &&( <Button type="submit" sx={{backgroundColor:"#005F73",fontWeight:"600",
