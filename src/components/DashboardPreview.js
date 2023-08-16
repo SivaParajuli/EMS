@@ -7,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Container, createTheme } from '@mui/material';
 import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
+import { AdminData } from './TableData';
 const DashboardChart = lazy(()=> import('./DashboardChart'));
 const DashboardFeatured = lazy(()=> import('./DashboardFeatured'));
 const DashboardWidget = lazy(()=> import('./DashboardWidget'));
@@ -30,8 +31,8 @@ const ContainerWrapper = styled(Container)(({siderbarT})=>({
     width:siderbarT ? `calc(100vw - 240px)`: `calc(100vw - 64px)`,
     marginLeft: siderbarT ? '240px' : '64px',
     padding:'5px 30px 5px 20px',
-  }));
- 
+}));
+
 const theme = createTheme({
     components:{
     MuiTypography:{
@@ -55,58 +56,54 @@ const theme = createTheme({
 const DashboardPreview = () => {
     const[state,setState] = useContext(AuthContext);
     const siderbarT = state.siderbarToggle;
-    
+    const authrole = JSON.parse(sessionStorage.getItem("isoftype"))
+
     
     const handleScroll = ()=>{
         if(window.scrollY >= 64 ){
-            setState({...state,pageScroll:true})
+            setState((prevState)=>{return {...prevState,pageScroll:true}})
         }else{
-            setState({...state,pageScroll:false})
+          setState((prevState)=>{return {...prevState,pageScroll:false}})
         }
     }
 
     useEffect(()=>{
+      let value = true
+        if(value){
         window.addEventListener("scroll",handleScroll)
+        }
         return ()=> {
         window.removeEventListener("scroll",handleScroll)
+        value = false
         }
     },[])
-
+    
     return (
         <ThemeProvider theme={theme}>    
         <ContainerWrapper siderbarT={siderbarT} 
         disableGutters maxWidth={'xl'} sx={{marginTop:'30px'}}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="user" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="order" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="earning" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-          <DashboardWidget type="balance" />
-        </Grid>
+          <DashboardWidget type={authrole}/>
       </Grid>
-      <Grid container spacing={2} marginTop={4}>
+      
+      {/* 
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
           <DashboardFeatured />
-        </Grid>
+        </Grid> */}
+        {state.logstate == "ADMIN" && (
+        <Grid container spacing={2} marginTop={4}>
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
           <DashboardChart />
         </Grid>
-      </Grid>
+        </Grid>)}
+        {state.logstate !== "CLIENT" &&(
       <Box marginTop={4} sx={{webkitBoxShadow: '2px 4px 10px 1px rgba(0, 0, 0, 0.47)',
             boxShadow: '2px 4px 10px 1px rgba(201, 201, 201, 0.47)',
             padding:'10px 10px',
             borderRadius: '10px'}}>
-        <Typography variant="h6" fontSize="large" gutterBottom>
-          Latest Transactions
-        </Typography>
-        <DashboardTable />
+         <DashboardTable type={authrole}/>
       </Box>
+    )}
       </ContainerWrapper>
       </ThemeProvider>
   );

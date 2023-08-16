@@ -1,8 +1,13 @@
-import React,{Suspense, lazy, useContext} from 'react';
+import React,{Suspense, lazy, useContext, useEffect} from 'react';
 import { Outlet, Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Skeleton, Stack } from '@mui/material';
 import { AuthProvider ,AuthContext} from './context/AuthContext';
-
+const ExploreVenue = lazy(()=> import('./components/ExploreVenue.js').then(module=>{
+  return { default: module.ExploreVenue}
+}));
+const ExploreVenueTabPanel = lazy(()=> import("./components/ExploreVenueTabPanel.js").then(module=>{
+  return { default: module.ExploreVenueTabPanel}
+}));
 const LoginPage = lazy(()=>import('./components/LoginPage'));
 const RegistrationPageForUser = lazy(()=> import('./components/RegistrationPageForUser'));
 const RegistrationPageForDealer= lazy(()=> import('./components/RegistrationPageForDealer'));
@@ -16,6 +21,9 @@ const Navbar = lazy(()=> import('./components/Navbar'));
 
 
 const App = () => {
+
+  const [state] = useContext(AuthContext);
+ 
 
   const LayoutLanding =()=>{
     return(
@@ -52,14 +60,16 @@ const App = () => {
     </Stack>
     )
   }
-  const ProtectedRoute = ({children}) => {
-    const [state] = useContext(AuthContext);
 
-    if(!state.loggedIn){
-      return <Navigate to="/loginpage"/>
+  
+    const ProtectedRoute = ({children}) => {
+      const [state] = useContext(AuthContext);
+
+      if(state.logstate == null){
+        return <Navigate to="/loginpage"/>
+      }
+      return children
     }
-    return children
-  }
 
   const router = createBrowserRouter([
     {
@@ -71,8 +81,11 @@ const App = () => {
         path:"/",
         element:<LandingPage/>
       },{
-        path:"/explorepage",
+        path: "/explorepage",
         element:<ExploreSectionComponent/>
+      },{
+        path: state.logstate == null ? "/explorepage/list/:email" : "/dashboard/list/detail/:email",
+        element: <ExploreVenueTabPanel/>
       },
       {
         path:"/loginpage",
@@ -88,16 +101,24 @@ const App = () => {
     ]
     },{
       path:"/dashboard",
-      element:(<ProtectedRoute><LayoutDashboard/></ProtectedRoute>),
+      element:<ProtectedRoute><LayoutDashboard/></ProtectedRoute>,
       children:[{
         path:"/dashboard/addvenuedetails",
         element:(<AddVenueDetailStepper/>),
-      },{path:"/dashboard/preview",
-        element:<DashboardPreview/>}
+      },{
+        path:"/dashboard/preview",
+        element:<DashboardPreview/>},
+        {
+          path:"/dashboard/list",
+        element:<ExploreVenue/>,
+      },{
+        path: state.logstate == null ? "/dashboard/list/detail/:email" : "/explorepage/list/:email",
+        element:<ExploreVenueTabPanel/>
+      }
     ]
     }
   ])
-
+  
   return (
     <div className='App'>
     <Suspense fallback={<Loader/>}>

@@ -13,9 +13,10 @@ import ListItemText from '@mui/material/ListItemText';
 import {AuthContext} from '../context/AuthContext.js'
 import { Typography, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import UpdateIcon from '@mui/icons-material/Update';
+import { Explore } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -86,38 +87,31 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       '& .MuiDrawer-paper': closedMixin(theme),
     }),
   }),
-);
-
-const sidebarItemDetail = [
-  {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-  {text:"Update Details",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
-  ]
-   
+);   
 
 export default function DashboardSidebar() {
   
   let data;
   const [open, setOpen] = React.useState(false);
   const [state,setState] = React.useContext(AuthContext);
-  console.log(state.isofType);
+  const authrole = JSON.parse(sessionStorage.getItem("isoftype"))
 
-  switch(state.isofType){
+  switch(authrole){
     case "ADMIN":
     data = [
-        {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"Update Details",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Home",route:`/dashboard/preview`,icon:<DashboardIcon/>},
       ]
       break;
       case "CLIENT":
       data = [
-        {text:"ABC",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"DEF",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Main",route:`/dashboard/preview`,icon:<DashboardIcon/>},
+        {text:"Explore",route:"/dashboard/list",icon:<Explore/>}
       ]
       break;
-      case "DEALER":
+      case "VENUE":
       data = [
-        {text:"Home",route:"/dashboard/preview",icon:<DashboardIcon/>},
-        {text:"Something",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
+        {text:"Home",route:`/dashboard/preview`,icon:<DashboardIcon/>},
+        {text:"Requests",route:"/dashboard/addVenueDetails",icon:<UpdateIcon/>}
       ]
       break;
       default:
@@ -175,53 +169,12 @@ export default function DashboardSidebar() {
           ))}
         </List>
         <Divider/>
-        <List>
-        {data.map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
-              <Link to={`${item.route}`} style={{textDecoration:'none',color:'GrayText'}}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: state.siderbarToggle ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    
-                    minWidth: 0,
-                    mr: state.siderbarToggle ? 2.5 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                
-                <ListItemText 
-                disableTypography
-                primary={<Typography variant='body2' style={{fontSize:'14px',
-                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-                fontWeight:'500',
-                color:'#264653'
-                ,opacity: state.siderbarToggle ? 1 : 0}}>{item.text}</Typography>}/>
-              </ListItemButton>
-              </Link>
-            </ListItem>
-          ))}
-        </List>
       </Drawer>
     </Box>
     </ThemeProvider>
   );
 }
-
-
-
-
-
-
-
-
+  
 
 
 

@@ -3,7 +3,7 @@ import heroimagetwo from '../images/eventseriestwo.jpg'
 import heroimagethree from '../images/eventseriesthree.jpg'
 import React from 'react';
 import { styled } from '@mui/system';
-import { Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import Carousel from 'react-material-ui-carousel';
 
 
@@ -23,11 +23,7 @@ const CarouselImage = styled('img')`
 `;
 
 const CarouselText = styled('div')`
-  position: absolute;
-  top: 50%;
-  left: 68%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+  
 `;
 
 const HeroText = styled(Typography)`
@@ -41,16 +37,20 @@ const HeroSubtext = styled(Typography)`
   color: #ffffff;
   font-size: 14px;
   font-weight:600;
-  
 `;
 
 const LeftWrapper = styled('div')({
-      flex:'0.55'
+      flex:'0.6'
 });
 
 const RightWrapper = styled('div')({
-      flex:'0.45'
+      display:'flex',
+      flexDirection:'row',
+      alignItems:'center',
+      flex:'0.4',
+      padding:'20px'
 });
+
 
 const HeroSectionComponent = () => {
   const carouselItems = [
@@ -73,7 +73,7 @@ const HeroSectionComponent = () => {
   ];
 
   return (
-    <HeroSection sx={{marginTop:'64px'}}>
+    <HeroSection>
       <Carousel animation="slide">
         {carouselItems.map((item, index) => (
           <CarouselItem key={index} item={item} />
@@ -85,11 +85,11 @@ const HeroSectionComponent = () => {
 
 const CarouselItem = ({ item }) => {
   return (
-    <div style={{display:'flex',flexDirection:'row'}}>
-      <LeftWrapper>
-      <CarouselImage src={item.image} alt="" loading='lazy'/>
-      </LeftWrapper>
-      <RightWrapper>
+    <Grid container sx={{display:'flex',flexDirection:'row'}}>
+      <Grid xs={12} lg={7}>
+      <CarouselImage src={item.image} alt="" loading='lazy' />
+      </Grid>
+      <Grid xs={12} lg={5} sx={{display:'flex',flexDirection:'row',alignItems:'center',padding:'20px'}}>
       <CarouselText sx={{backgroundColor:'#f1f1f1',padding:'20px',borderRadius:'15px',backdropFilter:'blur(10px)'}}>
         <HeroText variant="h6" sx={{fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
         color:'#023047'}}>
@@ -97,8 +97,8 @@ const CarouselItem = ({ item }) => {
         <HeroSubtext variant="body2" align='center' sx={{fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
         color:'#023047'}} >{item.subtext}</HeroSubtext>
       </CarouselText>
-      </RightWrapper>
-    </div>
+      </Grid>
+    </Grid>
   );
 };
 

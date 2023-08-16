@@ -6,27 +6,47 @@ import { Form } from 'react-router-dom';
 
 const arrayofeventdetail = {
 
-  "PersonalProgram":
+  "Program":
   ["Event Hall with Dining",
   "Multiple Rooms with Spa Pool(B:L:D)",
   "Bbq and Dance Live Event",
   "Parking Space and Security",
   "Green Environment",
-  "Sport Hall and Games"],
-  "FamilyFunction":[
+  "Sport Hall and Games",
   "Event Hall and Mandap",
   "Launch Snacks Beverages",
   "Dancing Space and Sound System",
-  "Green Environment",
-  "Parking Space and Security"
-  ],"ProfessionalEvent":[
   "Necessary Digital Systems",
-  "Launch Snacks Beverages",
-  "Parking Space and Security",
   "Vibrant and Audible Hall"
   ]
 
 } 
+
+export const arrayofrecipedetail = {
+  "RecipeList":[
+      "Biryani Steamed",
+      "Candle Night Special",
+      "Thakali Set","Soup Items","Sweet Items",
+      "Mashed Potato Chilly",
+      "Cake",
+      "Beans Pickle Chilly",
+      "Potato Ball","Samosa Chat",
+      "Paneer Chilly","Fried Veg Curry",
+      "Barbq and SoftDrinks With Liquors",
+      "Momo and Pizza",
+      "Fish Curry Chilly",
+      "Drumstick and Prawn",
+      "Dinner Set",
+      "Fruit Salad"
+  ]
+}
+
+const RoleDropdown = styled(TextField)`
+  && {
+    width: 100%;
+  }
+`;
+
 
 const theme = createTheme({
     components:{
@@ -73,9 +93,13 @@ const theme = createTheme({
     marginTop:'15px'
   }) 
 
+
+  const GuestRange = ["100-200","200-300","300-400","400-500","500-600","600-700","700-800","800-900","900-1000"]
+
 function EventServiceEventDetail() {
     const [textValues, setTextValues] = useState({});
     const [dropdownValues, setDropdownValues] = useState({});
+    const [capacity,setRequiredCapacity] = useState("")
 
     const handleTextChange = (event) => {
         setTextValues((prevValues) => ({
@@ -92,117 +116,146 @@ function EventServiceEventDetail() {
         }));
         
       };
+      
+      const handleSubmit = async(e)=> {
+        e.preventDefault()
+        console.log({capacity,...textValues,...dropdownValues})
+        try{
+        const url = `http://localhost:8888/venue-/update/${JSON.parse(sessionStorage.getItem("email"))}`;
+        const request = await fetch(url,{
+        method: "PUT", 
+        headers: {
+        Authorization : 'Bearer' +" "+ JSON.parse(sessionStorage.getItem("token")),
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({capacity,...textValues,...dropdownValues})
+        });
+      const response = await request.json();
+      console.log(response)
+        }catch(error){
+          console.log(error)
+        }
+      console.log(dropdownValues)
+      }
 
+      
       
   return (
     <UpperSectionWrapper>
-      <Form onSubmit={()=>console.log("hello")}>
+      <Form onSubmit={handleSubmit}>
       <Typography variant='body2' sx={{  fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
       fontWeight:'600'}}>
       <li sx={{padding:'0px'}}>Add Event Detail</li></Typography>
+      <ThemeProvider theme={theme}>
      <Grid container spacing={1} sx={{display:'flex',flexDirection:'row',alignItems:'center',gap:'15px'}}>
-     <Grid item xs={2}>
-    <ThemeProvider theme={theme}>
-    <TextField
-      label="Capacity(In Person)"
-      name="textField1"
-      value={textValues.textField1 || ''}
-      onChange={handleTextChange}
-      fullWidth
-      required
-      margin="normal"
-    />
-    </ThemeProvider>
-    </Grid>
+
+     <Grid item xs={12} lg={2}>
+          <RoleDropdown
+              select
+              label="GuestRange"
+              name="capacity"
+              value={capacity}
+              onChange={(e)=>{
+              setRequiredCapacity((prevValue)=> prevValue = e.target.value)
+              }}
+              variant="outlined"
+              required
+              > 
+              { GuestRange.map((value)=>(
+                        <MenuItem value={value}
+              sx={{
+                fontSize:'13px',
+                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+
+              }}>{value}</MenuItem>
+                    ))
+              }
+              </RoleDropdown>
+        </Grid>
     <Grid item xs={2}>
-    <ThemeProvider theme={theme}>
     <TextField
+    type="text"
       label="Available Rooms"
-      name="textField2"
-      value={textValues.textField2 || ''}
+      name="availableRooms"
+      value={textValues.availableRooms || ""}
       onChange={handleTextChange}
       fullWidth
       required
       margin="normal"
     />
-    </ThemeProvider>
     </Grid>
     <Grid item xs={2}>
-    <ThemeProvider theme={theme}>
     <FormControl fullWidth margin="normal">
       <InputLabel id="dropdown0-label" sx={{fontSize:'13px',paddingLeft:'4px',backgroundColor:'#fff',width:'83px',
           fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
 
         paddingTop:'3px'}}>Event Types</InputLabel>
       <Select
-        labelId="dropdown1-label"
+        labelId="dropdown0-label"
         id="dropdown0"
-        name="0"
+        name="functionTypes"
         multiple
         required
-        value={dropdownValues[0] || []}
+        value={dropdownValues.functionTypes || []}
         onChange={handleDropdownChange}
-        renderValue={(selected) => selected.join(', ')}
-      >
-        <MenuItem value="PersonalProgram">
-          <Checkbox checked={dropdownValues[0]?.includes('PersonalProgram')} />
-          <ListItemText primary="Personal Program" />
+        renderValue={(selected) => selected.join(', ')}>
+        {["PersonalProgram","FamilyFunction","ProfessionalEvent"].map((item,index)=>(
+        <MenuItem value={item} key={index}>
+          <Checkbox checked={dropdownValues[0]?.includes({item})} />
+          <ListItemText primary={item} />
         </MenuItem>
-        <MenuItem value="FamilyFunction">
-          <Checkbox checked={dropdownValues[0]?.includes('FamilyFunction')} />
-          <ListItemText primary="Family Function" />
-        </MenuItem>
-        <MenuItem value="ProfessionalEvent">
-          <Checkbox checked={dropdownValues[0]?.includes('ProfessionalEvent')} />
-          <ListItemText primary="Professional Event" />
-        </MenuItem>
+        ))}
       </Select>
     </FormControl>
-    </ThemeProvider>
     </Grid>
-    <ThemeProvider theme={theme}>
-  {dropdownValues[0]?.map((item,index)=>
-  ( 
     <Grid item xs={2}>
     <FormControl fullWidth margin="normal">
-      <InputLabel id={`dropdown${index+1}-label`}
+      <InputLabel id={`dropdown1-label`}
       sx={{fontSize:'13px',backgroundColor:'#fff',width:'140px',paddingLeft:'4px',
       fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
 
-        paddingTop:'3px'}}>For {item}</InputLabel>
+        paddingTop:'3px'}}>For Programs</InputLabel>
         <Select
-        id={`dropdown${index+1}`}
-        name={`${index+1}`}
+        id={`dropdown1`}
+        name={`availableServices`}
         multiple
         required
-        value={dropdownValues[index+1] || []}
+        value={dropdownValues.availableServices || []}
         onChange={handleDropdownChange}
-        renderValue={(selected) => selected.join(', ')}
+        renderValue={(selected) => selected.join(',')}
         >
-        {item == "PersonalProgram" ? ( 
-          arrayofeventdetail.PersonalProgram.map((item)=>( 
+        {arrayofeventdetail.Program.map((item)=>( 
         <MenuItem value={`${item}`}>
-          <Checkbox checked={dropdownValues[index+1]?.includes(`${item}`)} />
-          <ListItemText primary={`${item}`} />
-        </MenuItem> )))
-         : item == "FamilyFunction" ? (
-          arrayofeventdetail.FamilyFunction.map((item)=>( 
-            <MenuItem value={`${item}`}>
-          <Checkbox checked={dropdownValues[index+2]?.includes(`${item}`)} />
-          <ListItemText primary={`${item}`} />
-        </MenuItem> ))): 
-        item == "ProfessionalEvent" && (
-          arrayofeventdetail.ProfessionalEvent.map((item)=>( 
-            <MenuItem value={`${item}`}>
-          <Checkbox checked={dropdownValues[index+3]?.includes(`${item}`)} />
+          <Checkbox checked={dropdownValues[1]?.includes(`${item}`)} />
           <ListItemText primary={`${item}`} />
         </MenuItem> ))
-        )
          }
       </Select>
     </FormControl>
-    </Grid>))}
-    </ThemeProvider>
+    </Grid>
+    <Grid item xs={2}>
+      <FormControl fullWidth margin="normal">
+        <InputLabel id={`dropdown-label`}
+        sx={{fontSize:'13px',backgroundColor:'#fff',width:'140px',paddingLeft:'4px',
+        fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+        paddingTop:'3px'}}>RecipeList</InputLabel>
+          <Select
+          id={`dropdown`}
+          name={`recipe`}
+          multiple
+          required
+          value={dropdownValues.recipe || []}
+          onChange={handleDropdownChange}
+          renderValue={(selected) => selected.join(',')}
+          >
+          {arrayofrecipedetail.RecipeList.map((item)=>( 
+          <MenuItem value={`${item}`}>
+            <Checkbox checked={dropdownValues[2]?.includes(`${item}`)} />
+            <ListItemText primary={`${item}`} />
+          </MenuItem> ))}
+        </Select>
+      </FormControl>
+      </Grid>
     <Button type="submit"
                   sx={{":hover":{backgroundColor: 'rgba(0, 0, 0, 0.05)',color:'#001'},
                   fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
@@ -213,6 +266,7 @@ function EventServiceEventDetail() {
                     Submit
                   </Button>
     </Grid>
+    </ThemeProvider>
     </Form>
     </UpperSectionWrapper>
   )

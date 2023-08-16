@@ -1,17 +1,9 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
-const data = [
-  { name: "January", Total: 1200 },
-  { name: "February", Total: 2100 },
-  { name: "March", Total: 800 },
-  { name: "April", Total: 1600 },
-  { name: "May", Total: 900 },
-  { name: "June", Total: 1700 },
-];
+import { AuthContext } from "../context/AuthContext";
 
 const theme = createTheme({
   palette: {
@@ -35,6 +27,43 @@ const theme = createTheme({
 });
 
 const DashboardChart = () => {
+
+  const[verifiedvenue,setVerifiedVenue] = useState([])
+  
+  const [state] = useContext(AuthContext);
+  const data = verifiedvenue?.map((item)=>{return {name:`${item.userName}`,Total:item.ratings}})
+
+  console.log(data)
+
+  useEffect(()=>{
+    let value = true
+    let request;
+    async function getVerifiedVenue(){
+      if(value){
+        if(state.logstate == "CLIENT"){
+        request = await fetch(`http://localhost:8888/client-/clientHome`,{
+        method:"GET",
+        headers:{
+          Authorization : "Bearer" +" "+ JSON.parse(sessionStorage.getItem("token"))
+        }
+        })
+        }else{
+        request = await fetch(`http://localhost:8888/home-`,{
+        method:"GET"
+        })
+        }
+        let response = await request.json()
+      console.log(response)
+      const data = response.data
+      setVerifiedVenue((prevValue)=> prevValue = data)
+      }
+    }
+    getVerifiedVenue()
+    return ()=> {
+      value = false
+    }
+  },[])
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{webkitBoxShadow: '2px 4px 10px 1px rgba(0, 0, 0, 0.47)',
@@ -42,7 +71,7 @@ const DashboardChart = () => {
             padding:'10px 10px',
             borderRadius: '10px'}}>
         <Typography variant="h6" align="center" fontSize="large" gutterBottom>
-          Last 6 Months (Revenue)
+          Latest Rate Chart
         </Typography>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart

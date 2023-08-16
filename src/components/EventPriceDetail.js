@@ -3,6 +3,7 @@ import { Button, Checkbox, Container, FormControl, Grid, InputLabel, ListItemTex
 import React,{useState} from 'react'
 import {eventNames} from './EventArray'
 import { Form } from 'react-router-dom';
+import { Category } from '@mui/icons-material';
 
 const RoleDropdown = styled(TextField)`
   && {
@@ -48,20 +49,41 @@ const theme = createTheme({
   }
 });
 
-function EventPriceDetail() {
-    const [role, setRole] = useState("");
-    const [priceValue,setPriceValue] = useState("");
-    const[pref,setPref] = useState("");
-    const[dropdownValues,setDropdownValues] = useState({});
-    const[personNum,setPersonNum] = useState("");
 
-    const handleEventPriceSubmit = (e)=> {
+const EventService = ["Starter","Launch","Dinner","Dessert"]
+const GuestRange = ["100-200","200-300","300-400","400-500","500-600","600-700","700-800","800-900","900-1000"]
+const PriceRange = ["50000-75000","75000-100000","100000-125000","125000-150000","150000-175000","175000-200000"]
+
+function EventPriceDetail() {
+    const [functionName, setFunctionName] = useState("");
+    const [price,setPriceValue] = useState("");
+    const[preference,setPref] = useState("");
+    const[dropdownValues,setDropdownValues] = useState({});
+    const[guest,setPersonNum] = useState("");
+
+    const handleEventPriceSubmit = async(e)=> {
       e.preventDefault();
-      console.log({role,pref,dropdownValues,priceValue})
+      try{
+        const request = await fetch(`http://localhost:8888/venue-/updatePricing/${JSON.parse(sessionStorage.getItem("email"))}`,
+        {
+          method: "POST", 
+          headers: {
+          Authorization : 'Bearer' +" "+ JSON.parse(sessionStorage.getItem("token")),
+          "Content-Type": "application/json"
+          },
+          body: JSON.stringify({functionName,price,preference,guest,...dropdownValues})
+          }
+        )
+        const response = await request.json()
+        console.log(response)
+      }catch(error){
+        console.log(error)
+      }
+      console.log({functionName,price,preference,guest,...dropdownValues})
     }
 
     const handleRoleChange = (event) => {
-        setRole(event.target.value);
+        setFunctionName(event.target.value);
     };
 
     const handleDropdownChange = (event)=> {
@@ -75,7 +97,7 @@ function EventPriceDetail() {
 
     const eventValues = ()=> {
       for(let item in eventNames){
-        if(role == item){
+        if(functionName == item){
           return Object.keys(eventNames[item])
         }
       }
@@ -83,9 +105,9 @@ function EventPriceDetail() {
     
     const eventValuesNext = ()=> {
       for(let item in eventNames){
-        if(role == item){
+        if(functionName == item){
           for(let i in eventNames[item]){
-            if(pref == i){
+            if(preference == i){
               return eventNames[item][i]
             }
           }
@@ -97,7 +119,7 @@ function EventPriceDetail() {
 
     return (
       <ThemeProvider theme={theme}>
-        <Form onSubmit={()=>console.log("hello")}>
+        <Form onSubmit={handleEventPriceSubmit}>
         <Grid container spacing={1} sx={{display:'flex',flexDirection:'row',alignItems:'center',gap:'10px',marginLeft:'1px',marginBottom:'15px'}}>
         <Grid xs={2}>
               <RoleDropdown
@@ -115,7 +137,7 @@ function EventPriceDetail() {
 
               },
               }}
-              value={role}
+              value={functionName}
               onChange={handleRoleChange}
               variant="outlined"
               required
@@ -133,28 +155,16 @@ function EventPriceDetail() {
           <Grid xs={2}>
           <RoleDropdown
               select
-              disabled={role == "" ? true : false}
+              disabled={functionName == "" ? true : false}
               label="Preference"
               name="preference"
-              sx={{cursor: role == "" ? 'not-allowed' : 'pointer'}}
-              InputProps={{
-                style: { fontSize: '14px',
-                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-
-              }
-              }}
-              InputLabelProps={{
-                style: { fontSize: '13px' ,
-                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-
-              }
-              }}
-              value={pref}
+              sx={{cursor: functionName == "" ? 'not-allowed' : 'pointer'}}
+              value={preference}
               onChange={(e)=>setPref(e.target.value)}
               variant="outlined"
               required
               > 
-              { role !="" && eventValues().map((value)=>(
+              { functionName !="" && eventValues().map((value)=>(
                         <MenuItem value={value}
               sx={{
                 fontSize:'13px',
@@ -170,26 +180,20 @@ function EventPriceDetail() {
               <InputLabel id="dropdown0-label" sx={{fontSize:'13px',paddingLeft:'4px',
               backgroundColor:'#fff',width:'83px',
               fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-              paddingTop:'3px'}}>Event Types</InputLabel>
+              paddingTop:'3px'}}>Category</InputLabel>
               <Select
                 labelId="dropdown1-label"
                 id="dropdown0"
-                name="recipeitem"
+                name="recipe"
                 multiple
                 required
-                InputLabelProps={{
-                  style: { fontSize: '13px' ,
-                  fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
-
-                },
-                }}
                 variant="outlined"
-                disabled={pref == "" ? true : false}
-                value={dropdownValues.recipeitem || []}
+                disabled={preference == "" ? true : false}
+                value={dropdownValues.recipe || []}
                 onChange={handleDropdownChange}
                 renderValue={(selected) => selected.join(',')}
               >
-              { pref !=""  && eventValuesNext().map((value)=>(
+              { preference !=""  && EventService.map((value)=>(
              <MenuItem value={`${value}`}>
              <Checkbox checked={dropdownValues[0]?.includes(`${value}`)} />
              <ListItemText primary={`${value}`} />
@@ -200,26 +204,50 @@ function EventPriceDetail() {
               </FormControl>
               </Grid>
               <Grid xs={2}>
-              <TextField
-              type="number"
-              label="PriceValue"
-              name="textField1"
-              value={priceValue}
-              onChange={(e)=>setPriceValue(e.target.value)}
-              fullWidth
+          <RoleDropdown
+              select
+              disabled={dropdownValues?.recipe ? false : true}
+              label="GuestRange"
+              name="guest"
+              sx={{cursor: dropdownValues?.recipe == "" ? 'not-allowed' : 'pointer'}}
+              value={guest}
+              onChange={(e)=>setPersonNum(e.target.value)}
+              variant="outlined"
               required
-              />
+              > 
+              { dropdownValues?.recipe && GuestRange.map((value)=>(
+                        <MenuItem value={value}
+              sx={{
+                fontSize:'13px',
+                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+
+              }}>{value}</MenuItem>
+                    ))
+              }
+              </RoleDropdown>
               </Grid>
               <Grid xs={2}>
-              <TextField
-              type="number"
-              label="Guests"
-              name="textField2"
-              value={personNum}
-              onChange={(e)=>setPersonNum(e.target.value)}
-              fullWidth
+              <RoleDropdown
+              select
+              disabled={guest == "" ? true : false}
+              label="PriceRange"
+              name="price"
+              sx={{cursor: guest == "" ? 'not-allowed' : 'pointer'}}
+              value={price}
+              onChange={(e)=>setPriceValue(e.target.value)}
+              variant="outlined"
               required
-              />
+              > 
+              { guest !="" && PriceRange.map((value)=>(
+                        <MenuItem value={value}
+              sx={{
+                fontSize:'13px',
+                fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif',
+
+              }}>{value}</MenuItem>
+                    ))
+              }
+              </RoleDropdown>
               </Grid>
               <Button type="submit"
                   sx={{":hover":{backgroundColor: 'rgba(0, 0, 0, 0.05)',color:'#001'},
