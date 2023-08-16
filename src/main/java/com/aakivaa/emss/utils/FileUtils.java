@@ -2,26 +2,21 @@ package com.aakivaa.emss.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
 @Component
-public class FileStorageUtils {
+public class FileUtils {
 
     @Value("${venue.file.storage.directory}")
     private String venueFileStoragePath;
     private final String userHome = System.getProperty("user.home");
 
-    public FileStorageUtils(){
+    public FileUtils(){
     }
 
     public String storeFile(MultipartFile multipartFile) throws IOException {
@@ -67,13 +62,13 @@ public class FileStorageUtils {
         }
     }
 
-    public List<String> makePathToImage(List<String> paths){
+    public List<String> makePathToImage(List<String> paths) {
         List<String> images = new ArrayList<>();
-        FileStorageUtils fileStorageUtils = new FileStorageUtils();
-        for(String path :paths) {
-            String image = fileStorageUtils.getBase64FileFromFilePath(path);
+        for (String path : paths) {
+            String image = getBase64FileFromFilePath(path);
             images.add(image);
         }
+        System.out.println("images is here");
         return images;
     }
 

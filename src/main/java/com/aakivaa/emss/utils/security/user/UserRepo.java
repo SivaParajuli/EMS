@@ -14,10 +14,4 @@ import java.util.Optional;
 public interface UserRepo extends JpaRepository<User,Long> {
     Optional<User> findUserByEmail(String username);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE User u SET u.uname = :n,u.password = :p where u.email = :e")
-    Integer update(@Param("n") String username,
-                   @Param("p") String password,
-                   @Param("e")String email);
 }

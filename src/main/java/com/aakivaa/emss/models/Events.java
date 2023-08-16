@@ -1,11 +1,12 @@
 package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.enums.EventType;
+import com.aakivaa.emss.models.users.UserC;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,9 +19,15 @@ import java.io.Serializable;
 public class Events implements Serializable {
 
    @Id
+   @SequenceGenerator(name = "event_id_sequence", sequenceName = "event_id_sequence")
+   @GeneratedValue(generator = "event_id_sequence", strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserC user;
 
     private String sponsored;
 
@@ -30,5 +37,9 @@ public class Events implements Serializable {
 
     private String mainGuest;
 
+    @ElementCollection
+   @CollectionTable(name = "Events_attraction", joinColumns = @JoinColumn(name = "eeventId"))
+   @Column(name = "attractions")
+   private List<String> centerOfAttractions;
 
 }

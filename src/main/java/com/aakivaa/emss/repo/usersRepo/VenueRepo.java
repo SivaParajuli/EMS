@@ -29,12 +29,6 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     List<Venue>findAllVerifiedVenue(@Param("a")VenueStatus venueStatus);
 
 
-    @Query(value="SELECT r.bookingDate from Venue v join v.bookingList r where v.id= :i and r.bookingStatus <> :d")
-    List<?> getBookedVenueDateById(@Param("i")Long id,@Param("d") BookingStatus bookingStatus);
-
-    @Query(value = "SELECT r from Venue v join v.bookingList r where v.id= :i and r.bookingStatus= :p")
-    List<Booking> getAllPendingBookingRequest(@Param("i") Long id, @Param("p")BookingStatus bookingStatus);
-
     @Transactional
     @Modifying
     @Query(value = "UPDATE Venue v SET v.venueStatus= :s where v.id = :i")
@@ -45,8 +39,7 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     @Query(value = "SELECT COUNT(v) from Venue v where v.venueStatus= :p")
     Integer newRegistration(@Param("p")VenueStatus venueStatus);
 
-    @Query(value = "SELECT COUNT(r.bookingStatus) from Venue v join v.bookingList r where v.email= :e and r.bookingStatus = :p")
-    Integer getNumberOfBooking(@Param("e") String email,@Param("p")BookingStatus bookingStatus);
+
 
 
 

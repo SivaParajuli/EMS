@@ -9,13 +9,14 @@ import com.aakivaa.emss.services.RatingAndReviewService;
 import com.aakivaa.emss.services.usersServices.UserCService;
 import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.EmailSenderService;
-import com.aakivaa.emss.utils.FileStorageUtils;
+import com.aakivaa.emss.utils.FileUtils;
 import com.aakivaa.emss.utils.RecommenderUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,10 +35,10 @@ public class UserCController extends BaseController{
         private final RatingAndReviewService ratingAndReviewService;
         private final RecommenderUtils recommenderUtils;
         private  final VenueRepo venueRepo;
-        private final FileStorageUtils fileStorageUtils;
+        private final FileUtils fileUtils;
 
 
-    public UserCController(BookingServices bookingServices, VenueService venueService, UserCService userCService, EmailSenderService emailSenderService, RatingAndReviewService ratingAndReviewService, RecommenderUtils recommenderUtils, VenueRepo venueRepo, FileStorageUtils fileStorageUtils) {
+    public UserCController(BookingServices bookingServices, VenueService venueService, UserCService userCService, EmailSenderService emailSenderService, RatingAndReviewService ratingAndReviewService, RecommenderUtils recommenderUtils, VenueRepo venueRepo, FileUtils fileUtils) {
         this.bookingServices = bookingServices;
         this.venueService = venueService;
         this.userCService = userCService;
@@ -45,7 +46,7 @@ public class UserCController extends BaseController{
         this.ratingAndReviewService = ratingAndReviewService;
         this.recommenderUtils = recommenderUtils;
         this.venueRepo = venueRepo;
-        this.fileStorageUtils = fileStorageUtils;
+        this.fileUtils = fileUtils;
     }
 
     @GetMapping("clientHome")
@@ -87,7 +88,7 @@ public class UserCController extends BaseController{
 
         @GetMapping(path="bookedDate/{email}")
         public ResponseEntity<ResponseDto> getAllBookedDate(@PathVariable("email")String email){
-            List<?> dateList =venueService.getAllBookedDate(venueService.findByEmail(email).getId());
+            List<LocalDate> dateList =bookingServices.getAllBookedDate(venueService.findByEmail(email).getId());
             return new ResponseEntity<>
                     (successResponse("Date List fetched.", dateList),HttpStatus.OK);
         }
@@ -119,22 +120,22 @@ public class UserCController extends BaseController{
             }
         }
 
-    @PostMapping(path="rateVenue/{vemail}/{uemail}")
-    public ResponseEntity<ResponseDto> addRating(@PathVariable String vemail,String uemail,
-                                          @RequestBody Rating rating) {
-        Venue venue = venueService.findByEmail(vemail);
-        UserC user = userCService.findByEmail(uemail);
-
-        Integer integer = ratingAndReviewService.addRating(venue, user,rating.getRating());
-        if(integer != null ){
+    @PostMapping(path="rateVenue/{uemail}/{vemail}")
+    public ResponseEntity<ResponseDto> addRating(@PathVariable ("uemail")String uemail,@PathVariable ("vemail")String vemail,
+                                          @RequestBody RatingsAndReviews rating) {
+        RatingsAndReviews rating1 = ratingAndReviewService.addRating(userCService.findByEmail(uemail),
+                venueService.findByEmail(vemail)
+                ,rating);
+        if(rating1 != null ){
             return new ResponseEntity<>
-                    (successResponse("Rating successful.", rating.getRating()), HttpStatus.OK);
+                    (successResponse("Rating successful.", rating1), HttpStatus.OK);
         }
         else{
             return new ResponseEntity<>
                     (errorResponse("Rating denied", null), HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @GetMapping("getrating/{vemail}")
     public ResponseEntity<ResponseDto> getAverageRating(@PathVariable("vemail") String vemail) {
@@ -150,24 +151,7 @@ public class UserCController extends BaseController{
         }
     }
 
-    @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
-    @PutMapping(path="review/{vemail}/{uemail}")
-    public ResponseEntity<ResponseDto> reviewVenue(@PathVariable("vemail") String vEmail,
-                                                 @PathVariable("uemail") String uEmail,@RequestBody RatingsAndReviews reviews) throws IOException {
-        RatingsAndReviews review = ratingAndReviewService
-                .reviewOfVenue(
-                        venueService.findByEmail(vEmail).getId(),
-                        userCService.findByEmail(uEmail).getId(),
-                        reviews
-                );
-        if(review !=null){
-            return new ResponseEntity<>
-                    (successResponse("Review successful", review), HttpStatus.OK);
-        }
-        else
-            return new ResponseEntity<>
-                    (errorResponse("Review Denied",null),HttpStatus.BAD_REQUEST);
-    }
+
 
     @GetMapping(path="recommend/{email}")
     public ResponseEntity<ResponseDto> Recommender(@PathVariable("email") String email) {
@@ -200,7 +184,7 @@ public class UserCController extends BaseController{
                 .capacity(venue.getCapacity())
                 .city_name(venue.getCity_name())
                 .description(venue.getDescription())
-                .filePath(fileStorageUtils.getBase64FileFromFilePath(venue.getFile()))
+                .filePath(fileUtils.getBase64FileFromFilePath(venue.getFile()))
                 .email(venue.getEmail())
                 .mobile_no(venue.getMobile_no())
                 .userName(venue.getUserName())
@@ -232,6 +216,20 @@ public class UserCController extends BaseController{
         else{
             return new ResponseEntity<>
                     (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("getDates/{uemail}/{vemail}")
+    public ResponseEntity<ResponseDto>getReviews(@PathVariable("uemail") String uemail,@PathVariable("vemail") String vemail){
+        List<LocalDate> dateList = bookingServices.getDateByIds(userCService.findByEmail(uemail).getId(),
+                venueService.findByEmail(vemail).getId());
+        if(dateList !=null) {
+            return new ResponseEntity<>
+                    (successResponse("Dates..", dateList), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Some error occurred...", null), HttpStatus.BAD_REQUEST);
         }
     }
 

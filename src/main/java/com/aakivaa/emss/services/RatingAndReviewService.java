@@ -4,15 +4,16 @@ import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
 
-import javax.transaction.Transactional;
+import java.util.List;
 
 public interface RatingAndReviewService {
 
-    @Transactional
-    Integer addRating(Venue venue, UserC user, Double rating);
+    RatingsAndReviews addRating(UserC user,Venue venue, RatingsAndReviews rating);
 
     Double getAverageRating(Venue venue);
 
-    RatingsAndReviews reviewOfVenue(Long vid, Long id, RatingsAndReviews reviews);
+    List<RatingsAndReviews> getRatingAndReviewsById(Long id);
+
+    RatingsAndReviews review(Long vid, Long id, RatingsAndReviews reviews);
 
 }

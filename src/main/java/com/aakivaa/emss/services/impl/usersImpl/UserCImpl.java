@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserCServiceImpl implements UserCService {
+public class UserCImpl implements UserCService {
     private final UserCRepo userCRepo;
 
-    public UserCServiceImpl(UserCRepo userCRepo) {
+    public UserCImpl(UserCRepo userCRepo) {
         this.userCRepo = userCRepo;
     }
 

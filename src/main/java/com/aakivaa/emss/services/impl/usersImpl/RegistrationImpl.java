@@ -14,30 +14,31 @@ import com.aakivaa.emss.utils.security.user.User;
 import com.aakivaa.emss.utils.security.user.UserRepo;
 import com.aakivaa.emss.services.usersServices.RegistrationServices;
 import com.aakivaa.emss.utils.EmailSenderService;
-import com.aakivaa.emss.utils.FileStorageUtils;
+import com.aakivaa.emss.utils.FileUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class RegistrationServiceImpl implements RegistrationServices {
+public class RegistrationImpl implements RegistrationServices {
     private final VenueRepo venueRepo;
     private final UserCRepo userCRepo;
-    private  final FileStorageUtils fileStorageUtils;
+    private  final FileUtils fileUtils;
     private final EmailSenderService emailSenderService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
     private final AdminRepo adminRepo;
 
-    public RegistrationServiceImpl(VenueRepo venueRepo, UserCRepo userCRepo, FileStorageUtils fileStorageUtils, EmailSenderService emailSenderService, PasswordEncoder passwordEncoder, UserRepo userRepo, AdminRepo adminRepo) {
+    public RegistrationImpl(VenueRepo venueRepo, UserCRepo userCRepo, FileUtils fileUtils, EmailSenderService emailSenderService, PasswordEncoder passwordEncoder, UserRepo userRepo, AdminRepo adminRepo) {
         this.venueRepo = venueRepo;
         this.userCRepo = userCRepo;
-        this.fileStorageUtils = fileStorageUtils;
+        this.fileUtils = fileUtils;
         this.emailSenderService = emailSenderService;
         this.passwordEncoder = passwordEncoder;
         this.userRepo = userRepo;
@@ -75,13 +76,14 @@ public class RegistrationServiceImpl implements RegistrationServices {
     @Override
     public VenueDto venueRegistration(VenueDto venueDto) throws IOException {
         MultipartFile multipartFile = venueDto.getVenueFile();
-        String file = fileStorageUtils.storeFile(multipartFile);
+        String file = fileUtils.storeFile(multipartFile);
         Venue entity = Venue.builder()
                 .id(venueDto.getId())
                 .venueName(venueDto.getVenueName())
                 .password(passwordEncoder.encode(venueDto.getPassword()))
                 .mobile_no(venueDto.getMobile_no())
                 .email(venueDto.getEmail())
+                .citizenshipNo(venueDto.getCitizenShipNo())
                 .city_name(venueDto.getCity_name())
                 .userName(venueDto.getUserName())
                 .applicationUserRole(ApplicationUserRole.VENUE)
@@ -104,11 +106,12 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 .email(entity.getEmail())
                 .city_name(entity.getCity_name())
                 .mobile_no(entity.getMobile_no())
+                .citizenShipNo(entity.getCitizenshipNo())
                 .applicationUserRole(entity.getApplicationUserRole())
                 .venueStatus(entity.getVenueStatus())
                 .userName(entity.getUserName())
                 .citizenShipNo(entity.getCitizenshipNo())
-                .filePath(fileStorageUtils.getBase64FileFromFilePath(entity.getFile()))
+                .filePath(fileUtils.getBase64FileFromFilePath(entity.getFile()))
                 .build()).collect(Collectors.toList());
     }
 
@@ -126,7 +129,8 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 userRepo.save(user);
                 emailSenderService.sendEmail(venue1.getEmail(),
                         "Registration Response",
-                        "Your Registration is Successful login with your credentials.");
+                        "Mr/Miss " + venue1.getUserName() +",\n Your Registration is Successful."
+                                +"\n Authorized By : SA ");
                 return venueRepo.updateVenueStatus(VenueStatus.VERIFIED, id);
             }
         }
@@ -135,7 +139,8 @@ public class RegistrationServiceImpl implements RegistrationServices {
                 Venue venue1 = venue.get();
                 emailSenderService.sendEmail(venue1.getEmail(),
                         "Registration Response",
-                        "Your Registration is UnSuccessful Register again with valid information");
+                        "Your Registration is Denied for some reason. Register with valid information or contact to the Admin."
+                +"\n Suggested By : SA ");
                 return venueRepo.updateVenueStatus(VenueStatus.DELETED, id);
             }
         }

@@ -22,8 +22,8 @@ import java.util.List;
 public class Booking implements Serializable {
 
     @Id
-    @SequenceGenerator(name="BookingRequest_SEG_GEN",sequenceName = "BookingRequest_SEG_GEN")
-    @GeneratedValue(generator = "BookingRequest_SEG_GEN",strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name="Booking_SEG_GEN",sequenceName = "Booking_SEG_GEN")
+    @GeneratedValue(generator = "Booking_SEG_GEN",strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private LocalDate bookingDate;

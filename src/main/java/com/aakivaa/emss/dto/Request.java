@@ -12,5 +12,4 @@ import java.util.List;
 @Builder
 public class Request {
     private Integer status;
-    private List<MultipartFile> listOfImages;
 }

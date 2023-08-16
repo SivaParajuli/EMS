@@ -18,8 +18,8 @@ import java.io.Serializable;
 public class RatingsAndReviews implements Serializable {
 
     @Id
-    @SequenceGenerator(name="VenueRatings_SEG_GEN",sequenceName = "VenueRatings_SEG_GEN")
-    @GeneratedValue(generator = "VenueRatings_SEG_GEN",strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name="Ratings_SEG_GEN",sequenceName = "Ratings_SEG_GEN")
+    @GeneratedValue(generator = "Ratings_SEG_GEN",strategy = GenerationType.SEQUENCE)
 
     private Long id;
 

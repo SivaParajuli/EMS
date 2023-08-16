@@ -6,10 +6,10 @@ import com.aakivaa.emss.services.usersServices.AdminService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminImpl implements AdminService {
     private final AdminRepo adminRepo;
 
-    public AdminServiceImpl(AdminRepo adminRepo) {
+    public AdminImpl(AdminRepo adminRepo) {
             this.adminRepo = adminRepo;
         }
 

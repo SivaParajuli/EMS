@@ -3,14 +3,15 @@ package com.aakivaa.emss.controller;
 import com.aakivaa.emss.dto.*;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.Pricing;
+import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.services.BookingServices;
+import com.aakivaa.emss.services.RatingAndReviewService;
 import com.aakivaa.emss.services.usersServices.VenueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 @RequestMapping("venue-")
@@ -21,10 +22,12 @@ public class VenueController extends BaseController {
 
         private final VenueService venueService;
         private final BookingServices bookingServices;
+        private final RatingAndReviewService ratingAndReviewService;
 
-        public VenueController(VenueService venueService, BookingServices bookingServices) {
+        public VenueController(VenueService venueService, BookingServices bookingServices, RatingAndReviewService ratingAndReviewService) {
             this.venueService = venueService;
             this.bookingServices = bookingServices;
+            this.ratingAndReviewService = ratingAndReviewService;
         }
 
         @GetMapping(path="{email}")
@@ -43,7 +46,7 @@ public class VenueController extends BaseController {
 
         @GetMapping("requests/{email}")
         public ResponseEntity<ResponseDto>getBookingRequests(@PathVariable("email") String email){
-            List<Booking> booking =venueService.getRequestedBooking(venueService.findByEmail(email).getId());
+            List<Booking> booking =bookingServices.getRequestedBooking(venueService.findByEmail(email).getId());
             if(booking !=null) {
                 return new ResponseEntity<>
                         (successResponse("Requested Booking List  Fetched.", booking), HttpStatus.OK);
@@ -71,7 +74,7 @@ public class VenueController extends BaseController {
 
         @GetMapping("booking/{email}")
         public ResponseEntity<ResponseDto>getBooking(@PathVariable("email") String email){
-            List<Booking> booking =venueService.getBookingList(venueService.findByEmail(email).getId());
+            List<Booking> booking =bookingServices.getBookingList(venueService.findByEmail(email).getId());
             if(booking !=null) {
                 return new ResponseEntity<>
                         (successResponse("Requested Booking List  Fetched.", booking), HttpStatus.OK);
@@ -85,7 +88,7 @@ public class VenueController extends BaseController {
 
         @GetMapping("bookingRequest/{email}")
         public ResponseEntity<ResponseDto> getNumberOfBooking(@PathVariable("email")  String email){
-            Integer bookingRequest =venueService.getNumberOfBooking(email);
+            Integer bookingRequest =bookingServices.getNumberOfBooking(venueService.findByEmail(email).getId());
             return new ResponseEntity<>
                     (successResponse("Number of Booking Request", bookingRequest),HttpStatus.OK);
         }
@@ -131,6 +134,22 @@ public class VenueController extends BaseController {
                     (errorResponse("pricing update failed",null),HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("reviews/{email}")
+    public ResponseEntity<ResponseDto>getReviews(@PathVariable("email") String email){
+        List<RatingsAndReviews> reviews = ratingAndReviewService.getRatingAndReviewsById(venueService.findByEmail(email).getId());
+        if(reviews !=null) {
+            return new ResponseEntity<>
+                    (successResponse("Reviews of Venue..", reviews), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Some error occurred...", null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
 
 }
 

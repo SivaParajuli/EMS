@@ -24,22 +24,14 @@ public interface VenueService {
 
     void deleteBYId(Long id);
 
-    List<Booking> getRequestedBooking(Long id);
-
     List<Pricing> getAllPricing(Long id);
 
     List<VenueDto> getAllVerifiedVenue();
 
-    List<Booking> getBookingList(Long id);
 
     VenueDto getDetailsOfVenue(Long id);
 
-
-    List<?> getAllBookedDate(Long id);
-
     Integer getNumberOfNewRegistration();
-
-    Integer getNumberOfBooking(String email);
 
     List<VenueDto> getRecommendation(Long id);
 

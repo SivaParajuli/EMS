@@ -27,4 +27,7 @@ public interface RatingAndReviewsRepo extends JpaRepository<RatingsAndReviews,Lo
    @Query("select r.reviews from RatingsAndReviews r WHERE r.venue= :v")
     List<String>getReviews(@Param("v") Venue venue);
 
+    @Query(value="SELECT r from RatingsAndReviews r  where r.venue.id = :i ")
+    List<RatingsAndReviews> getReviewsAndRatings(@Param("i") Long id);
+
 }
