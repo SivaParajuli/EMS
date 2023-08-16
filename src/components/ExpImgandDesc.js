@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
 import { AuthContext } from '../context/AuthContext';
+import RatingandReviewPage from './RatingandReviewPage';
 
 
 const theme = createTheme({
@@ -71,6 +72,7 @@ function StandardImageList() {
 
 
   return (
+    <Container sx={{display:"flex",flexDirection:"column",gap:"20px"}}>
     <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
       {venueDetail?.images?.map((item,index) => (
         <ImageListItem key={index}>
@@ -83,6 +85,8 @@ function StandardImageList() {
         </ImageListItem>
       ))}
     </ImageList>
+    <RatingandReviewPage email={email} rating={venueDetail.ratings}/>
+    </Container>
   );
 }
 
@@ -159,23 +163,6 @@ const DetailDescription = (props)=> {
       //   }
       // },[])
 
-      const handleRate = async (e)=> {
-      e.preventDefault()
-      try{
-        const request = await fetch(`http://localhost:8888/client-/rateVenue/${email}/${JSON.parse(sessionStorage.getItem("email"))}`,{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json",
-            Authorization : "Bearer" +" "+ JSON.parse(sessionStorage.getItem("token"))
-        },body: JSON.stringify({rating:value})
-        })
-        const response = await request.json()
-        console.log(response)
-      }catch(error){
-        console.log(error)
-      }
-    }
-
     return(
       <React.Fragment>
      <Container sx={{width:"fit-content",display:"flex",flexDirection:"column",gap:"10px"}}>
@@ -223,7 +210,6 @@ const DetailDescription = (props)=> {
         ))}
         </ul>
         {state.logstate == "CLIENT" && (
-        <form onSubmit={handleRate}>
       <Box
       sx={{
         '& > legend': { mt: 2 },
@@ -234,11 +220,12 @@ const DetailDescription = (props)=> {
         Rated by Clients
       </Typography>
       <Rating
+      readOnly
         name="simple-uncontrolled"
+        precision={0.5}
         value={value}
       />
       </Box>
-      </form>
       )}
         </Container>
         </Container>

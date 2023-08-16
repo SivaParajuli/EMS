@@ -143,7 +143,7 @@ const TableContent = (props)=> {
             <TableCell className="tableCell">Status</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody sx={{fontFamily:'system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif'}}>
           {props.data?.map((row) => (
             <TableRow key={row.id}>
               <TableCell className="tableCell">{row.id}</TableCell>
@@ -163,11 +163,12 @@ const TableContent = (props)=> {
               {props.type == "VENUE" ? row.requiredCapacity: props.type == "ADMIN" ? row.email : " "}
               </TableCell>
               <TableCell className="tableCell" style={{width:"fit-content"}}>
-              {props.type == "VENUE" ? row?.items+"," : props.type == "ADMIN" ? row.citizenShipNo : " "}
+              {props.type == "VENUE" ? <span>{row?.items+","}</span> : 
+              props.type == "ADMIN" ? row.citizenShipNo : " "}
               </TableCell>
               <TableCell className="tableCell">
               {props.type == "VENUE" ? 
-              <span style={{display:"flex",flexDirection:"column"}}>
+              <span>
               {row?.recipeMenu+","} 
               </span> 
               : 

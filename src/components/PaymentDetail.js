@@ -129,7 +129,7 @@ export default function PaymentForm() {
   const {email} = useParams();
   const[bookingDetail,setbookingDetail] = React.useState({preference:"",
   requiredCapacity:"",functionType:""})
-  const[bookingdate,setBookingDate] = React.useState(dayjs("2023-08-15"))
+  const[bookingdate,setBookingDate] = React.useState(dayjs("2023-08-17"))
   const[isdatevalid,setisdatevalid] = React.useState(true);
   const[pricingdetail,setPricingDetail] = React.useState([]);
   const [open, setOpen] = React.useState(false);

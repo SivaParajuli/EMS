@@ -120,8 +120,10 @@ const theme = createTheme({
 const ExploreSectionComponent = ()=> {
 
   const[valid,setvalid] = React.useState(false)
-  const[searchfilter,setSearchFilter] = useState({searchTerm:"",role:"",pricing:"",
-  startingDate:dayjs('2023-08-20'),endingDate:dayjs('2023-09-20')})
+  const[searchfilter,setSearchFilter] = useState({searchTerm:"",role:"",pricing:""})
+  const[startingDate,setStartingDate] = useState(dayjs("2023-08-20"))
+  const[endingDate,setEndingDate] = useState(dayjs("2023-09-20"))
+
   const [state] = useContext(AuthContext);
   let extrabutton;
   
@@ -169,12 +171,12 @@ const ExploreSectionComponent = ()=> {
           marginBottom:'40px'
           }}>
           <Grid xs={6} lg={2}>
-          <DatePickerComponent arrayitem={searchfilter} label={"StartingDate"} value={searchfilter.startingDate} 
-          setTerm={setSearchFilter} setClick={setvalid} defaultDate={tomorrow} name={"startingDate"}/>
+          <DatePickerComponent label={"StartingDate"} value={startingDate} 
+          setTerm={setStartingDate} setClick={setvalid}/>
           </Grid>
           <Grid xs={6} lg={2}>
-          <DatePickerComponent arrayitem={searchfilter} label={"EndingDate"} value={searchfilter.endingDate} 
-          setTerm={setSearchFilter} setClick={setvalid} defaultDate={nextMonth} name={"endingDate"}/>
+          <DatePickerComponent label={"EndingDate"} value={endingDate} 
+          setTerm={setEndingDate} setClick={setvalid}/>
           </Grid>
           <Grid xs={6} lg={2}>
           <TextFieldComponent id={"location"} type={"text"} label={"Location"} 
