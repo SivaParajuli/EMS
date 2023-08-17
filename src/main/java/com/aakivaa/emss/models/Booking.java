@@ -1,6 +1,6 @@
 package com.aakivaa.emss.models;
 
-import com.aakivaa.emss.enums.BookingStatus;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,7 +9,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -42,7 +41,7 @@ public class Booking implements Serializable {
     @Column(name = "items")
     private List<String> items;
 
-    private BookingStatus bookingStatus;
+    private Status status;
 
     @JsonIgnoreProperties({"password","bookingList","id","applicationUserRole"})
     @ManyToOne(targetEntity = UserC.class, fetch = FetchType.EAGER)

@@ -1,6 +1,6 @@
 package com.aakivaa.emss.models.users;
 
-import com.aakivaa.emss.enums.ApplicationUserRole;
+import com.aakivaa.emss.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,7 +29,7 @@ public class Admin implements Serializable {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationUserRole applicationUserRole;
+    private Role role;
 
 }
 

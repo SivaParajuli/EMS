@@ -2,8 +2,8 @@ package com.aakivaa.emss.services.impl.usersImpl;
 
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.dto.UserDto;
-import com.aakivaa.emss.enums.ApplicationUserRole;
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Role;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.users.Admin;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,14 +52,14 @@ public class RegistrationImpl implements RegistrationServices {
                 .email(userDto.getEmail())
                 .city_name(userDto.getCity_name())
                 .street_name(userDto.getStreet_name())
-                .applicationUserRole(ApplicationUserRole.CLIENT)
+                .role(Role.CLIENT)
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .build();
         User entity1= User.builder()
                 .email(userDto.getEmail())
                 .uname(userDto.getUsername())
                 .password(passwordEncoder.encode(userDto.getPassword()))
-                .applicationUserRole(ApplicationUserRole.CLIENT).build();
+                .role(Role.CLIENT).build();
         userRepo.save(entity1);
         entity= userCRepo.save(entity);
         return UserDto.builder()
@@ -86,8 +85,8 @@ public class RegistrationImpl implements RegistrationServices {
                 .citizenshipNo(venueDto.getCitizenShipNo())
                 .city_name(venueDto.getCity_name())
                 .userName(venueDto.getUserName())
-                .applicationUserRole(ApplicationUserRole.VENUE)
-                .venueStatus(VenueStatus.PENDING)
+                .role(Role.VENUE)
+                .status(Status.PENDING)
                 .file(file)
                 .build();
         entity = venueRepo.save(entity);
@@ -99,7 +98,7 @@ public class RegistrationImpl implements RegistrationServices {
 
 
     public List<VenueDto> getAllPendingRegister() {
-        List<Venue> venueList= venueRepo.findPendingRegister(VenueStatus.PENDING);
+        List<Venue> venueList= venueRepo.findPendingRegister(Status.PENDING);
         return venueList.stream().map(entity -> VenueDto.builder()
                 .id(entity.getId())
                 .venueName(entity.getVenueName())
@@ -107,8 +106,8 @@ public class RegistrationImpl implements RegistrationServices {
                 .city_name(entity.getCity_name())
                 .mobile_no(entity.getMobile_no())
                 .citizenShipNo(entity.getCitizenshipNo())
-                .applicationUserRole(entity.getApplicationUserRole())
-                .venueStatus(entity.getVenueStatus())
+                .role(entity.getRole())
+                .status(entity.getStatus())
                 .userName(entity.getUserName())
                 .citizenShipNo(entity.getCitizenshipNo())
                 .filePath(fileUtils.getBase64FileFromFilePath(entity.getFile()))
@@ -125,13 +124,13 @@ public class RegistrationImpl implements RegistrationServices {
                 user.setEmail(venue1.getEmail());
                 user.setUname(venue1.getUserName());
                 user.setPassword(venue1.getPassword());
-                user.setApplicationUserRole(venue1.getApplicationUserRole());
+                user.setRole(venue1.getRole());
                 userRepo.save(user);
                 emailSenderService.sendEmail(venue1.getEmail(),
                         "Registration Response",
                         "Mr/Miss " + venue1.getUserName() +",\n Your Registration is Successful."
                                 +"\n Authorized By : SA ");
-                return venueRepo.updateVenueStatus(VenueStatus.VERIFIED, id);
+                return venueRepo.updateVenueStatus(Status.VERIFIED, id);
             }
         }
         if(status == 1 ) {
@@ -141,7 +140,7 @@ public class RegistrationImpl implements RegistrationServices {
                         "Registration Response",
                         "Your Registration is Denied for some reason. Register with valid information or contact to the Admin."
                 +"\n Suggested By : SA ");
-                return venueRepo.updateVenueStatus(VenueStatus.DELETED, id);
+                return venueRepo.updateVenueStatus(Status.DELETED, id);
             }
         }
         return null;
@@ -155,13 +154,13 @@ public class RegistrationImpl implements RegistrationServices {
                 .name(admin.getName())
                 .email(admin.getEmail())
                 .password(passwordEncoder.encode(admin.getPassword()))
-                .applicationUserRole(ApplicationUserRole.ADMIN)
+                .role(Role.ADMIN)
                 .build();
         User entity1= User.builder()
                 .email(admin.getEmail())
                 .uname(admin.getName())
                 .password(passwordEncoder.encode(admin.getPassword()))
-                .applicationUserRole(ApplicationUserRole.ADMIN).build();
+                .role(Role.ADMIN).build();
         userRepo.save(entity1);
         adminRepo.save(entity);
         return Admin.builder()

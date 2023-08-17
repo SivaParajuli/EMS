@@ -1,8 +1,7 @@
 package com.aakivaa.emss.services.impl;
 
 import com.aakivaa.emss.dto.BookingDto;
-import com.aakivaa.emss.enums.BookingStatus;
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
@@ -53,7 +52,7 @@ public class BookingImpl implements BookingServices {
 //        }
         Booking entity = Booking.builder()
                 .bookingDate(bookingDto.getBookingDate())
-                .bookingStatus(BookingStatus.PENDING)
+                .status(Status.PENDING)
                 .requiredCapacity(bookingDto.getRequiredCapacity())
                 .recipeMenu(bookingDto.getRecipeList())
                 .items(bookingDto.getItems())
@@ -64,7 +63,7 @@ public class BookingImpl implements BookingServices {
                 .build();
          entity = bookingRepo.save(entity);
          return Booking.builder()
-                 .bookingStatus(entity.getBookingStatus())
+                 .status(entity.getStatus())
                  .bookingDate(entity.getBookingDate())
                  .build();
 
@@ -81,7 +80,7 @@ public class BookingImpl implements BookingServices {
                         "Mr/Miss " + booking1.getUserC().getName() +",\n Your Booking is Successful. \n Date: "+booking1.getBookingDate()
                         +"\n Authorized By : " + venueRepo.getById(id).getUserName()
                 );
-                return bookingRepo.updateBookingStatus(BookingStatus.ACCEPTED, id);
+                return bookingRepo.updateBookingStatus(Status.VERIFIED, id);
             }
         }
         if (integer == 2) {
@@ -93,14 +92,14 @@ public class BookingImpl implements BookingServices {
                         "Mr/Miss " + booking1.getUserC().getName() + " Your Booking Request is Denied...\n Authorized By : "
                         + venueRepo.getById(id).getUserName()
                 );
-                return bookingRepo.updateBookingStatus(BookingStatus.CANCELED, id);
+                return bookingRepo.updateBookingStatus(Status.DELETED, id);
             }
         }
         return null;
     }
     @Override
     public List<Booking> getRequestedBooking(Long id) {
-        List<Booking> requestList = bookingRepo.getPendingRequests(id, BookingStatus.PENDING);
+        List<Booking> requestList = bookingRepo.getPendingRequests(id, Status.PENDING);
         return requestList.stream().map(entity -> Booking.builder()
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
@@ -109,7 +108,7 @@ public class BookingImpl implements BookingServices {
                 .requiredCapacity(entity.getRequiredCapacity())
                 .recipeMenu(entity.getRecipeMenu())
                 .items(entity.getItems())
-                .bookingStatus(entity.getBookingStatus())
+                .status(entity.getStatus())
                 .preference(entity.getPreference())
                 .build()).collect(Collectors.toList());
     }
@@ -121,7 +120,7 @@ public class BookingImpl implements BookingServices {
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
                 .userC(entity.getUserC())
-                .bookingStatus(entity.getBookingStatus())
+                .status(entity.getStatus())
                 .items(entity.getItems())
                 .recipeMenu(entity.getRecipeMenu())
                 .eventType(entity.getEventType())
@@ -130,12 +129,12 @@ public class BookingImpl implements BookingServices {
     }
     @Override
     public List<LocalDate> getAllBookedDate(Long id) {
-        List<LocalDate> dateList = bookingRepo.getBookedDateById(id, BookingStatus.ACCEPTED);
+        List<LocalDate> dateList = bookingRepo.getBookedDateById(id, Status.VERIFIED);
         return new ArrayList<>(dateList);
     }
     @Override
     public Integer getNumberOfBooking(Long id) {
-        return bookingRepo.getNumberOfBooking(id , BookingStatus.PENDING);
+        return bookingRepo.getNumberOfBooking(id , Status.PENDING);
     }
 
     @Override
@@ -153,7 +152,7 @@ public class BookingImpl implements BookingServices {
 
     @Override
     public List<LocalDate> getDateByIds(Long vid, Long uid) {
-        List<LocalDate> dateList = bookingRepo.getDatesByIds(vid,uid, BookingStatus.ACCEPTED);
+        List<LocalDate> dateList = bookingRepo.getDatesByIds(vid,uid, Status.VERIFIED);
         return new ArrayList<>(dateList);
     }
 

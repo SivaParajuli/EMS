@@ -1,6 +1,6 @@
 package com.aakivaa.emss.models.users;
 
-import com.aakivaa.emss.enums.ApplicationUserRole;
+import com.aakivaa.emss.enums.Role;
 import com.aakivaa.emss.models.Booking;
 import lombok.*;
 
@@ -41,7 +41,7 @@ public class UserC implements Serializable {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationUserRole applicationUserRole;
+    private Role role;
 
     @Column(name="city_address",length=45)
     private String city_name;

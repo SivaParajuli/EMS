@@ -2,7 +2,7 @@ package com.aakivaa.emss.utils;
 
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.repo.RatingAndReviewsRepo;
 import org.springframework.stereotype.Service;
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class RecommenderUtils {
+public class Recommender {
     private final RatingAndReviewsRepo ratingAndReviewsRepo;
 
-    public RecommenderUtils(RatingAndReviewsRepo ratingAndReviewsRepo) {
+    public Recommender(RatingAndReviewsRepo ratingAndReviewsRepo) {
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
     }
 
     private MatrixFactorizationResult matrixFactorization(Long userId) {
-        List<RatingsAndReviews> userRatings = ratingAndReviewsRepo.findUserCById(userId, VenueStatus.VERIFIED);
+        List<RatingsAndReviews> userRatings = ratingAndReviewsRepo.findUserCById(userId, Status.VERIFIED);
 
         // Build the user-item rating matrix
         int numUsers = 0;

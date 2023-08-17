@@ -1,10 +1,8 @@
 package com.aakivaa.emss.repo;
 
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.RatingsAndReviews;
-import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
-import org.hibernate.sql.Select;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,8 +14,8 @@ import java.util.List;
 @Repository
 public interface RatingAndReviewsRepo extends JpaRepository<RatingsAndReviews,Long> {
 
-    @Query(value="SELECT vr from RatingsAndReviews vr join vr.venue v where v.venueStatus= :s and vr.userC.id = :i ")
-    List<RatingsAndReviews> findUserCById(@Param("i") Long userId, @Param("s") VenueStatus venueStatus);
+    @Query(value="SELECT vr from RatingsAndReviews vr join vr.venue v where v.status= :s and vr.userC.id = :i ")
+    List<RatingsAndReviews> findUserCById(@Param("i") Long userId, @Param("s") Status status);
 
 
     @Transactional

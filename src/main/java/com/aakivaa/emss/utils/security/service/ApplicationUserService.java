@@ -31,7 +31,7 @@ public class ApplicationUserService implements UserDetailsService {
         User user = userRepo.findUserByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
         HashSet<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(SecurityUtils.convertToAuthority(user.getApplicationUserRole().name()));
+        authorities.add(SecurityUtils.convertToAuthority(user.getRole().name()));
 
         return ApplicationUser.builder()
                 .user(user)

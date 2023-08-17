@@ -1,7 +1,7 @@
 package com.aakivaa.emss.models.users;
 
-import com.aakivaa.emss.enums.ApplicationUserRole;
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Role;
+import com.aakivaa.emss.enums.Status;
 import javax.persistence.*;
 
 import com.aakivaa.emss.models.*;
@@ -44,7 +44,7 @@ public class Venue implements Serializable {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationUserRole applicationUserRole;
+    private Role role;
 
     @Column(name = "contactNumber", length = 10)
     private String mobile_no;
@@ -52,8 +52,8 @@ public class Venue implements Serializable {
     @Column(name = "address", length = 45)
     private String city_name;
 
-    @Column(name = "venueStatus")
-    private VenueStatus venueStatus;
+    @Column(name = "status")
+    private Status status;
 
     @Column(name = "capacity")
     private String capacity;

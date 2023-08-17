@@ -1,5 +1,6 @@
 package com.aakivaa.emss.services;
 
+import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
@@ -15,5 +16,4 @@ public interface RatingAndReviewService {
     List<RatingsAndReviews> getRatingAndReviewsById(Long id);
 
     RatingsAndReviews review(Long vid, Long id, RatingsAndReviews reviews);
-
 }

@@ -44,7 +44,7 @@ public class UserCImpl implements UserCService {
                 .id(entity.getId())
                 .bookingDate(entity.getBookingDate())
                 .venue(entity.getVenue())
-                .bookingStatus(entity.getBookingStatus())
+                .status(entity.getStatus())
                 .eventType(entity.getEventType())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());

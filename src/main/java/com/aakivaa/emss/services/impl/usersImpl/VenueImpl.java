@@ -4,14 +4,14 @@ import com.aakivaa.emss.dto.EventAndServicesDto;
 import com.aakivaa.emss.dto.ImgDesDto;
 import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.*;
 import com.aakivaa.emss.repo.usersRepo.VenueRepo;
 import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.FileUtils;
-import com.aakivaa.emss.utils.RecommenderUtils;
+import com.aakivaa.emss.utils.Recommender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,17 +28,17 @@ public class VenueImpl implements VenueService {
 
     private final VenueRepo venueRepo;
     private final FileUtils fileUtils;
-    private final RecommenderUtils recommenderUtils;
+    private final Recommender recommender;
     private final PricingRepo pricingRepo;
     private final RatingAndReviewsRepo ratingAndReviewsRepo;
     private final BookingRepo bookingRepo;
 
 
 
-    public VenueImpl(VenueRepo venueRepo, FileUtils fileUtils, RecommenderUtils recommenderUtils, PricingRepo pricingRepo, RatingAndReviewsRepo ratingAndReviewsRepo, BookingRepo bookingRepo) {
+    public VenueImpl(VenueRepo venueRepo, FileUtils fileUtils, Recommender recommender, PricingRepo pricingRepo, RatingAndReviewsRepo ratingAndReviewsRepo, BookingRepo bookingRepo) {
         this.venueRepo = venueRepo;
         this.fileUtils = fileUtils;
-        this.recommenderUtils = recommenderUtils;
+        this.recommender = recommender;
         this.pricingRepo = pricingRepo;
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
         this.bookingRepo = bookingRepo;
@@ -61,7 +61,7 @@ public class VenueImpl implements VenueService {
 
 
     @Override
-    public Venue findVenueById(Long id) {
+    public Venue findById(Long id) {
        return venueRepo.getById(id);
     }
 
@@ -69,11 +69,6 @@ public class VenueImpl implements VenueService {
     public Venue findByEmail(String email) {
         return venueRepo.getByEmail(email);
 
-    }
-
-    @Override
-    public List<Venue> getVenuesByIds(List<Long> venueIdList) {
-        return venueRepo.findAllById(venueIdList);
     }
 
 
@@ -100,7 +95,7 @@ public class VenueImpl implements VenueService {
 
     public List<VenueDto> getAllVerifiedVenue() {
 
-        List<Venue> venueList = venueRepo.findAllVerifiedVenue(VenueStatus.VERIFIED);
+        List<Venue> venueList = venueRepo.findAllVerifiedVenue(Status.VERIFIED);
         return venueList.stream().map(entity -> VenueDto.builder()
                 .id(entity.getId())
                 .venueName(entity.getVenueName())
@@ -144,31 +139,9 @@ public class VenueImpl implements VenueService {
 
     @Override
     public Integer getNumberOfNewRegistration() {
-        return venueRepo.newRegistration(VenueStatus.PENDING);
+        return venueRepo.newRegistration(Status.PENDING);
     }
 
-
-
-    public List<VenueDto> getRecommendation(Long id) {
-        List<Venue> venueList = new ArrayList<>();
-         List <Long> venueIdList = recommenderUtils.getVenueRecommendations(id,10);
-         for(Long venueId : venueIdList){
-             Venue venue = venueRepo.getById(venueId);
-             venueList.add(venue);
-         }
-        return venueList.stream().map(entity -> VenueDto.builder()
-                .id(entity.getId())
-                .venueName(entity.getVenueName())
-                .availableRooms(entity.getAvailableRooms())
-                .capacity(entity.getCapacity())
-                .city_name(entity.getCity_name())
-                .description(entity.getDescription())
-                .filePath(fileUtils.getBase64FileFromFilePath(entity.getFile()))
-                .email(entity.getEmail())
-                .mobile_no(entity.getMobile_no())
-                .userName(entity.getUserName())
-                .build()).collect(Collectors.toList());
-    }
 
     @Override
     @Transactional
@@ -225,6 +198,29 @@ public class VenueImpl implements VenueService {
                 .functionName(entity.getFunctionName())
                 .preference(entity.getPreference())
                 .priceRange(entity.getPriceRange())
+                .build();
+    }
+
+    @Override
+    public List<VenueDto> getRecommendations(Long userId) {
+        List<Long> venueIdList = recommender.getVenueRecommendations(userId, 10);
+        List<Venue> recommendedVenues = venueRepo.findAllById(venueIdList);
+        return recommendedVenues.stream()
+                .map(this::mapVenueToDto)
+                .collect(Collectors.toList());
+    }
+
+    private VenueDto mapVenueToDto(Venue venue) {
+        return VenueDto.builder()
+                .id(venue.getId())
+                .venueName(venue.getVenueName())
+                .availableRooms(venue.getAvailableRooms())
+                .capacity(venue.getCapacity())
+                .city_name(venue.getCity_name())
+                .description(venue.getDescription())
+                .email(venue.getEmail())
+                .mobile_no(venue.getMobile_no())
+                .userName(venue.getUserName())
                 .build();
     }
 }

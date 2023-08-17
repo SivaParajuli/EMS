@@ -1,6 +1,6 @@
 package com.aakivaa.emss.enums;
 
-public enum ApplicationUserRole {
+public enum Role {
     ADMIN,
     CLIENT,
     VENUE

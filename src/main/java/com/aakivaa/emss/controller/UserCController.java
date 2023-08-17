@@ -3,14 +3,12 @@ import com.aakivaa.emss.dto.*;
 import com.aakivaa.emss.models.*;
 import com.aakivaa.emss.models.users.UserC;
 import com.aakivaa.emss.models.users.Venue;
-import com.aakivaa.emss.repo.usersRepo.VenueRepo;
 import com.aakivaa.emss.services.BookingServices;
+import com.aakivaa.emss.services.EventService;
 import com.aakivaa.emss.services.RatingAndReviewService;
 import com.aakivaa.emss.services.usersServices.UserCService;
 import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.EmailSenderService;
-import com.aakivaa.emss.utils.FileUtils;
-import com.aakivaa.emss.utils.RecommenderUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @CrossOrigin(origins = "*")
@@ -33,20 +30,16 @@ public class UserCController extends BaseController{
         private final UserCService userCService;
         private final EmailSenderService emailSenderService;
         private final RatingAndReviewService ratingAndReviewService;
-        private final RecommenderUtils recommenderUtils;
-        private  final VenueRepo venueRepo;
-        private final FileUtils fileUtils;
+        private final EventService eventService;
 
 
-    public UserCController(BookingServices bookingServices, VenueService venueService, UserCService userCService, EmailSenderService emailSenderService, RatingAndReviewService ratingAndReviewService, RecommenderUtils recommenderUtils, VenueRepo venueRepo, FileUtils fileUtils) {
+    public UserCController(BookingServices bookingServices, VenueService venueService, UserCService userCService, EmailSenderService emailSenderService, RatingAndReviewService ratingAndReviewService, EventService eventService) {
         this.bookingServices = bookingServices;
         this.venueService = venueService;
         this.userCService = userCService;
         this.emailSenderService = emailSenderService;
         this.ratingAndReviewService = ratingAndReviewService;
-        this.recommenderUtils = recommenderUtils;
-        this.venueRepo = venueRepo;
-        this.fileUtils = fileUtils;
+        this.eventService = eventService;
     }
 
     @GetMapping("clientHome")
@@ -139,7 +132,7 @@ public class UserCController extends BaseController{
 
     @GetMapping("getrating/{vemail}")
     public ResponseEntity<ResponseDto> getAverageRating(@PathVariable("vemail") String vemail) {
-        Venue venue = venueRepo.getById(venueService.findByEmail(vemail).getId());
+        Venue venue = venueService.findById(venueService.findByEmail(vemail).getId());
         Double averageRating = ratingAndReviewService.getAverageRating(venue);
         if(averageRating != null ){
             return new ResponseEntity<>
@@ -157,7 +150,7 @@ public class UserCController extends BaseController{
     public ResponseEntity<ResponseDto> Recommender(@PathVariable("email") String email) {
         UserC user = userCService.findByEmail(email);
         if (user != null) {
-            List<VenueDto> venues = getRecommendedVenues(user.getId());
+            List<VenueDto> venues = venueService.getRecommendations(user.getId());
             if (!venues.isEmpty()) {
                 return new ResponseEntity<>(successResponse("Recommendation venue fetched.", venues), HttpStatus.OK);
             } else {
@@ -167,30 +160,6 @@ public class UserCController extends BaseController{
             return new ResponseEntity<>(errorResponse("User not found.", null), HttpStatus.BAD_REQUEST);
         }
     }
-
-    private List<VenueDto> getRecommendedVenues(Long userId) {
-        List<Long> venueIdList = recommenderUtils.getVenueRecommendations(userId, 10);
-        List<Venue> recommendedVenues = venueService.getVenuesByIds(venueIdList);
-        return recommendedVenues.stream()
-                .map(this::mapVenueToDto)
-                .collect(Collectors.toList());
-    }
-
-    private VenueDto mapVenueToDto(Venue venue) {
-        return VenueDto.builder()
-                .id(venue.getId())
-                .venueName(venue.getVenueName())
-                .availableRooms(venue.getAvailableRooms())
-                .capacity(venue.getCapacity())
-                .city_name(venue.getCity_name())
-                .description(venue.getDescription())
-                .filePath(fileUtils.getBase64FileFromFilePath(venue.getFile()))
-                .email(venue.getEmail())
-                .mobile_no(venue.getMobile_no())
-                .userName(venue.getUserName())
-                .build();
-    }
-
 
 
     @GetMapping(path="venueDetails/{email}")
@@ -230,6 +199,33 @@ public class UserCController extends BaseController{
         else{
             return new ResponseEntity<>
                     (errorResponse("Some error occurred...", null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(path="eventUpdate/{uemail}/")
+    public ResponseEntity<ResponseDto> addEvent(@PathVariable ("uemail")String uemail,
+                                                 @RequestBody Event evt) {
+        Event event1 = eventService.addEvent(userCService.findByEmail(uemail),evt);
+        if(event1 != null ){
+            return new ResponseEntity<>
+                    (successResponse("Events uploaded..", event1), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Failed to upload", null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("getEvents")
+    public ResponseEntity<ResponseDto>getEvents(){
+        List<Event> eventList = eventService.getEvents();
+        if(eventList !=null) {
+            return new ResponseEntity<>
+                    (successResponse("Available events  ", eventList), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Failed to retrieve", null), HttpStatus.BAD_REQUEST);
         }
     }
 

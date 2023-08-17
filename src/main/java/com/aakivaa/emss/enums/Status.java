@@ -1,6 +1,6 @@
 package com.aakivaa.emss.enums;
 
-public enum VenueStatus {
+public enum Status {
     VERIFIED,
     PENDING,
     DELETED

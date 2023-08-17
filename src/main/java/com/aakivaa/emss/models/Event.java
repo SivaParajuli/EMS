@@ -1,11 +1,13 @@
 package com.aakivaa.emss.models;
 
 import com.aakivaa.emss.enums.EventType;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.users.UserC;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -16,7 +18,7 @@ import java.util.List;
 @Builder
 
 
-public class Events implements Serializable {
+public class Event implements Serializable {
 
    @Id
    @SequenceGenerator(name = "event_id_sequence", sequenceName = "event_id_sequence")
@@ -24,6 +26,10 @@ public class Events implements Serializable {
     private Long id;
 
     private String location;
+
+    private LocalDateTime dateTime ;
+
+    private Status status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -73,4 +73,5 @@ public class RatingsAndReviewsImpl implements RatingAndReviewService {
                 .venue(entity.getVenue())
                 .build();
     }
+
 }

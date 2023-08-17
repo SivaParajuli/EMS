@@ -1,9 +1,8 @@
 package com.aakivaa.emss.dto;
 
-import com.aakivaa.emss.enums.ApplicationUserRole;
-import com.aakivaa.emss.enums.VenueStatus;
+import com.aakivaa.emss.enums.Role;
+import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.Pricing;
-import com.aakivaa.emss.models.RatingsAndReviews;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,14 +22,14 @@ public class VenueDto {
     private String userName;
     private String mobile_no;
     private String city_name;
-    private ApplicationUserRole applicationUserRole;
+    private Role role;
     private String email;
     private String availableRooms;
     private String password;
     private String citizenShipNo;
     //used while saving
     private MultipartFile venueFile;
-    private VenueStatus venueStatus;
+    private Status status;
     private String description;
     private String capacity;
     //used while listing and sending data to front end
