@@ -18,4 +18,5 @@ public class EventAndServicesDto {
     private List<String> functionTypes;
     private List<String> availableServices;
     private List<String> recipe;
+    private String venueType;
 }

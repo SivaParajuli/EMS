@@ -78,7 +78,7 @@ public class BookingImpl implements BookingServices {
                 emailSenderService.sendEmail(booking1.getUserC().getEmail(),
                         "Booking Response",
                         "Mr/Miss " + booking1.getUserC().getName() +",\n Your Booking is Successful. \n Date: "+booking1.getBookingDate()
-                        +"\n Authorized By : " + venueRepo.getById(id).getUserName()
+                        +"\n Authorized By : " + booking1.getVenue().getUserName()
                 );
                 return bookingRepo.updateBookingStatus(Status.VERIFIED, id);
             }
@@ -90,7 +90,7 @@ public class BookingImpl implements BookingServices {
                 emailSenderService.sendEmail(booking1.getUserC().getEmail(),
                         "Booking Response",
                         "Mr/Miss " + booking1.getUserC().getName() + " Your Booking Request is Denied...\n Authorized By : "
-                        + venueRepo.getById(id).getUserName()
+                        + booking1.getVenue().getUserName()
                 );
                 return bookingRepo.updateBookingStatus(Status.DELETED, id);
             }
@@ -127,6 +127,18 @@ public class BookingImpl implements BookingServices {
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());
     }
+
+    @Override
+    public List<Booking> getBookingResponses(String email) {
+        List<Booking> requestList= bookingRepo.getBookingResponse(userCRepo.getByEmail(email).getId(),Status.PENDING);
+        return requestList.stream().map(entity-> Booking.builder()
+                .bookingDate(entity.getBookingDate())
+                .status(entity.getStatus())
+                .eventType(entity.getEventType())
+                .requiredCapacity(entity.getRequiredCapacity())
+                .build()).collect(Collectors.toList());
+    }
+
     @Override
     public List<LocalDate> getAllBookedDate(Long id) {
         List<LocalDate> dateList = bookingRepo.getBookedDateById(id, Status.VERIFIED);

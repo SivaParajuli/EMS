@@ -43,8 +43,19 @@ public class RatingsAndReviewsImpl implements RatingAndReviewService {
                 .build();
     }
 
+    @Override
     public List<RatingsAndReviews> getRatingAndReviewsById(Long id){
         List<RatingsAndReviews> ratingsAndReviews = ratingAndReviewsRepo.getReviewsAndRatings(id);
+        return ratingsAndReviews.stream().map(entity -> RatingsAndReviews.builder()
+                .ratings(entity.getRatings())
+                .reviews(entity.getReviews())
+                .userC(entity.getUserC())
+                .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RatingsAndReviews> getAllRatings(){
+        List<RatingsAndReviews> ratingsAndReviews = ratingAndReviewsRepo.findAll();
         return ratingsAndReviews.stream().map(entity -> RatingsAndReviews.builder()
                 .ratings(entity.getRatings())
                 .reviews(entity.getReviews())
@@ -73,5 +84,4 @@ public class RatingsAndReviewsImpl implements RatingAndReviewService {
                 .venue(entity.getVenue())
                 .build();
     }
-
 }

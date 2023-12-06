@@ -9,6 +9,7 @@ import com.aakivaa.emss.services.RatingAndReviewService;
 import com.aakivaa.emss.services.usersServices.UserCService;
 import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.EmailSenderService;
+import org.apache.mahout.cf.taste.common.TasteException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -149,20 +150,20 @@ public class UserCController extends BaseController{
     @GetMapping(path="recommend/{email}")
     public ResponseEntity<ResponseDto> Recommender(@PathVariable("email") String email) {
         UserC user = userCService.findByEmail(email);
-        if (user != null) {
-            List<VenueDto> venues = venueService.getRecommendations(user.getId());
-            if (!venues.isEmpty()) {
-                return new ResponseEntity<>(successResponse("Recommendation venue fetched.", venues), HttpStatus.OK);
+            if (user != null) {
+                List<VenueDto> venues = venueService.getRecommendations(user.getId());
+                if (!venues.isEmpty()) {
+                    return new ResponseEntity<>(successResponse("Recommendation venue fetched.", venues), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(errorResponse("No recommendation available.", null), HttpStatus.OK);
+                }
             } else {
-                return new ResponseEntity<>(errorResponse("No recommendation available.", null), HttpStatus.OK);
+                return new ResponseEntity<>(errorResponse("User not found.", null), HttpStatus.BAD_REQUEST);
             }
-        } else {
-            return new ResponseEntity<>(errorResponse("User not found.", null), HttpStatus.BAD_REQUEST);
-        }
     }
 
 
-    @GetMapping(path="venueDetails/{email}")
+        @GetMapping(path="venueDetails/{email}")
     public ResponseEntity<ResponseDto>getDetailsOfVenue(@PathVariable("email") String email){
         VenueDto venue =venueService.getDetailsOfVenue(venueService.findByEmail(email).getId());
         if(venue != null ){
@@ -185,6 +186,19 @@ public class UserCController extends BaseController{
         else{
             return new ResponseEntity<>
                     (errorResponse("Details fetched  Failed", null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path="getResponse/{email}")
+    public ResponseEntity<ResponseDto>getBookingResponse(@PathVariable("email") String email){
+        List<Booking> response =bookingServices.getBookingResponses(email);
+        if(response != null ){
+            return new ResponseEntity<>
+                    (successResponse("Response fetched.", response), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>
+                    (errorResponse("Responding  Failed", null), HttpStatus.BAD_REQUEST);
         }
     }
 

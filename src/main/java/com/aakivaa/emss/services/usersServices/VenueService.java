@@ -6,6 +6,7 @@ import com.aakivaa.emss.dto.PricingDto;
 import com.aakivaa.emss.dto.VenueDto;
 import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
+import org.apache.mahout.cf.taste.common.TasteException;
 
 import java.util.List;
 

@@ -16,6 +16,9 @@ public interface BookingServices {
     Integer VenueBookingResponse(Long id , Integer integer);
     List<Booking> getRequestedBooking(Long id);
     List<Booking> getBookingList(Long id);
+
+    List<Booking> getBookingResponses(String email);
+
     List<LocalDate> getAllBookedDate(Long id);
     Integer getNumberOfBooking(Long id);
 

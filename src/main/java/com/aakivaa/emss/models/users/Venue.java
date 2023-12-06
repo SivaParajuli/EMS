@@ -63,6 +63,8 @@ public class Venue implements Serializable {
 
     private String citizenshipNo;
 
+    private String venueType;
+
 
     @Lob @Basic(fetch = FetchType.LAZY)
     @Column(name = "filePath")

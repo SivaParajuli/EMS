@@ -26,6 +26,7 @@ public class VenueDto {
     private String email;
     private String availableRooms;
     private String password;
+    private String venueType;
     private String citizenShipNo;
     //used while saving
     private MultipartFile venueFile;

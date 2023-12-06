@@ -16,4 +16,6 @@ public interface RatingAndReviewService {
     List<RatingsAndReviews> getRatingAndReviewsById(Long id);
 
     RatingsAndReviews review(Long vid, Long id, RatingsAndReviews reviews);
+
+     List<RatingsAndReviews> getAllRatings();
 }
