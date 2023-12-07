@@ -1,13 +1,13 @@
 package com.aakivaa.emss.utils;
 
-import Jama.Matrix;
-import Jama.SingularValueDecomposition;
-import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.RatingsAndReviews;
+import com.aakivaa.emss.models.users.UserC;
+import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.RatingAndReviewsRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
 @Service
 public class Recommender {
     private final RatingAndReviewsRepo ratingAndReviewsRepo;
@@ -16,158 +16,212 @@ public class Recommender {
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
     }
 
-    // Helper class to store the result of matrix factorization
-    private static class MatrixFactorizationResult {
-        private final double[] userFactors;
-        private final Matrix venueMatrix;
-        private final Map<Long, Integer> venueIndexMap;
+    public List<VenueRating> getRecommendation(UserC targetUser) {
+        List<RatingsAndReviews> ratingsAndReviewsList = ratingAndReviewsRepo.findAll();
 
-        public MatrixFactorizationResult(double[] userFactors, Matrix venueMatrix, Map<Long, Integer> venueIndexMap) {
-            this.userFactors = userFactors;
-            this.venueMatrix = venueMatrix;
-            this.venueIndexMap = venueIndexMap;
+
+        // Step 1: Identify unique users and venues
+        Map<UserC, Integer> userIndexMap = new HashMap<>();
+        Map<Venue, Integer> venueIndexMap = new HashMap<>();
+        int userIndex = 0;
+        int venueIndex = 0;
+
+        for (RatingsAndReviews rating : ratingsAndReviewsList) {
+            UserC user = rating.getUserC();
+            Venue venue = rating.getVenue();
+
+            // If the user is not in the map, add them with an index
+            userIndexMap.putIfAbsent(user, userIndex++);
+
+            // If the venue is not in the map, add it with an index
+            venueIndexMap.putIfAbsent(venue, venueIndex++);
         }
 
-        public double[] getUserFactors() {
-            return userFactors;
+        // Step 2: Create a matrix with users as rows and venues as columns
+        int numUsers = userIndexMap.size();
+        int numVenues = venueIndexMap.size();
+        double[][] userItemMatrix = new double[numUsers][numVenues];
+
+        // Step 3: Fill in the matrix with the corresponding ratings
+        for (RatingsAndReviews rating : ratingsAndReviewsList) {
+            UserC user = rating.getUserC();
+            Venue venue = rating.getVenue();
+            double userRating = rating.getRatings();
+
+            int rowIndex = userIndexMap.get(user);
+            int colIndex = venueIndexMap.get(venue);
+
+            userItemMatrix[rowIndex][colIndex] = userRating;
         }
 
-        public Matrix getVenueMatrix() {
-            return venueMatrix;
+        // Step 4: Calculate average ratings for all users excluding venues not rated by the target user
+        int targetUserIndex = userIndexMap.get(targetUser);
+        double[] averageRatings = new double[numUsers];
+
+// Map to store venues rated by the target user
+        Map<Venue, Integer> targetUserRatedVenues = new HashMap<>();
+
+        for (int j = 0; j < numVenues; j++) {
+            if (userItemMatrix[targetUserIndex][j] > 0) {
+                int finalJ = j;
+                targetUserRatedVenues.put(venueIndexMap.entrySet().stream()
+                        .filter(entry -> entry.getValue() == finalJ)
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElse(null), j);
+            }
         }
 
-        public Map<Long, Integer> getVenueIndexMap() {
-            return venueIndexMap;
+        for (int i = 0; i < numUsers; i++) {
+            if (i != targetUserIndex) {
+                int numRatedVenues = 0;
+                double totalRating = 0.0;
+
+                for (int j = 0; j < numVenues; j++) {
+                    int finalJ = j;
+                    if (targetUserRatedVenues.containsKey(venueIndexMap.entrySet().stream()
+                            .filter(entry -> entry.getValue() == finalJ)
+                            .findFirst()
+                            .map(Map.Entry::getKey)
+                            .orElse(null))) {
+
+                        if (userItemMatrix[i][j] > 0) {
+                            numRatedVenues++;
+                            totalRating += userItemMatrix[i][j];
+                        }
+                    }
+                }
+
+                if (numRatedVenues > 0) {
+                    averageRatings[i] = totalRating / numRatedVenues;
+                }
+            }
         }
+
+// Step 5: Create a new matrix with adjusted ratings (rating - averageRating)
+        double[][] adjustedUserItemMatrix = new double[numUsers][targetUserRatedVenues.size()];
+
+        for (int i = 0; i < numUsers; i++) {
+            int adjustedColIndex = 0;
+
+            for (int j = 0; j < numVenues; j++) {
+                int finalJ = j;
+                if (targetUserRatedVenues.containsKey(venueIndexMap.entrySet().stream()
+                        .filter(entry -> entry.getValue() == finalJ)
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElse(null))) {
+
+                    if (userItemMatrix[i][j] > 0) {
+                        adjustedUserItemMatrix[i][adjustedColIndex++] = userItemMatrix[i][j] - averageRatings[i];
+                    }
+                }
+            }
+        }
+
+        // Step 6: Calculate cosine similarity between targetUser and all other users
+        double[] targetUserVector = adjustedUserItemMatrix[targetUserIndex];
+        double[] similarities = new double[numUsers];
+
+        for (int i = 0; i < numUsers; i++) {
+            if (i != targetUserIndex) {
+                double[] userVector = adjustedUserItemMatrix[i];
+
+                // Calculate cosine similarity
+                double dotProduct = 0.0;
+                double normTargetUser = 0.0;
+                double normUser = 0.0;
+
+                for (int j = 0; j < targetUserVector.length; j++) {
+                    dotProduct += targetUserVector[j] * userVector[j];
+                    normTargetUser += Math.pow(targetUserVector[j], 2);
+                    normUser += Math.pow(userVector[j], 2);
+                }
+
+                double similarity = dotProduct / (Math.sqrt(normTargetUser) * Math.sqrt(normUser));
+                similarities[i] = similarity;
+            }
+        }
+
+        List<VenueRating> allVenueRatings = new ArrayList<>();
+
+        // Include actual ratings for venues already rated by the target user
+        Map<Venue, Integer> targetUserRatedVenues = new HashMap<>();
+        int targetUserIndex = userIndexMap.get(targetUser);
+
+        for (int j = 0; j < numVenues; j++) {
+            if (userItemMatrix[targetUserIndex][j] > 0) {
+                int finalJ = j;
+                Venue venue = venueIndexMap.entrySet().stream()
+                        .filter(entry -> entry.getValue() == finalJ)
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElse(null);
+
+                double actualRating = userItemMatrix[targetUserIndex][j];
+                allVenueRatings.add(new VenueRating(venue, actualRating));
+                targetUserRatedVenues.put(venue, j);
+            }
+        }
+
+        // Step 7: Predict ratings for venues not rated by targetUser
+        for (int j = 0; j < numVenues; j++) {
+            int finalJ = j;
+            if (!targetUserRatedVenues.containsKey(venueIndexMap.entrySet().stream()
+                    .filter(entry -> entry.getValue() == finalJ)
+                    .findFirst()
+                    .map(Map.Entry::getKey)
+                    .orElse(null))) {
+
+                double prediction = averageRatings[targetUserIndex];
+
+                for (int i = 0; i < numUsers; i++) {
+                    if (i != targetUserIndex) {
+                        double cosineSimilarity = similarities[i];
+
+                        if (cosineSimilarity > 0) {
+                            double ratingUser = userItemMatrix[i][j];
+                            double averageRatingUser = averageRatings[i];
+
+                            if (ratingUser > 0) {
+                                prediction += Math.abs(cosineSimilarity) * (ratingUser - averageRatingUser);
+                            }
+                        }
+                    }
+                }
+
+                int finalJ1 = j;
+                Venue venue = venueIndexMap.entrySet().stream()
+                        .filter(entry -> entry.getValue() == finalJ1)
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElse(null);
+
+                allVenueRatings.add(new VenueRating(venue, prediction));
+            }
+        }
+
+        // Sort allVenueRatings according to ratings (actual and predicted) in descending order
+        allVenueRatings.sort(Comparator.comparingDouble(VenueRating::getRating).reversed());
+
+        return allVenueRatings;
     }
 
-    // Perform matrix factorization
-    private MatrixFactorizationResult matrixFactorization(Long userId) {
-        List<RatingsAndReviews> userRatings = ratingAndReviewsRepo.findUserCById(userId, Status.VERIFIED);
+    static class VenueRating {
+        private Venue venue;
+        private double rating;
 
-        // Build the user-item rating matrix
-        int numUsers = 1; // Set initial number of users to 1
-        int numVenues = 0;
-        Map<Long, Integer> userIndexMap = new HashMap<>();
-        Map<Long, Integer> venueIndexMap = new HashMap<>();
-
-        for (RatingsAndReviews rating : userRatings) {
-            long uId = rating.getUserC().getId();
-            long vId = rating.getVenue().getId();
-
-            if (!userIndexMap.containsKey(uId)) {
-                userIndexMap.put(uId, 0); // Since there is only one user, set index to 0
-            }
-            if (!venueIndexMap.containsKey(vId)) {
-                venueIndexMap.put(vId, numVenues++);
-            }
+        public VenueRating(Venue venue, double rating) {
+            this.venue = venue;
+            this.rating = rating;
         }
 
-        // Check if there are not enough ratings or venues
-        if (numVenues < 1) {
-            return new MatrixFactorizationResult(new double[0], new Matrix(0, 0), new HashMap<>());
+        public Venue getVenue() {
+            return venue;
         }
 
-        // Initialize the ratings matrix
-        double[][] ratingsMatrix = new double[numUsers][numVenues];
-
-        // Populate the ratings matrix
-        for (RatingsAndReviews rating : userRatings) {
-            long uId = rating.getUserC().getId();
-            long vId = rating.getVenue().getId();
-
-            int userIndex = userIndexMap.get(uId);
-            int venueIndex = venueIndexMap.get(vId);
-
-            ratingsMatrix[userIndex][venueIndex] = rating.getRatings();
+        public double getRating() {
+            return rating;
         }
-
-        // Perform Singular Value Decomposition
-        Matrix matrix = new Matrix(ratingsMatrix);
-        SingularValueDecomposition svd = matrix.svd();
-
-        // Threshold for considering singular values
-        double threshold = 1;
-
-        // Matrices from SVD
-        Matrix userMatrix = svd.getU();
-        Matrix singularValues = svd.getS();
-        Matrix venueMatrix = svd.getV();
-
-        // Determine the number of factors to consider
-        int numFactors = Math.min(numUsers, numVenues);
-
-// Ensure that singular values array length matches the number of factors
-        int validSingularValues = Math.min(singularValues.getRowDimension(), singularValues.getColumnDimension());
-
-// Debugging information
-        System.out.println("Number of valid singular values: " + validSingularValues);
-
-// Initialize the reconstructed matrix
-        Matrix reconstructedMatrix = new Matrix(numUsers, numVenues);
-
-// Debugging information
-        System.out.println("Reconstructed matrix dimensions: " +
-                reconstructedMatrix.getRowDimension() + " x " + reconstructedMatrix.getColumnDimension());
-
-// Reconstruct the matrix using valid singular values and vectors
-        for (int i = 0; i < validSingularValues; i++) {
-            double value = singularValues.get(i, i);
-            if (value >= threshold) {
-                Matrix userPart = userMatrix.getMatrix(0, userMatrix.getRowDimension() - 1, i, i);
-                Matrix singularPart = new Matrix(1, 1);
-                singularPart.set(0, 0, value);
-                Matrix venuePart = venueMatrix.getMatrix(0, venueMatrix.getRowDimension() - 1, i, i);
-
-                // Perform matrix multiplication
-                Matrix product = userPart.times(singularPart).times(venuePart.transpose());  // Transpose venuePart
-
-                // Add the product to the reconstructed matrix
-                reconstructedMatrix.plusEquals(product);
-            }
-        }
-
-// Debugging information
-        System.out.println("Reconstructed matrix after SVD: ");
-        reconstructedMatrix.print(5, 5);
-
-
-        int userIndex = userIndexMap.get(userId);
-        double[] userFactors = reconstructedMatrix.getArray()[userIndex];
-
-        return new MatrixFactorizationResult(userFactors, venueMatrix, venueIndexMap);
-    }
-
-    // Get venue recommendations for a user
-    public List<Long> getVenueRecommendations(Long userId, int numRecommendations) {
-        MatrixFactorizationResult factorizationResult = matrixFactorization(userId);
-
-        Map<Long, Double> venueScores = new HashMap<>();
-        Matrix venueMatrix = factorizationResult.getVenueMatrix();
-
-        // Calculate scores for each venue based on user factors and venue matrix
-        for (long venueId : factorizationResult.getVenueIndexMap().keySet()) {
-            int venueIndex = factorizationResult.getVenueIndexMap().get(venueId);
-            double score = 0.0;
-
-            for (int i = 0; i < factorizationResult.getUserFactors().length; i++) {
-                double factor = factorizationResult.getUserFactors()[i];
-                score += factor * venueMatrix.get(venueIndex, i);
-            }
-
-            venueScores.put(venueId, score);
-        }
-
-        // Sort venues by score in descending order
-        List<Map.Entry<Long, Double>> sortedVenues = new ArrayList<>(venueScores.entrySet());
-        sortedVenues.sort((v1, v2) -> Double.compare(v2.getValue(), v1.getValue()));
-
-        // Select top venues as recommendations
-        List<Long> recommendations = new ArrayList<>();
-        for (int i = 0; i < Math.min(numRecommendations, sortedVenues.size()); i++) {
-            recommendations.add(sortedVenues.get(i).getKey());
-        }
-
-        return recommendations;
     }
 }

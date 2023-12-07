@@ -34,9 +34,4 @@ public interface VenueRepo extends JpaRepository<Venue, Long> {
     @Query(value = "SELECT COUNT(v) from Venue v where v.status= :p")
     Integer newRegistration(@Param("p") Status status);
 
-
-
-
-
-
 }

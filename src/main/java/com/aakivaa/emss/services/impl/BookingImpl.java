@@ -129,8 +129,8 @@ public class BookingImpl implements BookingServices {
     }
 
     @Override
-    public List<Booking> getBookingResponses(String email) {
-        List<Booking> requestList= bookingRepo.getBookingResponse(userCRepo.getByEmail(email).getId(),Status.PENDING);
+    public List<Booking> getBookingResponses(String email,String vEmail) {
+        List<Booking> requestList= bookingRepo.getBookingResponse(userCRepo.getByEmail(email).getId(),venueRepo.getByEmail(vEmail).getId(),Status.PENDING);
         return requestList.stream().map(entity-> Booking.builder()
                 .bookingDate(entity.getBookingDate())
                 .status(entity.getStatus())

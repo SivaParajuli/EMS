@@ -190,8 +190,8 @@ public class UserCController extends BaseController{
     }
 
     @GetMapping(path="getResponse/{email}")
-    public ResponseEntity<ResponseDto>getBookingResponse(@PathVariable("email") String email){
-        List<Booking> response =bookingServices.getBookingResponses(email);
+    public ResponseEntity<ResponseDto>getBookingResponse(@PathVariable("email") String email,@PathVariable("vemail") String vemail){
+        List<Booking> response =bookingServices.getBookingResponses(email,vemail);
         if(response != null ){
             return new ResponseEntity<>
                     (successResponse("Response fetched.", response), HttpStatus.OK);

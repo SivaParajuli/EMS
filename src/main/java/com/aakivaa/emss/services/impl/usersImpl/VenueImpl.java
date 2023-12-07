@@ -8,6 +8,7 @@ import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.Pricing;
 import com.aakivaa.emss.models.users.Venue;
 import com.aakivaa.emss.repo.*;
+import com.aakivaa.emss.repo.usersRepo.UserCRepo;
 import com.aakivaa.emss.repo.usersRepo.VenueRepo;
 import com.aakivaa.emss.services.usersServices.VenueService;
 import com.aakivaa.emss.utils.FileUtils;
@@ -34,9 +35,10 @@ public class VenueImpl implements VenueService {
     private final PricingRepo pricingRepo;
     private final RatingAndReviewsRepo ratingAndReviewsRepo;
     private final BookingRepo bookingRepo;
+    private final UserCRepo userCRepo;
 
 
-    public VenueImpl(VenueRepo venueRepo, FileUtils fileUtils, Recommender recommender, RecommenderOptional recommenderOptional, PricingRepo pricingRepo, RatingAndReviewsRepo ratingAndReviewsRepo, BookingRepo bookingRepo) {
+    public VenueImpl(VenueRepo venueRepo, FileUtils fileUtils, Recommender recommender, RecommenderOptional recommenderOptional, PricingRepo pricingRepo, RatingAndReviewsRepo ratingAndReviewsRepo, BookingRepo bookingRepo, UserCRepo userCRepo) {
         this.venueRepo = venueRepo;
         this.fileUtils = fileUtils;
         this.recommender = recommender;
@@ -44,6 +46,7 @@ public class VenueImpl implements VenueService {
         this.pricingRepo = pricingRepo;
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
         this.bookingRepo = bookingRepo;
+        this.userCRepo = userCRepo;
     }
 
     @Override
@@ -202,8 +205,8 @@ public class VenueImpl implements VenueService {
 
     @Override
     public List<VenueDto> getRecommendations(Long userId) {
-        List<Long> venueIdList = recommender.getVenueRecommendations(userId,10);
-        List<Venue> recommendedVenues = venueRepo.findAllById(venueIdList);
+        List<Venue> venueList = recommender.getRecommendation(userCRepo.getById(userId));
+        List<Venue> recommendedVenues = venueRepo.findAllById(venueList);
         return recommendedVenues.stream()
                 .map(this::mapVenueToDto)
                 .collect(Collectors.toList());

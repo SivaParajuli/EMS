@@ -23,8 +23,8 @@ public interface BookingRepo extends JpaRepository<Booking,Long> {
     @Query(value = "SELECT b from Booking b where b.venue.id= :i and b.status= :p")
     List<Booking> getPendingRequests(@Param("i") Long id, @Param("p")Status bookingStatus);
 
-    @Query(value = "SELECT b from Booking b where b.userC= :i and b.status <> :p")
-    List<Booking> getBookingResponse(@Param("i")Long id, @Param("p")Status bookingStatus);
+    @Query(value = "SELECT b from Booking b where b.userC.id= :i and b.venue.id=:v and b.status <> :p")
+    List<Booking> getBookingResponse(@Param("i")Long id,@Param("v")Long vid, @Param("p")Status bookingStatus);
 
     @Query(value = "SELECT b from Booking b where b.venue.id= :i order by b.id desc")
     List<Booking> getAllBookingList(@Param("i") Long id);
