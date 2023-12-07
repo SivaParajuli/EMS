@@ -205,8 +205,8 @@ public class VenueImpl implements VenueService {
 
     @Override
     public List<VenueDto> getRecommendations(Long userId) {
-        List<Venue> venueList = recommender.getRecommendation(userCRepo.getById(userId));
-        List<Venue> recommendedVenues = venueRepo.findAllById(venueList);
+        List<Long> venueIdList = recommender.getRecommendation(userCRepo.getById(userId));
+        List<Venue> recommendedVenues = venueRepo.findAllById(venueIdList);
         return recommendedVenues.stream()
                 .map(this::mapVenueToDto)
                 .collect(Collectors.toList());

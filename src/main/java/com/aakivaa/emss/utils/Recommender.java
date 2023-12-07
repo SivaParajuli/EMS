@@ -16,7 +16,7 @@ public class Recommender {
         this.ratingAndReviewsRepo = ratingAndReviewsRepo;
     }
 
-    public List<VenueRating> getRecommendation(UserC targetUser) {
+    public List<Long> getRecommendation(UserC targetUser) {
         List<RatingsAndReviews> ratingsAndReviewsList = ratingAndReviewsRepo.findAll();
 
 
@@ -146,8 +146,8 @@ public class Recommender {
         List<VenueRating> allVenueRatings = new ArrayList<>();
 
         // Include actual ratings for venues already rated by the target user
-        Map<Venue, Integer> targetUserRatedVenues = new HashMap<>();
-        int targetUserIndex = userIndexMap.get(targetUser);
+
+         targetUserIndex = userIndexMap.get(targetUser);
 
         for (int j = 0; j < numVenues; j++) {
             if (userItemMatrix[targetUserIndex][j] > 0) {
@@ -204,24 +204,11 @@ public class Recommender {
         // Sort allVenueRatings according to ratings (actual and predicted) in descending order
         allVenueRatings.sort(Comparator.comparingDouble(VenueRating::getRating).reversed());
 
-        return allVenueRatings;
-    }
+        List<Long> venueIdList = new ArrayList<>();
 
-    static class VenueRating {
-        private Venue venue;
-        private double rating;
-
-        public VenueRating(Venue venue, double rating) {
-            this.venue = venue;
-            this.rating = rating;
+        for(VenueRating venueRating:allVenueRatings){
+            venueIdList.add(venueRating.getVenue().getId());
         }
-
-        public Venue getVenue() {
-            return venue;
-        }
-
-        public double getRating() {
-            return rating;
-        }
+        return venueIdList;
     }
 }
