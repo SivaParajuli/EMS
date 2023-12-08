@@ -7,6 +7,7 @@ import com.aakivaa.emss.repo.RatingAndReviewsRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class Recommender {
@@ -17,45 +18,59 @@ public class Recommender {
     }
 
     public List<Long> getRecommendation(UserC targetUser) {
+
+
         List<RatingsAndReviews> ratingsAndReviewsList = ratingAndReviewsRepo.findAll();
 
 
         // Step 1: Identify unique users and venues
         Map<UserC, Integer> userIndexMap = new HashMap<>();
         Map<Venue, Integer> venueIndexMap = new HashMap<>();
-        int userIndex = 0;
-        int venueIndex = 0;
+        int userIndex = -1;
+        int venueIndex = -1;
 
         for (RatingsAndReviews rating : ratingsAndReviewsList) {
             UserC user = rating.getUserC();
             Venue venue = rating.getVenue();
 
-            // If the user is not in the map, add them with an index
-            userIndexMap.putIfAbsent(user, userIndex++);
-
-            // If the venue is not in the map, add it with an index
-            venueIndexMap.putIfAbsent(venue, venueIndex++);
+            if (!userIndexMap.containsKey(user)) {
+                // If the user is not in the map, add them with an index
+                userIndexMap.putIfAbsent(user, ++userIndex);
+            }
+            if (!venueIndexMap.containsKey(venue)) {
+                // If the venue is not in the map, add it with an index
+                venueIndexMap.putIfAbsent(venue, ++venueIndex);
+            }
         }
 
         // Step 2: Create a matrix with users as rows and venues as columns
         int numUsers = userIndexMap.size();
+
         int numVenues = venueIndexMap.size();
+
         double[][] userItemMatrix = new double[numUsers][numVenues];
+
 
         // Step 3: Fill in the matrix with the corresponding ratings
         for (RatingsAndReviews rating : ratingsAndReviewsList) {
             UserC user = rating.getUserC();
             Venue venue = rating.getVenue();
+
+
             double userRating = rating.getRatings();
 
             int rowIndex = userIndexMap.get(user);
             int colIndex = venueIndexMap.get(venue);
+
+
+
 
             userItemMatrix[rowIndex][colIndex] = userRating;
         }
 
         // Step 4: Calculate average ratings for all users excluding venues not rated by the target user
         int targetUserIndex = userIndexMap.get(targetUser);
+
         double[] averageRatings = new double[numUsers];
 
 // Map to store venues rated by the target user
@@ -198,11 +213,27 @@ public class Recommender {
                         .orElse(null);
 
                 allVenueRatings.add(new VenueRating(venue, prediction));
+                System.out.println("Predicted Venue: " + venue.getId());
+                System.out.println("Predicted rating  :" +prediction);
             }
+        }
+
+
+        System.out.println( " venues and rating before sorting :");
+        for (VenueRating allVenueRating : allVenueRatings) {
+            System.out.println("Venue : " + allVenueRating.getVenue().getId());
+            System.out.println("Rating : " + allVenueRating.getRating());
         }
 
         // Sort allVenueRatings according to ratings (actual and predicted) in descending order
         allVenueRatings.sort(Comparator.comparingDouble(VenueRating::getRating).reversed());
+
+        System.out.println( " venues and rating after sorting :");
+        for (VenueRating allVenueRating : allVenueRatings) {
+            System.out.println("Venue : " + allVenueRating.getVenue().getId());
+            System.out.println("Rating : " + allVenueRating.getRating());
+        }
+
 
         List<Long> venueIdList = new ArrayList<>();
 

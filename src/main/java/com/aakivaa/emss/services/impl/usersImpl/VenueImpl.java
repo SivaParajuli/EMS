@@ -205,11 +205,12 @@ public class VenueImpl implements VenueService {
 
     @Override
     public List<VenueDto> getRecommendations(Long userId) {
-        List<Long> venueIdList = recommender.getRecommendation(userCRepo.getById(userId));
-        List<Venue> recommendedVenues = venueRepo.findAllById(venueIdList);
-        return recommendedVenues.stream()
-                .map(this::mapVenueToDto)
-                .collect(Collectors.toList());
+            List<Long> venueIdList = recommenderOptional.getRecommendation(userCRepo.getById(userId));
+            List<Venue> recommendedVenues = venueRepo.findAllById(venueIdList);
+            return recommendedVenues.stream()
+                    .map(this::mapVenueToDto)
+                    .collect(Collectors.toList());
+
     }
 
     private VenueDto mapVenueToDto(Venue venue) {

@@ -1,7 +1,9 @@
 package com.aakivaa.emss.utils;
 
 import com.aakivaa.emss.models.users.Venue;
+import lombok.Builder;
 
+@Builder
 public class VenueRating {
 
         private final Venue venue;
