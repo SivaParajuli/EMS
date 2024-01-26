@@ -7,7 +7,6 @@ import com.aakivaa.emss.repo.RatingAndReviewsRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class Recommender {
@@ -48,6 +47,11 @@ public class Recommender {
 
         int numVenues = venueIndexMap.size();
 
+//        // Check if there are not enough ratings or venues
+//        if (numVenues < 1) {
+//            return new Recommender.MatrixFactorizationResult(new double[0], new Matrix(0, 0), new HashMap<>());
+//        }
+
         double[][] userItemMatrix = new double[numUsers][numVenues];
 
 
@@ -58,22 +62,16 @@ public class Recommender {
 
 
             double userRating = rating.getRatings();
-
             int rowIndex = userIndexMap.get(user);
             int colIndex = venueIndexMap.get(venue);
-
-
-
-
             userItemMatrix[rowIndex][colIndex] = userRating;
         }
 
         // Step 4: Calculate average ratings for all users excluding venues not rated by the target user
         int targetUserIndex = userIndexMap.get(targetUser);
-
         double[] averageRatings = new double[numUsers];
 
-// Map to store venues rated by the target user
+        // Map to store venues rated by the target user
         Map<Venue, Integer> targetUserRatedVenues = new HashMap<>();
 
         for (int j = 0; j < numVenues; j++) {
@@ -86,7 +84,7 @@ public class Recommender {
                         .orElse(null), j);
             }
         }
-
+        //calculating the total rating and the number of venues that have been rated by both the target user and the current user.
         for (int i = 0; i < numUsers; i++) {
             if (i != targetUserIndex) {
                 int numRatedVenues = 0;
@@ -113,7 +111,7 @@ public class Recommender {
             }
         }
 
-// Step 5: Create a new matrix with adjusted ratings (rating - averageRating)
+        // Step 5: Create a new matrix with adjusted ratings (rating - averageRating)
         double[][] adjustedUserItemMatrix = new double[numUsers][targetUserRatedVenues.size()];
 
         for (int i = 0; i < numUsers; i++) {
@@ -239,7 +237,9 @@ public class Recommender {
 
         for(VenueRating venueRating:allVenueRatings){
             venueIdList.add(venueRating.getVenue().getId());
+            System.out.println("Venue Id :" +venueIdList);
         }
+        System.out.println(" Venue Id in returning " + venueIdList);
         return venueIdList;
     }
 }

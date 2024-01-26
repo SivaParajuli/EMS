@@ -205,8 +205,11 @@ public class VenueImpl implements VenueService {
 
     @Override
     public List<VenueDto> getRecommendations(Long userId) {
-            List<Long> venueIdList = recommenderOptional.getRecommendation(userCRepo.getById(userId));
-            List<Venue> recommendedVenues = venueRepo.findAllById(venueIdList);
+        List<Long> venueIdList = recommender.getRecommendation(userCRepo.getById(userId));
+        List<Venue> recommendedVenues = new ArrayList<>();
+        for (Long id : venueIdList) {
+            recommendedVenues.add(venueRepo.getById(id));
+        }
             return recommendedVenues.stream()
                     .map(this::mapVenueToDto)
                     .collect(Collectors.toList());
@@ -220,6 +223,8 @@ public class VenueImpl implements VenueService {
                 .availableRooms(venue.getAvailableRooms())
                 .capacity(venue.getCapacity())
                 .city_name(venue.getCity_name())
+                .images(fileUtils.makePathToImage(venue.getListOfImages()))
+                .ratings(ratingAndReviewsRepo.findAverageRatingByVenue(venueRepo.getById(venue.getId())))
                 .description(venue.getDescription())
                 .email(venue.getEmail())
                 .mobile_no(venue.getMobile_no())

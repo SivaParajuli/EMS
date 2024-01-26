@@ -1,5 +1,6 @@
 package com.aakivaa.emss.repo;
 
+import com.aakivaa.emss.dto.TotalBookingDto;
 import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.users.UserC;
@@ -37,4 +38,7 @@ public interface BookingRepo extends JpaRepository<Booking,Long> {
 
     @Query(value = "SELECT COUNT(b.status) from Booking b where b.venue.id= :i and b.status = :p")
     Integer getNumberOfBooking(@Param("i") Long id,@Param("p")Status bookingStatus);
+
+    @Query(value="Select b from Booking b order by b.id desc ")
+    List<Booking> getAllBooking();
 }

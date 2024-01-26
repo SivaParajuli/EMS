@@ -35,6 +35,7 @@ public class Booking implements Serializable {
 
     private String preference;
 
+    private String payment;
 
     @ElementCollection
     @CollectionTable(name = "booking_items", joinColumns = @JoinColumn(name = "booking_id"))

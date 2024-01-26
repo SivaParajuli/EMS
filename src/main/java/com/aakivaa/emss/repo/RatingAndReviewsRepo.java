@@ -4,6 +4,7 @@ import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.RatingsAndReviews;
 import com.aakivaa.emss.models.users.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,5 +29,8 @@ public interface RatingAndReviewsRepo extends JpaRepository<RatingsAndReviews,Lo
     @Query(value="SELECT r from RatingsAndReviews r  where r.venue.id = :i ")
     List<RatingsAndReviews> getReviewsAndRatings(@Param("i") Long id);
 
+    @Modifying
+    @Query(value = "UPDATE RatingsAndReviews rr SET rr.ratings = :r where rr.venue.id = :vid and rr.userC.id = :uid")
+    Boolean updateRating(@Param("r") Double i, @Param("vid")Long vid,@Param("uid")Long uid);
 
 }

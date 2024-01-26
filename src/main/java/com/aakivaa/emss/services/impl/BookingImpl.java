@@ -1,6 +1,7 @@
 package com.aakivaa.emss.services.impl;
 
 import com.aakivaa.emss.dto.BookingDto;
+import com.aakivaa.emss.dto.TotalBookingDto;
 import com.aakivaa.emss.enums.Status;
 import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.users.UserC;
@@ -56,6 +57,7 @@ public class BookingImpl implements BookingServices {
                 .requiredCapacity(bookingDto.getRequiredCapacity())
                 .recipeMenu(bookingDto.getRecipeList())
                 .items(bookingDto.getItems())
+                .payment(bookingDto.getPayment())
                 .userC(userC1)
                 .venue(venue1)
                 .preference(bookingDto.getPreference())
@@ -107,6 +109,7 @@ public class BookingImpl implements BookingServices {
                 .eventType(entity.getEventType())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .recipeMenu(entity.getRecipeMenu())
+                .payment(entity.getPayment())
                 .items(entity.getItems())
                 .status(entity.getStatus())
                 .preference(entity.getPreference())
@@ -134,6 +137,7 @@ public class BookingImpl implements BookingServices {
         return requestList.stream().map(entity-> Booking.builder()
                 .bookingDate(entity.getBookingDate())
                 .status(entity.getStatus())
+                .payment(entity.getPayment())
                 .eventType(entity.getEventType())
                 .requiredCapacity(entity.getRequiredCapacity())
                 .build()).collect(Collectors.toList());
@@ -166,6 +170,22 @@ public class BookingImpl implements BookingServices {
     public List<LocalDate> getDateByIds(Long vid, Long uid) {
         List<LocalDate> dateList = bookingRepo.getDatesByIds(vid,uid, Status.VERIFIED);
         return new ArrayList<>(dateList);
+    }
+
+    @Override
+    public List<TotalBookingDto> getAllVerifiedBooking(){
+        List<Booking> bookingList = bookingRepo.getAllBooking();
+        return bookingList.stream().map(entity -> TotalBookingDto.builder()
+                .venueName(entity.getVenue().getVenueName())
+                .bookingDate(entity.getBookingDate())
+                .userName(entity.getUserC().getName())
+                .items(entity.getItems())
+                .recipeList(entity.getRecipeMenu())
+                .status(entity.getStatus())
+                .userEmail(entity.getUserC().getEmail())
+                .venueEmail(entity.getVenue().getEmail())
+                .requiredCapacity(entity.getRequiredCapacity())
+                .build()).collect(Collectors.toList());
     }
 
 }

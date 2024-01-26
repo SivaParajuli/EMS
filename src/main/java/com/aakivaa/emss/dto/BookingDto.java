@@ -1,5 +1,6 @@
 package com.aakivaa.emss.dto;
 
+import com.aakivaa.emss.models.users.Venue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class BookingDto {
     private LocalDate bookingDate;
     private String requiredCapacity;
     private String preference;
+    private String payment;
     private List<String> recipeList;
     private List<String> items;
 }

@@ -2,13 +2,17 @@ package com.aakivaa.emss.controller;
 
 import com.aakivaa.emss.dto.ResponseDto;
 import com.aakivaa.emss.dto.Request;
+import com.aakivaa.emss.dto.TotalBookingDto;
 import com.aakivaa.emss.dto.VenueDto;
+import com.aakivaa.emss.models.Booking;
 import com.aakivaa.emss.models.users.Admin;
 import com.aakivaa.emss.models.users.UserC;
+import com.aakivaa.emss.services.BookingServices;
 import com.aakivaa.emss.services.usersServices.AdminService;
 import com.aakivaa.emss.services.usersServices.RegistrationServices;
 import com.aakivaa.emss.services.usersServices.UserCService;
 import com.aakivaa.emss.services.usersServices.VenueService;
+import org.apache.el.util.Validation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +27,15 @@ public class AdminController extends BaseController {
     private final AdminService adminService;
     private final VenueService venueService;
     private final UserCService clientService;
+    private final BookingServices bookingServices;
 
 
-    public AdminController(RegistrationServices registerService, AdminService adminService, VenueService venueService, UserCService clientService) {
+    public AdminController(RegistrationServices registerService, AdminService adminService, VenueService venueService, UserCService clientService, BookingServices bookingServices) {
         this.registerService = registerService;
         this.adminService = adminService;
         this.venueService = venueService;
         this.clientService = clientService;
+        this.bookingServices = bookingServices;
     }
 
     @GetMapping("registerRequests")
@@ -90,6 +96,18 @@ public class AdminController extends BaseController {
         Integer newRegistrationRequests =venueService.getNumberOfNewRegistration();
         return new ResponseEntity<>
                 (successResponse("Number of new Registration Requests", newRegistrationRequests),HttpStatus.OK);
+    }
+
+    @GetMapping("totalBooking")
+    public ResponseEntity<ResponseDto> getTotalBooking(){
+       List<TotalBookingDto> booking  = bookingServices.getAllVerifiedBooking();
+       if (booking != null) {
+           return new ResponseEntity<>(
+                   successResponse("Verified booking list fetched. ",booking),HttpStatus.OK);
+       }
+       else
+           return new ResponseEntity<>(
+                   errorResponse("fetching failed " ,null),HttpStatus.BAD_REQUEST);
     }
 }
 

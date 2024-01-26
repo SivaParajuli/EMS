@@ -3,6 +3,7 @@ package com.aakivaa.emss.services;
 
 
 import com.aakivaa.emss.dto.BookingDto;
+import com.aakivaa.emss.dto.TotalBookingDto;
 import com.aakivaa.emss.models.Booking;
 
 import java.io.IOException;
@@ -25,4 +26,6 @@ public interface BookingServices {
     Booking findById(Long id);
 
     List<LocalDate> getDateByIds(Long vid, Long uid);
+
+    List<TotalBookingDto> getAllVerifiedBooking();
 }

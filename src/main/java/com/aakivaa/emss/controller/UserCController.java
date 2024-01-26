@@ -84,7 +84,7 @@ public class UserCController extends BaseController{
         public ResponseEntity<ResponseDto> getAllBookedDate(@PathVariable("email")String email){
             List<LocalDate> dateList =bookingServices.getAllBookedDate(venueService.findByEmail(email).getId());
             return new ResponseEntity<>
-                    (successResponse("Date List fetched.", dateList),HttpStatus.OK);
+                    (successResponse("Data List fetched.", dateList),HttpStatus.OK);
         }
 
 
@@ -114,7 +114,8 @@ public class UserCController extends BaseController{
             }
         }
 
-    @PostMapping(path="rateVenue/{uemail}/{vemail}")
+    @CrossOrigin(origins = "*",methods = RequestMethod.PUT,maxAge = 86400,allowedHeaders = "*")
+    @PutMapping(path="rateVenue/{uemail}/{vemail}")
     public ResponseEntity<ResponseDto> addRating(@PathVariable ("uemail")String uemail,@PathVariable ("vemail")String vemail,
                                           @RequestBody RatingsAndReviews rating) {
         RatingsAndReviews rating1 = ratingAndReviewService.addRating(userCService.findByEmail(uemail),

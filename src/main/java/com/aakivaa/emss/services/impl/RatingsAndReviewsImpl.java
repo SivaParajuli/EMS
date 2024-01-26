@@ -30,17 +30,31 @@ public class RatingsAndReviewsImpl implements RatingAndReviewService {
     @Transactional
     @Override
     public RatingsAndReviews addRating(UserC user ,Venue venue, RatingsAndReviews rating) {
-        RatingsAndReviews newRating = RatingsAndReviews.builder()
-                .userC(user)
-                .venue(venue)
-                .reviews(rating.getReviews())
-                .ratings(rating.getRatings())
-                .build();
-        newRating = ratingAndReviewsRepo.save(newRating);
-        return RatingsAndReviews.builder()
-                .ratings(newRating.getRatings())
-                .reviews(newRating.getReviews())
-                .build();
+        if(ratingAndReviewsRepo.updateRating(rating.getRatings(), venue.getId(), user.getId())) {
+            RatingsAndReviews ratingsAndReviews1 = RatingsAndReviews.builder()
+                    .userC(user)
+                    .venue(venue)
+                    .ratings(rating.getRatings()).build();
+            return RatingsAndReviews.builder()
+                    .ratings(ratingsAndReviews1.getRatings())
+                    .reviews(ratingsAndReviews1.getReviews())
+                    .build();
+        }
+
+        else{
+            RatingsAndReviews newRating = RatingsAndReviews.builder()
+                    .userC(user)
+                    .venue(venue)
+                    .reviews(rating.getReviews())
+                    .ratings(rating.getRatings())
+                    .build();
+              ratingAndReviewsRepo.save(newRating);
+            return RatingsAndReviews.builder()
+                    .ratings(newRating.getRatings())
+                    .reviews(newRating.getReviews())
+                    .build();
+        }
+
     }
 
     @Override
